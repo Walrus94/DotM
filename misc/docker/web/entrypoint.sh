@@ -11,7 +11,9 @@ if [ ! -e .docker-init-done ] ; then
     "$(dirname $0)"/generate-config.sh
     composer --version
     composer install --no-progress --optimize-autoloader
-    bin/local-patch
+    if command -v patch >/dev/null 2>&1; then
+        bin/local-patch
+    fi
     echo "Installing node, go grab a coffee"
     npm install
     npx update-browserslist-db@latest
