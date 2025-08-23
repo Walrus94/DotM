@@ -7,9 +7,8 @@ class Torrent extends \Gazelle\Base {
         SELECT
             t.ID,
             g.ID,
-            ((t.Size * tls.Snatched) + (t.Size * 0.5 * tls.Leechers)) AS Data
+            t.Size AS Data
         FROM torrents AS t
-        INNER JOIN torrents_leech_stats tls ON (tls.TorrentID = t.ID)
         INNER JOIN torrents_group AS g ON (g.ID = t.GroupID)
         %s
         GROUP BY %s
@@ -46,7 +45,7 @@ class Torrent extends \Gazelle\Base {
         $where[] = $this->freeleechWhere($getParameters);
         $where[] = $this->detailsWhere($details);
 
-        $where[] = ["parameters" => null, "where" => "tls.Seeders > 0"];
+        $where[] = ["parameters" => null, "where" => "1=1"];
 
         $whereFilter = fn($value) => $value["where"] ?? null;
 
@@ -97,10 +96,8 @@ class Torrent extends \Gazelle\Base {
 
     private function orderBy($details): string {
         return match ($details) {
-            'snatched' => 'tls.Snatched',
-            'seeded'   => 'tls.Seeders',
             'data'     => 'Data',
-            default    => '(tls.Seeders + tls.Leechers)',
+            default    => 't.Size',
         };
     }
 

@@ -162,12 +162,11 @@ class TGroup extends \Gazelle\BaseManager {
             (int)self::$db->scalar("
                 SELECT r1.ID
                 FROM torrents_group AS r1
-                INNER JOIN torrents t ON (r1.ID = t.GroupID)
-                INNER JOIN torrents_leech_stats tls ON (tls.TorrentID = t.ID AND tls.Seeders >= ?),
+                INNER JOIN torrents t ON (r1.ID = t.GroupID),
                 (SELECT rand() * max(ID) AS ID FROM torrents_group) AS r2
                 WHERE r1.ID >= r2.ID
                 LIMIT 1
-                ", RANDOM_TORRENT_MIN_SEEDS
+                "
             )
         );
     }

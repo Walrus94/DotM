@@ -174,7 +174,6 @@ class Reaper extends \Gazelle\Base {
             SELECT t.UserID AS user_id,
                 group_concat(t.ID ORDER BY t.ID) AS ids
             FROM torrents                   t
-            INNER JOIN torrents_leech_stats tls ON (tls.TorrentID = t.ID)
             LEFT JOIN torrent_unseeded      tu  ON (tu.torrent_id = t.ID)
             WHERE $condition
                 AND tu.torrent_id IS NULL
@@ -416,10 +415,8 @@ class Reaper extends \Gazelle\Base {
             FROM torrent_unseeded tu
             iNNER JOIN xbt_files_users xfu ON (xfu.fid = tu.torrent_id)
             INNER JOIN torrents t ON (t.ID = xfu.fid AND t.UserID = xfu.uid)
-            INNER JOIN torrents_leech_stats tls ON (tls.TorrentID = xfu.fid)
             LEFT JOIN torrent_unseeded_claim tuc USING (torrent_id)
-            WHERE tu.unseeded_date < tls.last_action
-                AND tuc.claim_date IS NULL
+            WHERE tuc.claim_date IS NULL
                 AND xfu.remaining  = 0
                 AND xfu.timespent  > 0
         ");
@@ -431,11 +428,9 @@ class Reaper extends \Gazelle\Base {
                 xfu.uid AS user_id
             FROM xbt_files_users xfu
             INNER JOIN torrents t ON (t.ID = xfu.fid)
-            INNER JOIN torrents_leech_stats tls ON (tls.TorrentID = xfu.fid)
             INNER JOIN torrent_unseeded tu ON (tu.torrent_id = xfu.fid)
             LEFT JOIN torrent_unseeded_claim tuc ON (tuc.torrent_id = xfu.fid AND tuc.user_id = xfu.uid)
             WHERE tuc.claim_date IS NULL
-                AND tu.unseeded_date < tls.last_action
                 AND NOT EXISTS (
                     SELECT 1
                     FROM torrent_unseeded_claim tuc_prev
