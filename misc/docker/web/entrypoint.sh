@@ -14,7 +14,7 @@ if [ ! -e .docker-init-done ] ; then
     if command -v patch >/dev/null 2>&1; then
         bin/local-patch
     fi
-    bin/config-css /tmp/config-css.js
+    php bin/config-css /tmp/config-css.js
     echo "Installing node, go grab a coffee"
     npm install
     npx update-browserslist-db@latest
@@ -30,20 +30,20 @@ do
 done
 
 echo "Run mysql migrations..."
-if ! FKEY_MY_DATABASE=1 LOCK_MY_DATABASE=1 /var/www/vendor/bin/phinx migrate; then
+if ! FKEY_MY_DATABASE=1 LOCK_MY_DATABASE=1 php /var/www/vendor/bin/phinx migrate; then
     echo "PHINX FAILED TO RUN MIGRATIONS"
     exit 1
 fi
 
 echo "Run postgres migrations..."
-if ! /var/www/vendor/bin/phinx migrate -c ./misc/phinx-pg.php; then
+if ! php /var/www/vendor/bin/phinx migrate -c ./misc/phinx-pg.php; then
     echo "PHINX FAILED TO RUN MIGRATIONS"
     exit 1
 fi
 
 if [ ! -f /var/www/misc/phinx/seeded.txt ]; then
     echo "Run seed:run..."
-    if ! /var/www/vendor/bin/phinx seed:run; then
+    if ! php /var/www/vendor/bin/phinx seed:run; then
         echo "PHINX FAILED TO SEED"
         exit 1
     fi

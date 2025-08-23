@@ -8,7 +8,5 @@ if ! command -v patch >/dev/null 2>&1; then
 fi
 
 find "$(dirname "$0")/../misc/patch" -name "*.patch" -print0 \
-    | while IFS= read -r -d '' patch_file; do
-        patch -p1 < "$patch_file"
-    done
+    | xargs -0 -r -n1 patch -p1 -i
 
