@@ -113,7 +113,6 @@ class Debug {
                 'flags'         => $this->markList(),
                 'includes'      => $this->includeList(),
                 'perf'          => $this->perfInfo(),
-                'ocelot'        => (new \Gazelle\Tracker())->requestList(),
                 'searches'      => class_exists('Sphinxql') ? \Sphinxql::$Queries : [],
                 'searches_time' => class_exists('Sphinxql') ? \Sphinxql::$Time : 0.0,
                 'queries'       => $this->db->queryList(),

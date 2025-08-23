@@ -1,33 +1,4 @@
     <div class="main_column">
-{% if contest %}
-        <div id="contest-info" class="box" style="text-align:center">
-    {% if contest.banner %}
-            <br /><a href="/contest.php?action=leaderboard">
-                <img src="{{ contest.banner }}" alt="{{ contest.name }}" title="{{ contest.name }}" />
-            </a>
-    {% endif %}
-            <h5>The <a href="/contest.php?action=leaderboard">{{ contest.name }}</a> {{ contest.isOpen ? 'ends in' : 'ended' }} {{ contest.dateEnd|time_diff }}</h5>
-        </div>
-{% endif %}
-
-        <div id="last_uploads" class="box">
-            <div class="head">
-                <strong>Latest Uploads</strong>
-            </div>
-            <div class="head">
-            <ul class="collage_images" id="collage_page0">
-{% for t in latest %}
-    {% set title = t.name ~ '<br />(' ~ t.group.tagNameList|join(', ') ~ ')<br />uploaded by ' ~ t.uploader.username ~ ' ' ~ t.created|time_diff %}
-                <li class="image_group_{{ t.groupId }}">
-                <a href="{{ t.location }}">
-                <img class="tooltip_interactive" src="{{ t.group.image|image_cache(width = 150) }}" loading="eager" title="{{ title }}" data-title-plain="{{
-                    title|replace({'<br />': ' '}) }}" width="118" data-origin-src="{{ t.group.image }}" /></a>
-                </li>
-{% endfor %}
-            </ul>
-            </div>
-        </div>
-
 {% for article in news[0:5] %}
         <div class="box news_post">
             <div class="head">
@@ -38,7 +9,7 @@
 
 {%- set name = 'news' ~ article.id -%}
 {{- dom.click("#" ~ name, "$('#newsbody" ~ article.id ~ "').gtoggle(); this.innerHTML = (this.innerHTML == 'Hide') ? 'Show' : 'Hide'; return false;") -}}
-            <span id="{{ name }}" style="float: right; cursor: pointer;" class="brackets">Hide</span>
+                <span id="{{ name }}" style="float: right; cursor: pointer;" class="brackets">Hide</span>
             </div>
 
             <div id="newsbody{{ article.id }}" class="pad">{{ article.body|bb_format }}</div>
