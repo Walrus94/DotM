@@ -15,6 +15,9 @@ class ReleaseArtistTag extends AbstractMigration {
             }
         }
 
+        $tg = $this->fetchRow("SHOW TABLE STATUS WHERE Name = 'torrents_group'");
+        $canFk = $tg && strtolower($tg['Engine']) === 'innodb';
+
         // torrents_artists -> release_artist (guard against previous partial runs)
         if ($this->hasTable('torrents_artists')) {
             $this->execute("RENAME TABLE torrents_artists TO release_artist");
@@ -23,7 +26,9 @@ class ReleaseArtistTag extends AbstractMigration {
             $this->execute("ALTER TABLE release_artist CHANGE GroupID release_id int(10) NOT NULL");
             $this->execute("ALTER TABLE release_artist ADD INDEX release_id (release_id)");
             $this->execute("ALTER TABLE release_artist ADD PRIMARY KEY (release_id, ArtistID, Importance)");
-            $this->execute("ALTER TABLE release_artist ADD FOREIGN KEY (release_id) REFERENCES torrents_group(ID)");
+            if ($canFk) {
+                $this->execute("ALTER TABLE release_artist ADD FOREIGN KEY (release_id) REFERENCES torrents_group(ID)");
+            }
         }
 
         // torrents_tags -> release_tag
@@ -34,7 +39,9 @@ class ReleaseArtistTag extends AbstractMigration {
             $this->execute("ALTER TABLE release_tag CHANGE GroupID release_id int(10) NOT NULL DEFAULT '0'");
             $this->execute("ALTER TABLE release_tag ADD INDEX release_id (release_id)");
             $this->execute("ALTER TABLE release_tag ADD PRIMARY KEY (TagID, release_id)");
-            $this->execute("ALTER TABLE release_tag ADD FOREIGN KEY (release_id) REFERENCES torrents_group(ID)");
+            if ($canFk) {
+                $this->execute("ALTER TABLE release_tag ADD FOREIGN KEY (release_id) REFERENCES torrents_group(ID)");
+            }
         }
 
         // update votes table
@@ -42,11 +49,16 @@ class ReleaseArtistTag extends AbstractMigration {
             $this->execute("ALTER TABLE torrents_tags_votes DROP INDEX GroupID");
             $this->execute("ALTER TABLE torrents_tags_votes CHANGE GroupID release_id int(10) NOT NULL");
             $this->execute("ALTER TABLE torrents_tags_votes ADD INDEX release_id (release_id)");
-            $this->execute("ALTER TABLE torrents_tags_votes ADD FOREIGN KEY (release_id) REFERENCES torrents_group(ID)");
+            if ($canFk) {
+                $this->execute("ALTER TABLE torrents_tags_votes ADD FOREIGN KEY (release_id) REFERENCES torrents_group(ID)");
+            }
         }
     }
 
     public function down(): void {
+        $tg = $this->fetchRow("SHOW TABLE STATUS WHERE Name = 'torrents_group'");
+        $canFk = $tg && strtolower($tg['Engine']) === 'innodb';
+
         // drop foreign keys on release_id before reverting
         foreach (['release_artist', 'release_tag', 'torrents_tags_votes'] as $table) {
             $fk = $this->fetchRow(
@@ -63,7 +75,9 @@ class ReleaseArtistTag extends AbstractMigration {
         $this->execute("ALTER TABLE torrents_tags_votes DROP INDEX release_id");
         $this->execute("ALTER TABLE torrents_tags_votes CHANGE release_id GroupID int(10) NOT NULL");
         $this->execute("ALTER TABLE torrents_tags_votes ADD INDEX GroupID (GroupID)");
-        $this->execute("ALTER TABLE torrents_tags_votes ADD FOREIGN KEY (GroupID) REFERENCES torrents_group(ID)");
+        if ($canFk) {
+            $this->execute("ALTER TABLE torrents_tags_votes ADD FOREIGN KEY (GroupID) REFERENCES torrents_group(ID)");
+        }
 
         // release_tag -> torrents_tags
         $this->execute("ALTER TABLE release_tag DROP PRIMARY KEY");
@@ -72,7 +86,9 @@ class ReleaseArtistTag extends AbstractMigration {
         $this->execute("ALTER TABLE release_tag ADD INDEX GroupID (GroupID)");
         $this->execute("ALTER TABLE release_tag ADD PRIMARY KEY (TagID, GroupID)");
         $this->execute("RENAME TABLE release_tag TO torrents_tags");
-        $this->execute("ALTER TABLE torrents_tags ADD FOREIGN KEY (GroupID) REFERENCES torrents_group(ID)");
+        if ($canFk) {
+            $this->execute("ALTER TABLE torrents_tags ADD FOREIGN KEY (GroupID) REFERENCES torrents_group(ID)");
+        }
 
         // release_artist -> torrents_artists
         $this->execute("ALTER TABLE release_artist DROP PRIMARY KEY");
@@ -81,6 +97,8 @@ class ReleaseArtistTag extends AbstractMigration {
         $this->execute("ALTER TABLE release_artist ADD INDEX GroupID (GroupID)");
         $this->execute("ALTER TABLE release_artist ADD PRIMARY KEY (GroupID, ArtistID, Importance)");
         $this->execute("RENAME TABLE release_artist TO torrents_artists");
-        $this->execute("ALTER TABLE torrents_artists ADD FOREIGN KEY (GroupID) REFERENCES torrents_group(ID)");
+        if ($canFk) {
+            $this->execute("ALTER TABLE torrents_artists ADD FOREIGN KEY (GroupID) REFERENCES torrents_group(ID)");
+        }
     }
 }
