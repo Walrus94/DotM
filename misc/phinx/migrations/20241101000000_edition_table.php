@@ -6,8 +6,14 @@ use Phinx\Migration\AbstractMigration;
 
 final class EditionTable extends AbstractMigration {
     public function up(): void {
-        // rename torrents table to edition
-        $this->table('torrents')->rename('edition')->save();
+        // rename torrents table to edition if needed
+        if (!$this->hasTable('edition') && $this->hasTable('torrents')) {
+            $this->table('torrents')->rename('edition')->save();
+        }
+
+        if (!$this->hasTable('edition')) {
+            return; // nothing to do
+        }
 
         $table = $this->table('edition');
         if ($table->hasColumn('ID')) {
