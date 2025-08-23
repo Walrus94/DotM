@@ -22,51 +22,25 @@ final class ReleaseTable extends AbstractMigration {
 
         // update foreign keys
         $fkOptions = ['delete' => 'CASCADE', 'update' => 'CASCADE'];
-        $this->table('torrents')
-            ->dropForeignKey('GroupID')
-            ->addForeignKey('GroupID', 'release', 'ID', $fkOptions)
-            ->update();
-        $this->table('torrents_artists')
-            ->dropForeignKey('GroupID')
-            ->addForeignKey('GroupID', 'release', 'ID', $fkOptions)
-            ->update();
-        $this->table('bookmarks_torrents')
-            ->dropForeignKey('GroupID')
-            ->addForeignKey('GroupID', 'release', 'ID', $fkOptions)
-            ->update();
-        $this->table('collages_torrents')
-            ->dropForeignKey('GroupID')
-            ->addForeignKey('GroupID', 'release', 'ID', $fkOptions)
-            ->update();
-        $this->table('requests')
-            ->dropForeignKey('GroupID')
-            ->addForeignKey('GroupID', 'release', 'ID', $fkOptions)
-            ->update();
+        foreach (['torrents', 'torrents_artists', 'bookmarks_torrents', 'collages_torrents', 'requests'] as $name) {
+            $table = $this->table($name);
+            if ($table->hasForeignKey('GroupID')) {
+                $table->dropForeignKey('GroupID');
+            }
+            $table->addForeignKey('GroupID', 'release', 'ID', $fkOptions)->update();
+        }
     }
 
     public function down(): void {
         // revert foreign keys first
         $fkOptions = ['delete' => 'CASCADE', 'update' => 'CASCADE'];
-        $this->table('torrents')
-            ->dropForeignKey('GroupID')
-            ->addForeignKey('GroupID', 'torrents_group', 'ID', $fkOptions)
-            ->update();
-        $this->table('torrents_artists')
-            ->dropForeignKey('GroupID')
-            ->addForeignKey('GroupID', 'torrents_group', 'ID', $fkOptions)
-            ->update();
-        $this->table('bookmarks_torrents')
-            ->dropForeignKey('GroupID')
-            ->addForeignKey('GroupID', 'torrents_group', 'ID', $fkOptions)
-            ->update();
-        $this->table('collages_torrents')
-            ->dropForeignKey('GroupID')
-            ->addForeignKey('GroupID', 'torrents_group', 'ID', $fkOptions)
-            ->update();
-        $this->table('requests')
-            ->dropForeignKey('GroupID')
-            ->addForeignKey('GroupID', 'torrents_group', 'ID', $fkOptions)
-            ->update();
+        foreach (['torrents', 'torrents_artists', 'bookmarks_torrents', 'collages_torrents', 'requests'] as $name) {
+            $table = $this->table($name);
+            if ($table->hasForeignKey('GroupID')) {
+                $table->dropForeignKey('GroupID');
+            }
+            $table->addForeignKey('GroupID', 'torrents_group', 'ID', $fkOptions)->update();
+        }
 
         // restore column set
         $this->table('release')
