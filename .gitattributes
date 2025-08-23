@@ -1,0 +1,5 @@
+# enforce LF for shell scripts
+*.sh text eol=lf
+
+# ensure executables in bin/ keep LF endings to avoid Docker startup failures
+bin/* text eol=lf

@@ -1,6 +1,12 @@
 #!/bin/sh
 
-for patch in $(find "$(dirname $0)"/../misc/patch/ -name "*.patch" -print)
-do
-    patch -p1 < $patch || exit 1
-done
+set -e
+
+if ! command -v patch >/dev/null 2>&1; then
+    echo "patch utility not found; skipping local patches" >&2
+    exit 0
+fi
+
+find "$(dirname "$0")/../misc/patch" -name "*.patch" -print0 \
+    | xargs -0 -r -n1 patch -p1 -i
+

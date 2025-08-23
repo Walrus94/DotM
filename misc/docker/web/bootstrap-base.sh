@@ -23,7 +23,9 @@ if [ ! -f "/etc/php/${PHP_VER}/cli/conf.d/99-boris.ini" ]; then
 fi
 
 composer --version && composer install --no-progress
-bin/local-patch
+if command -v patch >/dev/null 2>&1; then
+    bin/local-patch
+fi
 
 cat > ~/.my.cnf <<EOF
 [client]

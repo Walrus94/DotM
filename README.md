@@ -34,6 +34,8 @@ proxies, and tuning TCP configs to obtain proper performance and privacy.
 Docker is used to develop Gazelle. See https://docs.docker.com/engine/install/
 for more information on getting Docker set up locally.
 
+If cloning on Windows, configure Git to avoid CRLF line endings by running `git config core.autocrlf false` before cloning or run `dos2unix` on the repository before building.
+
 ### Docker on WSL
 By default, Windows Subsystem for Linux (WSL) does not support the use of
 `docker compose`. As root, you should to run the following command
