@@ -17,9 +17,9 @@ if [ ! -e .docker-init-done ] ; then
     php bin/config-css /tmp/config-css.js
     echo "Installing node, go grab a coffee"
     npm install
-    npx update-browserslist-db@latest
-    npx puppeteer browsers install chrome
-    npm run dev
+    npx update-browserslist-db@latest || echo "browserslist DB update failed; continuing"
+    npx puppeteer browsers install chrome || echo "puppeteer install failed; continuing"
+    npm run dev || echo "asset build failed; continuing"
     touch .docker-init-done
 fi
 
