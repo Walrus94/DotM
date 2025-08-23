@@ -14,6 +14,7 @@ if [ ! -e .docker-init-done ] ; then
     if command -v patch >/dev/null 2>&1; then
         bin/local-patch
     fi
+    bin/config-css /tmp/config-css.js
     echo "Installing node, go grab a coffee"
     npm install
     npx update-browserslist-db@latest
