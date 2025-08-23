@@ -1,4 +1,4 @@
 <?php
-namespace Gazelle\Manager;
+namespace Gazelle;
 
 class TGroup extends Release {}
