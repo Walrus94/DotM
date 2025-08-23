@@ -18,12 +18,19 @@ final class EditionTable extends AbstractMigration {
                 $table->removeColumn($col);
             }
         }
-        $table
-            ->addColumn('release_id', 'integer', ['null' => false])
-            ->addForeignKey('release_id', 'release', 'id', ['delete' => 'CASCADE', 'update' => 'CASCADE'])
-            ->addColumn('edition_type', 'enum', ['values' => ['original', 'remaster'], 'default' => 'original'])
-            ->addIndex(['release_id'])
-            ->save();
+
+        if (!$table->hasColumn('release_id')) {
+            $table
+                ->addColumn('release_id', 'integer', ['null' => false])
+                ->addForeignKey('release_id', 'release', 'id', ['delete' => 'CASCADE', 'update' => 'CASCADE'])
+                ->addIndex(['release_id']);
+        }
+
+        if (!$table->hasColumn('edition_type')) {
+            $table->addColumn('edition_type', 'enum', ['values' => ['original', 'remaster'], 'default' => 'original']);
+        }
+
+        $table->save();
     }
 
     public function down(): void {
