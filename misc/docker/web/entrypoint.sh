@@ -8,19 +8,20 @@ run_service()
 }
 
 if [ ! -e .docker-init-done ] ; then
-    bash "$(dirname "$0")/generate-config.sh"
-    composer --version
-    composer install --no-progress --optimize-autoloader
+    touch .docker-init-done
+
+    bash "$(dirname "$0")/generate-config.sh" || echo "config generation failed; continuing"
+    composer --version || echo "composer missing; continuing"
+    composer install --no-progress --optimize-autoloader || echo "composer install failed; continuing"
     if command -v patch >/dev/null 2>&1; then
-        bin/local-patch
+        bin/local-patch || echo "local patches failed; continuing"
     fi
-    php bin/config-css /tmp/config-css.js
+    php bin/config-css /tmp/config-css.js || echo "config-css failed; continuing"
     echo "Installing node, go grab a coffee"
-    npm install
+    npm install || echo "npm install failed; continuing"
     npx update-browserslist-db@latest || echo "browserslist DB update failed; continuing"
     npx puppeteer browsers install chrome || echo "puppeteer install failed; continuing"
     npm run dev || echo "asset build failed; continuing"
-    touch .docker-init-done
 fi
 
 while ! nc -z mysql 3306
