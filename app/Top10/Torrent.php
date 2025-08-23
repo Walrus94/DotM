@@ -119,12 +119,12 @@ class Torrent extends \Gazelle\Base {
         if ($artists) {
             return [
                 " LEFT JOIN (
-                    SELECT COUNT(*) AS ArtistCount, ta.GroupID
-                    FROM torrents_artists AS ta
+                    SELECT COUNT(*) AS ArtistCount, ta.release_id
+                    FROM release_artist AS ta
                     INNER JOIN artists_alias AS aa ON (ta.AliasID = aa.AliasID)
                     WHERE ta.Importance != '2' AND aa.Name IN (" . placeholders($artists) . ")
-                    GROUP BY ta.GroupID
-                ) AS ta ON (g.ID = ta.GroupID)",
+                    GROUP BY ta.release_id
+                ) AS ta ON (g.ID = ta.release_id)",
                 array_map('trim', $artists)
             ];
         }
@@ -156,11 +156,11 @@ class Torrent extends \Gazelle\Base {
             $where = implode(' OR ', array_fill(0,  count($tags), "t.Name = ?"));
             $clause = "
         g.ID IN (
-            SELECT tt.GroupID
-            FROM torrents_tags tt
+            SELECT tt.release_id
+            FROM release_tag tt
             INNER JOIN tags t ON (t.ID = tt.TagID)
             WHERE $where
-            GROUP BY tt.GroupID
+            GROUP BY tt.release_id
             HAVING count(*) >= ?
         )";
             $tags[] = $any ? 1 : count($tags);

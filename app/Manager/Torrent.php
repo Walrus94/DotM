@@ -504,8 +504,8 @@ class Torrent extends \Gazelle\BaseManager {
                         AND um.Enabled = '1'
                         AND NOT EXISTS (
                             SELECT 1
-                            FROM torrents_tags ttex
-                            WHERE t.GroupID = ttex.GroupID
+                            FROM release_tag ttex
+                            WHERE t.GroupID = ttex.release_id
                                 AND ttex.TagID IN (" . placeholders(HOMEPAGE_TAG_IGNORE) . ")
                         )
                     ORDER BY t.created DESC

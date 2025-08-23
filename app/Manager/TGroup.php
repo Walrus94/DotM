@@ -143,7 +143,7 @@ class TGroup extends \Gazelle\BaseManager {
         $id = (int)self::$db->scalar("
             SELECT tg.id
             FROM torrents_group AS tg
-            INNER JOIN torrents_artists AS ta ON (ta.GroupID = tg.ID)
+            INNER JOIN release_artist AS ta ON (ta.release_id = tg.ID)
             WHERE tg.Name          = ?
                 AND tg.ReleaseType = ?
                 AND tg.Year        = ?

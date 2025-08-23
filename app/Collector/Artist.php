@@ -16,16 +16,16 @@ class Artist extends \Gazelle\Collector {
 
     public function prepare(array $list): bool {
         self::$db->prepared_query("
-            SELECT ta.GroupID, ta.artist_role_id
-            FROM torrents_artists ta
+            SELECT ta.release_id, ta.artist_role_id
+            FROM release_artist ta
             INNER JOIN artists_alias aa USING (AliasID)
             WHERE aa.ArtistID = ?
             ", $this->artist->id()
         );
-        while ([$groupId, $role] = self::$db->next_record(MYSQLI_NUM, false)) {
+        while ([$releaseId, $role] = self::$db->next_record(MYSQLI_NUM, false)) {
             // Get the highest importances to place the .torrents in the most relevant folders
-            if (!isset($this->roleList[$groupId]) || $role < $this->roleList[$groupId]) {
-                $this->roleList[$groupId] = (int)$role;
+            if (!isset($this->roleList[$releaseId]) || $role < $this->roleList[$releaseId]) {
+                $this->roleList[$releaseId] = (int)$role;
             }
         }
         $this->args = array_keys($this->roleList);
@@ -42,7 +42,7 @@ class Artist extends \Gazelle\Collector {
     public function fillZip(\ZipStream\ZipStream $zip): int {
         $releaseMan = new \Gazelle\ReleaseType();
         $n = 0;
-        while (($downloadList = $this->process('GroupID')) != null) {
+        while (($downloadList = $this->process('release_id')) != null) {
             foreach ($downloadList as $download) {
                 $torrent = $this->torMan->findById($download['TorrentID']);
                 if (is_null($torrent)) {

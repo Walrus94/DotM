@@ -32,9 +32,9 @@ class Artist extends \Gazelle\BaseObject {
                     coalesce(sum(tls.Leechers), 0) AS leecher_total,
                     coalesce(sum(tls.Seeders), 0)  AS seeder_total,
                     coalesce(sum(tls.Snatched), 0) AS snatch_total
-                FROM torrents_artists           ta
+                FROM release_artist           ta
                 INNER JOIN artists_alias        aa  ON (ta.AliasID = aa.AliasID)
-                INNER JOIN torrents_group       tg  ON (tg.ID = ta.GroupID)
+                INNER JOIN torrents_group       tg  ON (tg.ID = ta.release_id)
                 INNER JOIN torrents             t   ON (t.GroupID = tg.ID)
                 INNER JOIN torrents_leech_stats tls ON (tls.TorrentID = t.ID)
                 WHERE aa.ArtistID = ?
