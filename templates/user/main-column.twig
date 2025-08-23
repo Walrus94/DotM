@@ -66,36 +66,12 @@
         } only %}
 {%  endif %}
 
-{%  if viewer.permittedAny('users_make_invisible', 'admin_tracker') %}
-{%      include 'user/edit-peer-visibility.twig' with {
-            'is_visible' : user.isVisible,
-            'is_traced'  : is_traced,
-            'viewer'     : viewer,
-        } only %}
-{%  endif %}
-
 {%  if viewer.permitted('admin_rate_limit_manage') %}
 {%      include 'user/edit-rate-limit.twig' with {
             'prl'  : prl,
             'user' : user,
         } only %}
 {%  endif %}
-
-{%  if viewer.permitted('users_edit_ratio') or (own_profile and viewer.permitted('users_edit_own_ratio')) %}
-{%      include 'user/edit-buffer.twig' with {
-            'user'  : user,
-            'donor' : donor,
-        } only %}
-{%  endif %}
-
-{%  if viewer.permitted('users_edit_invites') %}
-{%      include 'user/edit-invite.twig' with {'amount': user.unusedInviteTotal} only %}
-{%  endif %}
-
-{%  if viewer.permitted('admin_manage_user_fls') %}
-{%      include 'user/edit-fltoken.twig' with {'amount' : user.tokenCount} only %}
-{%  endif %}
-
 {%  if viewer.permitted('admin_manage_fls') or (own_profile and viewer.permitted('users_mod')) %}
 {%      include 'user/edit-remark.twig' with {'user': user} only %}
 {%  endif %}
@@ -104,20 +80,12 @@
 <tr>
     <td class="label">Reset:</td>
     <td>
-        <span style="white-space: nowrap; padding-right: 15px"><input type="checkbox" name="ResetRatioWatch" id="ResetRatioWatch" />
-        <label for="ResetRatioWatch">Ratio watch</label></span>
-        <span style="white-space: nowrap; padding-right: 15px"><input type="checkbox" name="ResetPasskey" id="ResetPasskey" />
-        <label for="ResetPasskey">Passkey</label></span>
         <span style="white-space: nowrap; padding-right: 15px"><input type="checkbox" name="ResetAuthkey" id="ResetAuthkey" />
         <label for="ResetAuthkey">Authkey</label></span>
         <span style="white-space: nowrap; padding-right: 15px"><input type="checkbox" name="ResetIPHistory" id="ResetIPHistory" />
         <label for="ResetIPHistory">IP history</label></span>
         <span style="white-space: nowrap; padding-right: 15px"><input type="checkbox" name="ResetEmailHistory" id="ResetEmailHistory" />
         <label for="ResetEmailHistory">Email history</label></span>
-        <span style="white-space: nowrap; padding-right: 15px"><input type="checkbox" name="ResetSnatchList" id="ResetSnatchList" />
-        <label for="ResetSnatchList">Snatch list</label></span>
-        <span style="white-space: nowrap; padding-right: 15px"><input type="checkbox" name="ResetDownloadList" id="ResetDownloadList" />
-        <label for="ResetDownloadList">Download list</label></span>
     </td>
 </tr>
 {%  endif %}
@@ -139,10 +107,6 @@
                 'permitted_names'  : forum_man.nameList(user.permittedForums),
             }
         } only %}
-{%  endif %}
-
-{%  if user.isInterviewer or user.isRecruiter or user.isStaff %}
-{%      include 'user/edit-invite-sources.twig' with {'list': invite_source} only %}
 {%  endif %}
 
 {%  if viewer.permitted('users_give_donor') %}

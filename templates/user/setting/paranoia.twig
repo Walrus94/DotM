@@ -60,24 +60,6 @@
             <label for="p_donor_heart">Show donor heart</label>
         </td>
     </tr>
-    <tr id="para_stats_tr">
-        <td class="label tooltip" title="These settings control the display of your uploaded data amount, downloaded data amount, and ratio.">
-            <strong>Statistics</strong>
-        </td>
-        <td>
-            <label><input type="checkbox" name="p_uploaded" class="paranoia-setting"{{ checked(not user.isParanoid('uploaded')) }} /> Uploaded</label>&nbsp;&nbsp;
-            <label><input type="checkbox" name="p_downloaded" class="paranoia-setting"{{ checked(not user.isParanoid('downloaded')) }} /> Downloaded</label>&nbsp;&nbsp;
-            <label><input type="checkbox" name="p_bonuspoints"{{ checked(not user.isParanoid('bonuspoints')) }} /> Bonus Points</label>
-            <label><input type="checkbox" name="p_invitedcount"{{ checked(not user.isParanoid('invitedcount')) }} /> Invitees</label>
-        </td>
-    </tr>
-    <tr id="para_reqratio_tr">
-        <td class="label"><strong>Ratio</strong></td>
-        <td>
-            <label><input type="checkbox" name="p_ratio" class="paranoia-setting"{{ checked(not user.isParanoid('ratio')) }} /> Current Ratio</label>&nbsp;&nbsp;
-            <label><input type="checkbox" name="p_requiredratio"{{ checked(not user.isParanoid('requiredratio')) }} /> Required Ratio</label>
-        </td>
-    </tr>
     <tr id="para_upltor_tr">
         <td class="label"><strong>Uploads</strong></td>
         <td>{{ paranoia_list(user, 'uploads') }}</td>
@@ -105,18 +87,6 @@
         <td>
             <label><input type="checkbox" name="p_notifications"{{ checked(not user.isParanoid('notifications')) }} /> Allow notifications on your uploads</label>
         </td>
-    </tr>
-    <tr id="para_torleech_tr">
-        <td class="label"><strong>Leeching stats</strong></td>
-        <td>{{ paranoia_list(user, 'leeching') }}</td>
-    </tr>
-    <tr id="para_torsnatch_tr">
-        <td class="label"><strong>Snatched stats</strong></td>
-        <td>{{ paranoia_list(user, 'snatched') }}</td>
-    </tr>
-    <tr id="para_torseed_tr">
-        <td class="label"><strong>Seeding stats</strong></td>
-        <td>{{ paranoia_list(user, 'seeding') }}</td>
     </tr>
     <tr id="para_comments_tr">
         <td class="label"><strong>Comments (torrents)</strong></td>

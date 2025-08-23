@@ -31,42 +31,6 @@
     {% include 'user/ip.twig' with {'user': user} %}
 {% endif %}
 
-{%- if own_profile or viewer.permitted('users_view_keys') %}
-    <li>Passkey: <a href="#" id="passkey" data-key="{{ user.announceKey }}" class="brackets">View</a></li>
-{% endif %}
-
-{% if viewer.permitted('users_view_invites') %}
-    <li>Invited by:
-{%  if user.referral %}
-        self from {{ user.referral }}.
-{%  elseif not user.inviterId %}
-        <i>Nobody</i>
-{%  else %}
-{%      set current = user %}
-{%      for parent in ancestry %}
-{%          if not loop.first %}&nbsp;&nbsp;↳ {% endif %}
-{{          parent.id|user_url }}
-{%          if parent.isDisabled %}<span title="disabled"> ⛔️<span>{% endif %}
-{%          if parent.disableInvites %}<span title="invites revoked"> 🚫</span>{% endif %}
-{%          set source = invite_source.findSourceNameByUser(current) %}
-{%          if not source and (inviter.isInterviewer or inviter.isRecruiter) %} (unconfirmed){% endif %}
-{%          if source %} from {{ source }}{% endif %}
-{%          set current = parent %}
-    <br />
-{%      endfor %}
-{%  endif %}
-    </li>
-{% endif %}
-
-{%- if viewer.permitted('users_view_invites') or (own_profile and user.canPurchaseInvite) %}
-    <li>Invites: {% if user.disableInvites %}<span title="Invites are disabled">X</span>{% else %}{{ user.unusedInviteTotal|number_format }}{% endif %}
-    ({{ user.invite.pendingTotal|number_format }} in use)</li>
-    {% set total = user.stats.invitedTotal %}
-    <li>Invited: {{ total|number_format }}
-    {% if total %} <a class="brackets" href="user.php?id={{ user.id }}&amp;action=invite">View</a>{% endif %}
-    </li>
-{% endif %}
-
 {%- if own_profile or viewer.permitted('users_override_paranoia') %}
     <li>IRC Key: {{ user.IRCKey ? 'Yes' : 'Not set' }}</li>
 {% endif %}
@@ -76,7 +40,6 @@
 {% endif %}
 
 {%- if own_profile or viewer.permitted('users_mod') or viewer.isFLS %}
-    <li{% if not own_profile %} class="paranoia_override"{% endif %} id="torrent-client">Torrent clients: {{ user.clients|join('; ') }}</li>
     <li{% if not own_profile %} class="paranoia_override"{% endif %}>Password age: {{ user.passwordAge|time_interval }}</li>
 {% endif %}
 

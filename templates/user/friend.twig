@@ -7,8 +7,6 @@
     {{ paginator.linkbox|raw }}
 {% for friend in list %}
     {% set allspan = viewer.showAvatars ? 3 : 2 %}
-    {% set uploaded = friend.user.uploadedSize %}
-    {% set downloaded = friend.user.downloadedSize %}
 <form class="manage_form" name="friends" action="friends.php" method="post">
     <input type="hidden" name="auth" value="{{ viewer.auth }}" />
     <table class="friends_table vertical_margin">
@@ -16,15 +14,6 @@
             <td colspan="{{ allspan }}">
                 <span style="float: left;">{{ friend.id|user_full }}
         {% if friend.mutual %} <span title="The feeling is mutual (awwww!)">💕</span>{% endif %}
-        {% if friend.user.propertyVisible(viewer, 'ratio') %}
-                &nbsp;Ratio: <strong>{{ ratio(uploaded, downloaded)|raw }}</strong>
-        {% endif %}
-        {% if friend.user.propertyVisible(viewer, 'uploaded') %}
-                &nbsp;Up: <strong>{{ uploaded|octet_size }}</strong>
-        {% endif %}
-        {% if friend.user.propertyVisible(viewer, 'downloaded') %}
-                &nbsp;Down: <strong>{{ downloaded|octet_size }}</strong>
-        {% endif %}
                 </span>
         {% if friend.user.propertyVisible(viewer, 'lastseen') %}
                 <span style="float: right;">Last seen: {{ friend.user.lastAccess|time_diff }}</span>
