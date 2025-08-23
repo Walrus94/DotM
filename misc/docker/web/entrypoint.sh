@@ -8,7 +8,7 @@ run_service()
 }
 
 if [ ! -e .docker-init-done ] ; then
-    "$(dirname $0)"/generate-config.sh
+    bash "$(dirname "$0")/generate-config.sh"
     composer --version
     composer install --no-progress --optimize-autoloader
     if command -v patch >/dev/null 2>&1; then
