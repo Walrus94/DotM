@@ -5,8 +5,8 @@ namespace Gazelle\Manager;
 use Gazelle\Enum\LeechType;
 use Gazelle\Enum\LeechReason;
 
-class Torrent extends \Gazelle\BaseManager {
-    protected const ID_KEY = 'zz_t_%d';
+class Edition extends \Gazelle\BaseManager {
+    protected const ID_KEY = 'zz_e_%d';
     protected const CACHE_HIST = 'top10_hist_%s_%s';
 
     final public const CACHE_KEY_LATEST_UPLOADS = 'latest_up_%d';
@@ -26,8 +26,8 @@ class Torrent extends \Gazelle\BaseManager {
     public function create(
         \Gazelle\TGroup $tgroup,
         \Gazelle\User   $user,
+        int             $releaseId,
         string          $description,
-        string          $media,
         ?string         $format,
         ?string         $encoding,
         string          $infohash,
@@ -35,56 +35,55 @@ class Torrent extends \Gazelle\BaseManager {
         array           $fileList,
         int             $size,
         bool            $isScene,
-        bool            $isRemaster,
+        string          $editionType,
         ?int            $remasterYear,
         string          $remasterTitle,
         string          $remasterRecordLabel,
         string          $remasterCatalogueNumber,
         int             $logScore     = 0,
-        bool            $hasChecksum = false,
         bool            $hasCue      = false,
         bool            $hasLog      = false,
         bool            $hasLogInDB  = false,
-    ): \Gazelle\Torrent {
+    ): \Gazelle\Edition {
         self::$db->prepared_query("
-            INSERT INTO torrents (
-                GroupID, UserID, Media, Format, Encoding, Remastered, RemasterYear, RemasterTitle, RemasterRecordLabel, RemasterCatalogueNumber,
-                info_hash, Scene, LogScore, LogChecksum, HasLog, HasCue, HasLogDB, FilePath, FileCount, FileList,
+            INSERT INTO edition (
+                GroupID, UserID, release_id, Format, Encoding, edition_type, RemasterYear, RemasterTitle, RemasterRecordLabel, RemasterCatalogueNumber,
+                info_hash, Scene, LogScore, HasLog, HasCue, HasLogDB, FilePath, FileCount, FileList,
                 Size, Description
             ) VALUES (
                 ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,
                 ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,
                 ?, ?
-            )", $tgroup->id(), $user->id(), $media, $format, $encoding,
-                $isRemaster ? '1' : '0', $remasterYear, $remasterTitle, $remasterRecordLabel, $remasterCatalogueNumber,
-                $infohash, $isScene ? '1' : '0', $logScore, $hasChecksum ? '1' : '0', $hasLog ? '1' : '0',
+            )", $tgroup->id(), $user->id(), $releaseId, $format, $encoding, $editionType,
+                $remasterYear, $remasterTitle, $remasterRecordLabel, $remasterCatalogueNumber,
+                $infohash, $isScene ? '1' : '0', $logScore, $hasLog ? '1' : '0',
                 $hasCue ? '1' : '0', $hasLogInDB ? '1' : '0', $filePath, count($fileList), implode("\n", $fileList),
                 $size, $description,
         );
-        $torrent = $this->findById(self::$db->inserted_id());
+        $edition = $this->findById(self::$db->inserted_id());
         self::$db->prepared_query('
             INSERT INTO torrents_leech_stats (TorrentID) VALUES (?)
-            ', $torrent->id()
+            ', $edition->id()
         );
         $tgroup->flush();
-        $torrent->lockUpload();
-        $torrent->flushFoldernameCache();
+        $edition->lockUpload();
+        $edition->flushFoldernameCache();
         $user->flushRecentUpload();
 
         // Flush the most recent uploads when a new lossless upload is made
         if (in_array($encoding, ['Lossless', '24bit Lossless'])) {
             self::$cache->delete_value(sprintf(self::CACHE_KEY_LATEST_UPLOADS, 5));
         }
-        return $torrent;
+        return $edition;
     }
 
-    public function findById(int $torrentId): ?\Gazelle\Torrent {
-        $key = sprintf(self::ID_KEY, $torrentId);
+    public function findById(int $editionId): ?\Gazelle\Edition {
+        $key = sprintf(self::ID_KEY, $editionId);
         $id = self::$cache->get_value($key);
         if ($id === false) {
             $id = self::$db->scalar("
-                SELECT ID FROM torrents WHERE ID = ?
-                ", $torrentId
+                SELECT edition_id FROM edition WHERE edition_id = ?
+                ", $editionId
             );
             if (!is_null($id)) {
                 self::$cache->cache_value($key, $id, 7200);
@@ -93,24 +92,24 @@ class Torrent extends \Gazelle\BaseManager {
         if (!$id) {
             return null;
         }
-        $torrent = new \Gazelle\Torrent($id);
+        $edition = new \Gazelle\Edition($id);
         if (isset($this->viewer)) {
-            $torrent->setViewer($this->viewer);
+            $edition->setViewer($this->viewer);
         }
-        return $torrent;
+        return $edition;
     }
 
-    public function findDeletedById(int $torrentId): ?\Gazelle\TorrentDeleted {
+    public function findDeletedById(int $editionId): ?\Gazelle\TorrentDeleted {
         $found = (bool)self::$db->scalar("
             SELECT 1 FROM deleted_torrents WHERE ID = ?
-            ", $torrentId
+            ", $editionId
         );
-        return $found ? new \Gazelle\TorrentDeleted($torrentId) : null;
+        return $found ? new \Gazelle\TorrentDeleted($editionId) : null;
     }
 
-    public function findByInfohash(string $hash): ?\Gazelle\Torrent {
+    public function findByInfohash(string $hash): ?\Gazelle\Edition {
         return $this->findById((int)self::$db->scalar("
-            SELECT id FROM torrents WHERE info_hash = unhex(?)
+            SELECT edition_id FROM edition WHERE info_hash = unhex(?)
             ", $hash
         ));
     }
@@ -129,8 +128,8 @@ class Torrent extends \Gazelle\BaseManager {
         $list = self::$cache->get_value($key);
         if ($list === false) {
             self::$db->prepared_query("
-                SELECT t.ID
-                FROM torrents t
+                SELECT t.edition_id
+                FROM edition t
                 INNER JOIN torrents_group tg ON (tg.ID = t.GroupID)
                 WHERE t.FilePath = ?
                 ", $folder
@@ -140,9 +139,9 @@ class Torrent extends \Gazelle\BaseManager {
         }
         $all = [];
         foreach ($list as $id) {
-            $torrent = $this->findById($id);
-            if ($torrent) {
-                $all[] = $torrent;
+            $edition = $this->findById($id);
+            if ($edition) {
+                $all[] = $edition;
             }
         }
         return $all;
