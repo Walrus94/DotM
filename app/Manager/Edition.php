@@ -5,8 +5,8 @@ namespace Gazelle\Manager;
 use Gazelle\Enum\LeechType;
 use Gazelle\Enum\LeechReason;
 
-class Torrent extends \Gazelle\BaseManager {
-    protected const ID_KEY = 'zz_t_%d';
+class Edition extends \Gazelle\BaseManager {
+    protected const ID_KEY = 'zz_e_%d';
     protected const CACHE_HIST = 'top10_hist_%s_%s';
 
     final public const CACHE_KEY_LATEST_UPLOADS = 'latest_up_%d';
@@ -26,8 +26,8 @@ class Torrent extends \Gazelle\BaseManager {
     public function create(
         \Gazelle\TGroup $tgroup,
         \Gazelle\User   $user,
+        int             $releaseId,
         string          $description,
-        string          $media,
         ?string         $format,
         ?string         $encoding,
         string          $infohash,
@@ -35,56 +35,51 @@ class Torrent extends \Gazelle\BaseManager {
         array           $fileList,
         int             $size,
         bool            $isScene,
-        bool            $isRemaster,
+        string          $editionType,
         ?int            $remasterYear,
         string          $remasterTitle,
         string          $remasterRecordLabel,
         string          $remasterCatalogueNumber,
         int             $logScore     = 0,
-        bool            $hasChecksum = false,
         bool            $hasCue      = false,
         bool            $hasLog      = false,
         bool            $hasLogInDB  = false,
-    ): \Gazelle\Torrent {
+    ): \Gazelle\Edition {
         self::$db->prepared_query("
-            INSERT INTO torrents (
-                GroupID, UserID, Media, Format, Encoding, Remastered, RemasterYear, RemasterTitle, RemasterRecordLabel, RemasterCatalogueNumber,
-                info_hash, Scene, LogScore, LogChecksum, HasLog, HasCue, HasLogDB, FilePath, FileCount, FileList,
+            INSERT INTO edition (
+                GroupID, UserID, release_id, Format, Encoding, edition_type, RemasterYear, RemasterTitle, RemasterRecordLabel, RemasterCatalogueNumber,
+                info_hash, Scene, LogScore, HasLog, HasCue, HasLogDB, FilePath, FileCount, FileList,
                 Size, Description
             ) VALUES (
                 ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,
                 ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,
                 ?, ?
-            )", $tgroup->id(), $user->id(), $media, $format, $encoding,
-                $isRemaster ? '1' : '0', $remasterYear, $remasterTitle, $remasterRecordLabel, $remasterCatalogueNumber,
-                $infohash, $isScene ? '1' : '0', $logScore, $hasChecksum ? '1' : '0', $hasLog ? '1' : '0',
+            )", $tgroup->id(), $user->id(), $releaseId, $format, $encoding, $editionType,
+                $remasterYear, $remasterTitle, $remasterRecordLabel, $remasterCatalogueNumber,
+                $infohash, $isScene ? '1' : '0', $logScore, $hasLog ? '1' : '0',
                 $hasCue ? '1' : '0', $hasLogInDB ? '1' : '0', $filePath, count($fileList), implode("\n", $fileList),
                 $size, $description,
         );
-        $torrent = $this->findById(self::$db->inserted_id());
-        self::$db->prepared_query('
-            INSERT INTO torrents_leech_stats (TorrentID) VALUES (?)
-            ', $torrent->id()
-        );
+        $edition = $this->findById(self::$db->inserted_id());
         $tgroup->flush();
-        $torrent->lockUpload();
-        $torrent->flushFoldernameCache();
+        $edition->lockUpload();
+        $edition->flushFoldernameCache();
         $user->flushRecentUpload();
 
         // Flush the most recent uploads when a new lossless upload is made
         if (in_array($encoding, ['Lossless', '24bit Lossless'])) {
             self::$cache->delete_value(sprintf(self::CACHE_KEY_LATEST_UPLOADS, 5));
         }
-        return $torrent;
+        return $edition;
     }
 
-    public function findById(int $torrentId): ?\Gazelle\Torrent {
-        $key = sprintf(self::ID_KEY, $torrentId);
+    public function findById(int $editionId): ?\Gazelle\Edition {
+        $key = sprintf(self::ID_KEY, $editionId);
         $id = self::$cache->get_value($key);
         if ($id === false) {
             $id = self::$db->scalar("
-                SELECT ID FROM torrents WHERE ID = ?
-                ", $torrentId
+                SELECT edition_id FROM edition WHERE edition_id = ?
+                ", $editionId
             );
             if (!is_null($id)) {
                 self::$cache->cache_value($key, $id, 7200);
@@ -93,24 +88,24 @@ class Torrent extends \Gazelle\BaseManager {
         if (!$id) {
             return null;
         }
-        $torrent = new \Gazelle\Torrent($id);
+        $edition = new \Gazelle\Edition($id);
         if (isset($this->viewer)) {
-            $torrent->setViewer($this->viewer);
+            $edition->setViewer($this->viewer);
         }
-        return $torrent;
+        return $edition;
     }
 
-    public function findDeletedById(int $torrentId): ?\Gazelle\TorrentDeleted {
+    public function findDeletedById(int $editionId): ?\Gazelle\TorrentDeleted {
         $found = (bool)self::$db->scalar("
             SELECT 1 FROM deleted_torrents WHERE ID = ?
-            ", $torrentId
+            ", $editionId
         );
-        return $found ? new \Gazelle\TorrentDeleted($torrentId) : null;
+        return $found ? new \Gazelle\TorrentDeleted($editionId) : null;
     }
 
-    public function findByInfohash(string $hash): ?\Gazelle\Torrent {
+    public function findByInfohash(string $hash): ?\Gazelle\Edition {
         return $this->findById((int)self::$db->scalar("
-            SELECT id FROM torrents WHERE info_hash = unhex(?)
+            SELECT edition_id FROM edition WHERE info_hash = unhex(?)
             ", $hash
         ));
     }
@@ -129,8 +124,8 @@ class Torrent extends \Gazelle\BaseManager {
         $list = self::$cache->get_value($key);
         if ($list === false) {
             self::$db->prepared_query("
-                SELECT t.ID
-                FROM torrents t
+                SELECT t.edition_id
+                FROM edition t
                 INNER JOIN torrents_group tg ON (tg.ID = t.GroupID)
                 WHERE t.FilePath = ?
                 ", $folder
@@ -140,9 +135,9 @@ class Torrent extends \Gazelle\BaseManager {
         }
         $all = [];
         foreach ($list as $id) {
-            $torrent = $this->findById($id);
-            if ($torrent) {
-                $all[] = $torrent;
+            $edition = $this->findById($id);
+            if ($edition) {
+                $all[] = $edition;
             }
         }
         return $all;
@@ -360,122 +355,6 @@ class Torrent extends \Gazelle\BaseManager {
 
         return $affected;
     }
-
-    public function updatePeerlists(): array {
-        self::$db->prepared_query("
-            DELETE FROM xbt_files_users
-            WHERE mtime < unix_timestamp(NOW() - INTERVAL ? SECOND)
-            ", UNSEEDED_DRAIN_INTERVAL
-        );
-        $purged = self::$db->affected_rows();
-        self::$db->dropTemporaryTable("tmp_torrents_peerlists");
-        self::$db->prepared_query("
-            CREATE TEMPORARY TABLE tmp_torrents_peerlists (
-                TorrentID int NOT NULL PRIMARY KEY,
-                GroupID   int,
-                Seeders   int,
-                Leechers  int,
-                Snatches  int
-            )
-        ");
-        self::$db->prepared_query("
-            INSERT INTO tmp_torrents_peerlists
-            SELECT t.ID, t.GroupID, tls.Seeders, tls.Leechers, tls.Snatched
-            FROM torrents t
-            INNER JOIN torrents_leech_stats tls ON (tls.TorrentID = t.ID)
-        ");
-
-        self::$db->dropTemporaryTable("tpc_temp");
-        self::$db->prepared_query("
-            CREATE TEMPORARY TABLE tpc_temp (
-                TorrentID int,
-                GroupID   int,
-                Seeders   int,
-                Leechers  int,
-                Snatched  int,
-                PRIMARY KEY (GroupID, TorrentID)
-            )
-        ");
-        self::$db->prepared_query("
-            INSERT INTO tpc_temp
-            SELECT t2.*
-            FROM torrents_peerlists AS t1
-            INNER JOIN tmp_torrents_peerlists AS t2 USING (TorrentID)
-            WHERE t1.Seeders != t2.Seeders
-                OR t1.Leechers != t2.Leechers
-                OR t1.Snatches != t2.Snatches
-        ");
-
-        $StepSize = 30000;
-        self::$db->prepared_query("
-            SELECT TorrentID, GroupID, Seeders, Leechers, Snatched
-            FROM tpc_temp
-            ORDER BY GroupID ASC, TorrentID ASC
-            LIMIT ?
-            ", $StepSize
-        );
-
-        $RowNum = 0;
-        $LastGroupID = 0;
-        $UpdatedKeys = $UncachedGroups = 0;
-        [$TorrentID, $GroupID, $Seeders, $Leechers, $Snatches] = self::$db->next_record(MYSQLI_NUM, false);
-        while ($TorrentID) {
-            if ($LastGroupID != $GroupID) {
-                $CachedData = self::$cache->get_value("torrent_group_$GroupID");
-                if ($CachedData !== false) {
-                    if (isset($CachedData["ver"]) && $CachedData["ver"] == \Gazelle\Cache::GROUP_VERSION) {
-                        $CachedStats = &$CachedData["d"]["Torrents"];
-                    }
-                } else {
-                    $UncachedGroups++;
-                }
-                $LastGroupID = $GroupID;
-            }
-            $Changed = false;
-            while ($LastGroupID == $GroupID) {
-                $RowNum++;
-                if (isset($CachedStats) && is_array($CachedStats[$TorrentID])) {
-                    $OldValues = &$CachedStats[$TorrentID];
-                    $OldValues["Seeders"] = $Seeders;
-                    $OldValues["Leechers"] = $Leechers;
-                    $OldValues["Snatched"] = $Snatches;
-                    $Changed = true;
-                    unset($OldValues);
-                }
-                if (!($RowNum % $StepSize)) {
-                    self::$db->prepared_query("
-                        SELECT TorrentID, GroupID, Seeders, Leechers, Snatched
-                        FROM tpc_temp
-                        WHERE (GroupID > ? OR (GroupID = ? AND TorrentID > ?))
-                        ORDER BY GroupID ASC, TorrentID ASC
-                        LIMIT ?
-                        ", $GroupID, $GroupID, $TorrentID, $StepSize
-                    );
-                }
-                $LastGroupID = $GroupID;
-                [$TorrentID, $GroupID, $Seeders, $Leechers, $Snatches] = self::$db->next_record(MYSQLI_NUM, false);
-            }
-            if (isset($CachedData) && $Changed) {
-                self::$cache->cache_value("torrent_group_$LastGroupID", $CachedData, 7200);
-                unset($CachedStats);
-                $UpdatedKeys++;
-                $Changed = false;
-            }
-        }
-        self::$db->dropTemporaryTable("tpc_temp");
-
-        self::$db->begin_transaction();
-        self::$db->prepared_query("DELETE FROM torrents_peerlists");
-        self::$db->prepared_query("
-            INSERT INTO torrents_peerlists
-            SELECT *
-            FROM tmp_torrents_peerlists
-        ");
-        self::$db->commit();
-        self::$db->dropTemporaryTable("tmp_torrents_peerlists");
-        return [$UpdatedKeys + $purged, $UncachedGroups];
-    }
-
     /**
      * Return the N most recent lossless uploads
      * Note that if both a Lossless and 24bit Lossless are uploaded at the same time,
@@ -639,41 +518,6 @@ class Torrent extends \Gazelle\BaseManager {
             preg_replace('/\D+/', '', $datetime)
         );
     }
-
-    public function storeTop10(string $type, int $days): int {
-        self::$db->prepared_query("
-            INSERT INTO top10_history (Type) VALUES (?)
-            ", $type
-        );
-        $historyId = self::$db->inserted_id();
-
-        self::$db->prepared_query("
-            SELECT t.ID
-            FROM torrents AS t
-            INNER JOIN torrents_leech_stats tls ON (tls.TorrentID = t.ID)
-            WHERE t.Size > 0
-                AND tls.Seeders > 0
-                AND t.created > now() - INTERVAL ? DAY
-            ORDER BY ln(t.Size) * tls.Snatched + ln(t.Size) * tls.Leechers DESC, t.ID DESC
-            LIMIT 20
-            ", $days
-        );
-
-        $sequence = 0;
-        foreach (self::$db->collect(0, false) as $torrentId) {
-            $torrent = $this->findById($torrentId);
-            if ($torrent) {
-                self::$db->prepared_query("
-                    INSERT INTO top10_history_torrents
-                           (HistoryID, sequence, TorrentID)
-                    VALUES (?,         ?,        ?)
-                    ", $historyId, ++$sequence, $torrentId
-                );
-            }
-        }
-        return $historyId;
-    }
-
     public function topTenHistoryList(string $datetime, bool $isByDay): array {
         $key = $this->topTenCacheKey($datetime, $isByDay);
         $list = self::$cache->get_value($key);
@@ -697,22 +541,5 @@ class Torrent extends \Gazelle\BaseManager {
             $entry['torrent'] = $this->findById($entry['torrent_id']);
         }
         return $list;
-    }
-
-    public function resetReseededRequest(): int {
-        self::$db->prepared_query("
-            UPDATE torrents AS t
-            LEFT JOIN torrents_leech_stats AS tls ON t.ID = tls.TorrentID
-            SET t.LastReseedRequest = NULL
-            WHERE t.LastReseedRequest <= (now() - INTERVAL " . RESEED_NEVER_ACTIVE_TORRENT . " DAY)
-                AND tls.last_action IS NULL
-        ");
-        $affected = self::$db->affected_rows();
-        self::$db->prepared_query("
-            UPDATE torrents SET
-                LastReseedRequest = NULL
-            WHERE LastReseedRequest <= (now() - INTERVAL " . RESEED_TORRENT . " DAY)
-        ");
-        return $affected + self::$db->affected_rows();
     }
 }

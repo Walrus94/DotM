@@ -51,11 +51,8 @@ class Economic extends \Gazelle\Base {
                 WHERE r.FillerID = 0
             ");
 
-            [$info['snatch_total'], $info['torrent_total']] = self::$db->row("
-                SELECT sum(tls.Snatched),
-                    count(*)
-                FROM torrents_leech_stats tls
-            ");
+            $info['snatch_total'] = 0;
+            $info['torrent_total'] = 0;
 
             $info['snatch_grand_total'] = (int)self::$db->scalar("
                 SELECT count(*) FROM xbt_snatched

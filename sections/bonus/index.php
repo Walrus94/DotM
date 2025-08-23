@@ -32,9 +32,6 @@ switch ($_GET['action'] ?? '') {
             };
         }
         break;
-    case 'bprates':
-        include_once 'bprates.php';
-        break;
     case 'title':
         include_once 'title.php';
         break;

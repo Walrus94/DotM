@@ -18,7 +18,7 @@ class NotificationSearch extends \Gazelle\BaseUser {
 
     public function __construct(
         \Gazelle\User $user,
-        protected \Gazelle\Manager\Torrent $torMan,
+        protected \Gazelle\Manager\Edition $torMan,
         protected string $orderBy,
         protected string $direction,
     ) {
@@ -30,8 +30,7 @@ class NotificationSearch extends \Gazelle\BaseUser {
             $this->dirty = false;
             $this->baseQuery = "
                 FROM users_notify_torrents AS unt
-                INNER JOIN torrents AS t ON (t.ID = unt.TorrentID)
-                INNER JOIN torrents_leech_stats AS tls ON (tls.TorrentID = unt.TorrentID)
+                INNER JOIN edition AS t ON (t.edition_id = unt.TorrentID)
             ";
             $this->cond = ['unt.UserID = ?'];
             $this->args = [$this->user->id()];
