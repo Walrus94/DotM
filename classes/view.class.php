@@ -138,7 +138,6 @@ class View {
             'action'      => $_REQUEST['action'] ?? null,
             'action_list' => $activity->actionList(),
             'alert_list'  => $activity->alertList(),
-            'bonus'       => new Gazelle\User\Bonus($Viewer),
             'document'    => $module,
             'dono_target' => $payMan->monthlyPercent(new Gazelle\Manager\Donation()),
             'nav_links'   => $navLinks,
