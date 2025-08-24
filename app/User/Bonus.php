@@ -506,6 +506,9 @@ class Bonus extends \Gazelle\BaseUser {
     }
 
     public function hourlyRate(): float {
+        if (!self::$db->scalar("SELECT 1 FROM information_schema.tables WHERE table_schema = ? AND table_name = 'torrents'", SQLDB)) {
+            return 0.0;
+        }
         return (float)self::$db->scalar("
             SELECT sum(bonus_accrual(t.Size, xfh.seedtime, tls.Seeders))
             FROM (
@@ -522,6 +525,18 @@ class Bonus extends \Gazelle\BaseUser {
     }
 
     public function userTotals(): array {
+        if (!self::$db->scalar("SELECT 1 FROM information_schema.tables WHERE table_schema = ? AND table_name = 'torrents'", SQLDB)) {
+            return [
+                'total_torrents' => 0,
+                'total_size'     => 0,
+                'hourly_points'  => 0,
+                'daily_points'   => 0,
+                'weekly_points'  => 0,
+                'monthly_points' => 0,
+                'yearly_points'  => 0,
+                'points_per_gb'  => 0,
+            ];
+        }
         $stats = self::$db->rowAssoc("
             SELECT count(*) AS total_torrents,
                 coalesce(sum(t.Size), 0)   AS total_size,
