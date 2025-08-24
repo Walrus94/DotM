@@ -24,6 +24,23 @@ final class DropLegacyTorrentTables extends AbstractMigration {
             $this->execute("DROP TABLE IF EXISTS $table CASCADE");
         }
         foreach ([
+            'relay.deleted_torrent_has_attr',
+            'relay.deleted_torrents_files',
+            'relay.deleted_torrents_leech_stats',
+            'relay.deleted_torrents',
+            'relay.torrent_has_attr',
+            'relay.torrent_group_has_attr',
+            'relay.torrent_attr',
+            'relay.torrent_group_attr',
+            'relay.torrent_report_configuration_log',
+            'relay.torrent_report_configuration',
+            'relay.torrent_unseeded_claim',
+            'relay.torrent_unseeded',
+            'relay.torrents_logs',
+        ] as $table) {
+            $this->execute("DROP FOREIGN TABLE IF EXISTS $table CASCADE");
+        }
+        foreach ([
             'deleted_torrents_remastered_t',
             'deleted_torrents_scene_t',
             'deleted_torrents_haslog_t',
