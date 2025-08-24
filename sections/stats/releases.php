@@ -4,7 +4,7 @@
 $statsTor = new Gazelle\Stats\Release();
 $flow = $statsTor->flow();
 
-echo $Twig->render('stats/torrent.twig', [
+echo $Twig->render('stats/release.twig', [
     'flow' => [
         'month' => array_values(array_map(fn($m) => $m['Month'], $flow)),
         'add'   => array_values(array_map(fn($m) => $m['t_add'], $flow)),

@@ -5,8 +5,8 @@ switch ($_REQUEST['action'] ?? null) {
     case 'users':
         include_once 'users.php';
         break;
-    case 'torrents':
-        include_once 'torrents.php';
+    case 'releases':
+        include_once 'releases.php';
         break;
     default:
         echo $Twig->render('stats.twig');
