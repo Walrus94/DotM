@@ -46,7 +46,7 @@ class UserNav extends AbstractMigration
             [
                 'Key' => 'bookmarks',
                 'Title' => 'Bookmarks',
-                'Target' => 'bookmarks.php?type=torrents',
+                'Target' => 'bookmarks.php?type=releases',
                 'Tests' => 'bookmarks',
                 'TestUser' => false,
                 'Mandatory' => false

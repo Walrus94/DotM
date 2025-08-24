@@ -3,7 +3,7 @@
 
 authorize();
 
-if ($_POST['type'] === 'torrents') {
+if ($_POST['type'] === 'releases') {
     $editor = new Gazelle\Editor\UserBookmark($Viewer->id());
     if (isset($_POST['update']) && !empty($_POST['sort'])) {
         $editor->modify($_POST['sort']);
@@ -15,4 +15,4 @@ if ($_POST['type'] === 'torrents') {
     }
 }
 
-header('Location: bookmarks.php?type=torrents');
+header('Location: bookmarks.php?type=releases');

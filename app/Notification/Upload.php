@@ -220,8 +220,8 @@ class Upload extends \Gazelle\Base {
                 ", $tgroupId, $this->torrent->id(), $notify['user_id'], $notify['filter_id']
             );
             $n += self::$db->affected_rows();
-            $this->rss[] = "torrents_notify_{$notify['passkey']}";
-            $this->rss[] = "torrents_notify_{$notify['filter_id']}_{$notify['passkey']}";
+            $this->rss[] = "releases_notify_{$notify['passkey']}";
+            $this->rss[] = "releases_notify_{$notify['filter_id']}_{$notify['passkey']}";
             self::$cache->delete_value("user_notify_upload_{$notify['user_id']}");
         }
 
@@ -237,29 +237,29 @@ class Upload extends \Gazelle\Base {
 
         // set up RSS feed categories
         $this->rss[] = match ($tgroup->categoryName()) {
-            'Music'             => 'torrents_music',
-            'Applications'      => 'torrents_apps',
-            'Audiobooks'        => 'torrents_abooks',
-            'Comedy'            => 'torrents_comedy',
-            'Comics'            => 'torrents_comics',
-            'E-Books'           => 'torrents_ebooks',
-            'E-Learning Videos' => 'torrents_evideos',
-            default             => 'torrents_unknown',
+            'Music'             => 'releases_music',
+            'Applications'      => 'releases_apps',
+            'Audiobooks'        => 'releases_abooks',
+            'Comedy'            => 'releases_comedy',
+            'Comics'            => 'releases_comics',
+            'E-Books'           => 'releases_ebooks',
+            'E-Learning Videos' => 'releases_evids',
+            default             => 'releases_unknown',
         };
 
         $torrent = $this->torrent;
         if (in_array($torrent->format(), ['FLAC', 'MP3'])) {
-            $this->rss[] = 'torrents_' . strtolower($torrent->format());
+            $this->rss[] = 'releases_' . strtolower($torrent->format());
         }
         if ($torrent->encoding() === 'Lossless') {
-            $this->rss[] = 'torrents_lossless';
+            $this->rss[] = 'releases_lossless';
         } elseif ($torrent->encoding() === '24bit Lossless') {
-            $this->rss[] = 'torrents_lossless24';
+            $this->rss[] = 'releases_lossless24';
         }
         if ($torrent->media() === 'Vinyl') {
-            $this->rss[] = 'torrents_vinyl';
+            $this->rss[] = 'releases_vinyl';
         }
-        $this->rss[] = 'torrents_all';
+        $this->rss[] = 'releases_all';
 
         $feed = new \Gazelle\Feed();
         $item = $feed->item(
@@ -280,7 +280,7 @@ class Upload extends \Gazelle\Base {
 
         // RSS for bookmarks
         self::$db->prepared_query("
-            SELECT concat('torrents_bookmarks_t_', um.torrent_pass)
+            SELECT concat('releases_bookmarks_e_', um.torrent_pass)
             FROM users_main AS um
             INNER JOIN bookmarks_torrents AS b ON (b.UserID = um.ID)
             WHERE b.GroupID = ?
