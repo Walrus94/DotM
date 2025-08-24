@@ -61,7 +61,7 @@ class View {
             $threshold = (new \Gazelle\Manager\SiteOption())
                 ->findValueByName('download-warning-threshold');
             if ($threshold) {
-                $activity->setStats((int)$threshold, new Gazelle\Stats\Torrent());
+                $activity->setStats((int)$threshold, new Gazelle\Stats\Release());
             }
 
             if (OPEN_EXTERNAL_REFERRALS) {

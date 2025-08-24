@@ -2,9 +2,9 @@
 
 namespace Gazelle\Json\Stats;
 
-class Torrent extends \Gazelle\Json {
+class Release extends \Gazelle\Json {
     public function __construct(
-        protected \Gazelle\Stats\Torrent $stat,
+        protected \Gazelle\Stats\Release $stat,
     ) {}
 
     public function payload(): array {
