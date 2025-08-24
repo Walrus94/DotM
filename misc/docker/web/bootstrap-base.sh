@@ -97,10 +97,9 @@ if [ "${DUMP_MYSQL_SCHEMA}" = 1 ]; then
     mysqldump -u root -p"$MYSQL_ROOT_PASSWORD" -f --single-transaction --no-data --databases "$MYSQL_DATABASE"
 fi
 
-if [ ! -d /var/lib/gazelle/torrent ]; then
+if [ ! -d /var/lib/gazelle/riplog ]; then
     echo "Generate file storage directories..."
     time (
-        perl "${CI_PROJECT_DIR}/bin/generate-storage-dirs" /var/lib/gazelle/torrent 2 100
         perl "${CI_PROJECT_DIR}/bin/generate-storage-dirs" /var/lib/gazelle/riplog 2 100
         perl "${CI_PROJECT_DIR}/bin/generate-storage-dirs" /var/lib/gazelle/riploghtml 2 100
     )
