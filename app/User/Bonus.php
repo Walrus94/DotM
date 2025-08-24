@@ -553,6 +553,7 @@ class Bonus extends \Gazelle\BaseUser {
         $stats['total_size'] = (int)$stats['total_size'];
         return $stats;
     }
+
     public function seedList(string $orderBy, string $orderWay, int $limit, int $offset): array {
         return [];
     }
