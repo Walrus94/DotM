@@ -100,14 +100,6 @@ class Torrent extends \Gazelle\BaseManager {
         return $torrent;
     }
 
-    public function findDeletedById(int $torrentId): ?\Gazelle\TorrentDeleted {
-        $found = (bool)self::$db->scalar("
-            SELECT 1 FROM deleted_torrents WHERE ID = ?
-            ", $torrentId
-        );
-        return $found ? new \Gazelle\TorrentDeleted($torrentId) : null;
-    }
-
     public function findByInfohash(string $hash): ?\Gazelle\Torrent {
         return $this->findById((int)self::$db->scalar("
             SELECT id FROM torrents WHERE info_hash = unhex(?)
@@ -559,40 +551,19 @@ class Torrent extends \Gazelle\BaseManager {
 
     public static function renderPL(int $id, array $attr): ?string {
         $torrent = (new self())->findById($id);
+        if (is_null($torrent)) {
+            return null;
+        }
         $meta = '';
         $wantMeta = !(in_array('nometa', $attr) || in_array('title', $attr));
-
-        if (!is_null($torrent)) {
-            $tgroup = $torrent->group();
-            if ($wantMeta && $tgroup->categoryName() === 'Music') {
-                $meta = self::metaPL(
-                    $torrent->media(), $torrent->format(), $torrent->encoding(),
-                    $torrent->hasCue(), $torrent->hasLog(), $torrent->hasLogDb(), $torrent->logScore()
-                );
-            }
-            $isDeleted = false;
-        } else {
-            $deleted = self::$db->rowAssoc("
-                SELECT GroupID, Format, Encoding, Media, HasCue, HasLog, HasLogDB, LogScore
-                FROM deleted_torrents
-                WHERE ID = ?
-                ", $id
+        $tgroup = $torrent->group();
+        if ($wantMeta && $tgroup->categoryName() === 'Music') {
+            $meta = self::metaPL(
+                $torrent->media(), $torrent->format(), $torrent->encoding(),
+                $torrent->hasCue(), $torrent->hasLog(), $torrent->hasLogDb(), $torrent->logScore()
             );
-            if (is_null($deleted)) {
-                return null;
-            }
-            $tgroup = (new \Gazelle\Manager\TGroup())->findById((int)$deleted['GroupID']);
-            if (is_null($tgroup)) {
-                return null;
-            }
-            if ($wantMeta && $tgroup->categoryName() === 'Music') {
-                $meta = self::metaPL(
-                    $deleted['Media'], $deleted['Format'], $deleted['Encoding'],
-                    (bool)$deleted['HasCue'], (bool)$deleted['HasLog'], (bool)$deleted['HasLogDB'], (int)$deleted['LogScore']
-                );
-            }
-            $isDeleted = true;
         }
+
         $year = in_array('noyear', $attr) || in_array('title', $attr) ? '' : $tgroup->year();
         $releaseType = ($tgroup->categoryName() !== 'Music' || in_array('noreleasetype', $attr) || in_array('title', $attr))
             ? '' : $tgroup->releaseTypeName();
@@ -606,7 +577,7 @@ class Torrent extends \Gazelle\BaseManager {
         return $url . sprintf(
             '<a title="%s" href="/torrents.php?id=%d&torrentid=%d#torrent%d">%s%s</a>%s',
             $tgroup->hashTag(), $tgroup->id(), $id, $id, display_str($tgroup->name()), $label,
-            $meta . ($isDeleted ? ' <i>deleted</i>' : '')
+            $meta
         );
     }
 

@@ -15,14 +15,9 @@ class Artwork extends AbstractBetter {
         $this->field = 'tg.ID';
         $this->baseQuery = "
             FROM torrents_group tg
-            LEFT JOIN wiki_torrents wt USING (RevisionID)
-            LEFT JOIN torrent_group_has_attr tgha ON (tgha.TorrentGroupID = tg.ID
-                AND tgha.TorrentGroupAttrID = (
-                    SELECT tga.ID FROM torrent_group_attr tga WHERE tga.Name = 'no-cover-art'
-                )
-            )";
+            LEFT JOIN wiki_torrents wt USING (RevisionID)";
 
-        $this->where[] = "tg.CategoryID = 1 AND coalesce(wt.Image, tg.WikiImage) = '' AND tgha.TorrentGroupID IS NULL";
+        $this->where[] = "tg.CategoryID = 1 AND coalesce(wt.Image, tg.WikiImage) = ''";
         $this->orderBy = "ORDER BY tg.Name";
 
         if ($this->filter === 'snatched') {

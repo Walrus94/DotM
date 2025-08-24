@@ -119,11 +119,9 @@ class TGroup extends \Gazelle\BaseManager {
     }
 
     public function findByTorrentId(int $torrentId): ?\Gazelle\TGroup {
-        $id = (int)self::$db->scalar("
-            SELECT GroupID FROM torrents WHERE ID = ?
-            UNION ALL
-            SELECT GroupID FROM deleted_torrents WHERE ID = ?
-            ", $torrentId, $torrentId
+        $id = (int)self::$db->scalar(
+            "SELECT GroupID FROM torrents WHERE ID = ?",
+            $torrentId
         );
         return $this->findById($id);
     }

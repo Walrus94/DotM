@@ -4,7 +4,6 @@ namespace Gazelle;
 
 use Gazelle\Enum\LeechReason;
 use Gazelle\Enum\LeechType;
-use Gazelle\Enum\TorrentFlag;
 
 abstract class TorrentAbstract extends BaseObject {
     final public const CACHE_LOCK           = 'torrent_lock_%d';
@@ -19,7 +18,6 @@ abstract class TorrentAbstract extends BaseObject {
         self::$cache->delete_multi([
             sprintf(self::CACHE_FILELIST_COUNT, $this->id),
             sprintf(Torrent::CACHE_KEY, $this->id),
-            sprintf(TorrentDeleted::CACHE_KEY, $this->id),
         ]);
         unset($this->info);
         $this->group()->flush();
@@ -82,7 +80,7 @@ abstract class TorrentAbstract extends BaseObject {
         if (isset($this->info)) {
             return $this->info;
         }
-        $key = sprintf($this->isDeleted() ? TorrentDeleted::CACHE_KEY : Torrent::CACHE_KEY, $this->id);
+        $key = sprintf(Torrent::CACHE_KEY, $this->id);
         $info = self::$cache->get_value($key);
         if ($info === false) {
             $info = $this->infoRow();
@@ -95,15 +93,10 @@ abstract class TorrentAbstract extends BaseObject {
             foreach (['LogChecksum', 'HasCue', 'HasLog', 'HasLogDB', 'Remastered', 'Scene'] as $zerotruth) {
                 $info[$zerotruth] = !($info[$zerotruth] == '0');
             }
-
-            $info['ripLogIds'] = empty($info['ripLogIds']) ? [] : array_map('intval', explode(',', $info['ripLogIds']));
-            $info['LogCount'] = count($info['ripLogIds']);
-            if (!$this->isDeleted()) {
-                self::$cache->cache_value($key, $info, ($info['Seeders'] ?? 0) > 0 ? 600 : 3600);
-            }
+            self::$cache->cache_value($key, $info, ($info['Seeders'] ?? 0) > 0 ? 600 : 3600);
         }
 
-        if (!$this->isDeleted() && isset($this->viewer)) {
+        if (isset($this->viewer)) {
             $info['PersonalFL'] = $info['FreeTorrent'] == LeechType::Normal->value && $this->viewer->hasToken($this);
             $info['IsSnatched'] = $this->viewer->snatch()->showSnatch($this);
         } else {
@@ -113,14 +106,6 @@ abstract class TorrentAbstract extends BaseObject {
 
         $this->info = $info;
         return $this->info;
-    }
-
-    /**
-     * Assume a torrent has not been deleted. This function is
-     * overridden in TorrentDeleted
-     */
-    public function isDeleted(): bool {
-        return false;
     }
 
     public function created(): string {
@@ -494,38 +479,6 @@ abstract class TorrentAbstract extends BaseObject {
         return $this->info()['LogScore'];
     }
 
-    public function logfileList(\Gazelle\File\RipLog $ripFiler, \Gazelle\File\RipLogHTML $htmlFiler): array {
-        self::$db->prepared_query("
-            SELECT LogID AS id,
-                Score,
-                `Checksum`,
-                Adjusted,
-                AdjustedBy,
-                AdjustedScore,
-                AdjustedChecksum,
-                AdjustmentReason,
-                coalesce(AdjustmentDetails, 'a:0:{}') AS AdjustmentDetails,
-                Details
-            FROM torrents_logs
-            WHERE TorrentID = ?
-            ", $this->id
-        );
-        $list = self::$db->to_array(false, MYSQLI_ASSOC, false);
-        foreach ($list as &$log) {
-            $log['has_riplog'] = $ripFiler->exists([$this->id, $log['id']]);
-            $log['html_log'] = $htmlFiler->get([$this->id, $log['id']]);
-            $log['adjustment_details'] = unserialize($log['AdjustmentDetails']);
-            $log['adjusted'] = ($log['Adjusted'] === '1');
-            $log['adjusted_checksum'] = ($log['AdjustedChecksum'] === '1');
-            $log['checksum'] = ($log['Checksum'] === '1');
-            $log['details'] = empty($log['Details']) ? [] : explode("\r\n", trim($log['Details']));
-            if ($log['adjusted'] && $log['checksum'] !== $log['adjusted_checksum']) {
-                $log['details'][] = 'Bad/No Checksum(s)';
-            }
-        }
-        return $list;
-    }
-
     /**
      * The media of this torrent. Will be null for non-music uploads.
      */
@@ -562,47 +515,6 @@ abstract class TorrentAbstract extends BaseObject {
             $this->remasterRecordLabel(),
             $this->remasterCatalogueNumber(),
         ]);
-    }
-
-    /**
-     * Get the reports associated with this torrent
-     *
-     * @return array of ids of \Gazelle\Torrent\Report
-     */
-    public function reportIdList(User $viewer): array {
-        if ($this->isDeleted()) {
-            return [];
-        }
-        $key = sprintf(self::CACHE_REPORTLIST, $this->id());
-        $list = self::$cache->get_value($key);
-        if ($list === false) {
-            $qid = self::$db->get_query_id();
-            self::$db->prepared_query("
-                SELECT r.ID      AS id,
-                    r.ReporterID AS reporter_id,
-                    trc.is_invisible
-                FROM reportsv2 r
-                INNER JOIN torrent_report_configuration trc ON (trc.type = r.Type)
-                WHERE r.Status != 'Resolved'
-                    AND r.TorrentID = ?
-                ", $this->id
-            );
-            $list = self::$db->to_array(false, MYSQLI_ASSOC, false);
-            self::$db->set_query_id($qid);
-            self::$cache->cache_value($key, $list, 7200);
-        }
-        if (!$viewer->isStaff()) {
-            $list = array_filter($list, fn($r) => $r['is_invisible'] == 0 || $r['reporter_id'] == $viewer->id());
-        }
-        return array_column($list, 'id');
-    }
-
-    public function reportTotal(User $viewer): int {
-        return count($this->reportIdList($viewer));
-    }
-
-    public function ripLogIdList(): array {
-        return $this->info()['ripLogIds'];
     }
 
     public function seederTotal(): int {
@@ -666,34 +578,6 @@ abstract class TorrentAbstract extends BaseObject {
      */
     public function uploader(): User {
         return new User($this->uploaderId());
-    }
-
-    /**** TORRENT FLAG TABLE METHODS ****/
-
-    public function hasFlag(TorrentFlag $flag): bool {
-        return isset($this->info()['attr'][$flag->value]);
-    }
-
-    public function addFlag(TorrentFlag $flag, User $user): int {
-        self::$db->prepared_query("
-            INSERT IGNORE INTO torrent_has_attr
-                (TorrentID, TorrentAttrID, UserID)
-            VALUES (?, (SELECT ID FROM torrent_attr WHERE Name = ?), ?)
-            ", $this->id, $flag->value, $user->id()
-        );
-        $this->flush();
-        return self::$db->affected_rows();
-    }
-
-    public function removeFlag(TorrentFlag $flag): int {
-        self::$db->prepared_query("
-            DELETE FROM torrent_has_attr
-            WHERE TorrentID = ?
-                AND TorrentAttrID = (SELECT ID FROM torrent_attr WHERE Name = ?)
-            ", $this->id, $flag->value
-        );
-        $this->flush();
-        return self::$db->affected_rows();
     }
 
     public function hasUploadLock(): bool {
@@ -786,14 +670,6 @@ abstract class TorrentAbstract extends BaseObject {
         }
         if ($info['Media'] === 'CD' && $info['HasLog'] && $info['HasLogDB'] && !$info['LogChecksum']) {
             $extra[] = $this->labelElement('tl_notice', 'Bad/Missing Checksum');
-        }
-        foreach (TorrentFlag::cases() as $flag) {
-            if ($this->hasFlag($flag)) {
-                $extra[] = $this->labelElement("tl_{$flag->labelClass()} tl_{$flag->value}", $flag->label());
-            }
-        }
-        if ($viewer && $this->reportTotal($viewer)) {
-            $extra[] = $this->labelElement('tl_reported', 'Reported');
         }
         return $extra;
     }
