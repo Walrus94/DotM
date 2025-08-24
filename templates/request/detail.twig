@@ -110,7 +110,7 @@
             <ul class="stats nobullet">
 {% for name in request.tagNameList %}
                 <li>
-                    <a href="torrents.php?taglist={{ name }}">{{ name }}</a>
+                    <a href="releases.php?taglist={{ name }}">{{ name }}</a>
                     <br style="clear: both;" />
                 </li>
 {% endfor %}
@@ -288,7 +288,7 @@
             <tr>
                 <td class="label">Filled</td>
                 <td>
-                    <strong><a href="torrents.php?torrentid={{ request.torrentId }}">Yes</a></strong>, by user {{ filler.username }}
+                    <strong><a href="releases.php?releaseid={{ request.torrentId }}">Yes</a></strong>, by user {{ filler.username }}
     {% if viewer.id in [request.userId, request.fillerId] or viewer.permitted('site_moderate_requests') %}
                         <strong><a href="requests.php?action=unfill&amp;id={{ request.id }}" class="brackets">Unfill</a></strong> Unfilling a request without a <a href="/rules.php?p=requests">valid, nontrivial reason</a> will result in a warning.
     {% endif %}
@@ -305,7 +305,7 @@
                             <input type="hidden" name="requestid" value="{{ request.id }}" />
                             <input type="text" size="50" name="link"{% if link %}  value="{{ link }}"{% endif %} />
                             <br />
-                            <strong>Must be the permalink [PL] of the torrent<br />(e.g. {{ constant('SITE_URL') }}/torrents.php?torrentid=nnn).</strong>
+                            <strong>Must be the permalink [PL] of the release<br />(e.g. {{ constant('SITE_URL') }}/releases.php?releaseid=nnn).</strong>
                         </div>
 {%  if viewer.permitted('site_moderate_requests') %}
                         <div class="field_div">

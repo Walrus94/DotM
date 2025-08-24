@@ -240,8 +240,8 @@ switch ($_REQUEST['action'] ?? '') {
         include_once 'data/site_info.php';
         break;
 
-    case 'torrent_stats':
-        include_once 'data/torrent_stats.php';
+    case 'release_stats':
+        include_once 'data/release_stats.php';
         break;
 
     case 'user_flow':

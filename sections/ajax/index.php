@@ -235,8 +235,8 @@ switch ($Action) {
     case 'user_stats':
         include_once 'stats/users.php';
         break;
-    case 'torrent_stats':
-        include_once 'stats/torrents.php';
+    case 'release_stats':
+        include_once 'stats/releases.php';
         break;
     case 'logchecker':
         include_once 'logchecker.php';

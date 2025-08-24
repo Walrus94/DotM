@@ -9,7 +9,7 @@ if (!$Viewer->permitted('site_view_flow')) {
 }
 
 $userMan = new Gazelle\Manager\User();
-echo $Twig->render('admin/stats/torrent.twig', [
+echo $Twig->render('admin/stats/release.twig', [
     'notification' => new Gazelle\Manager\Notification(),
     'reaper'       => new Gazelle\Torrent\Reaper(new Gazelle\Manager\Torrent(), $userMan),
     'torr_stat'    => new Gazelle\Stats\Release(),

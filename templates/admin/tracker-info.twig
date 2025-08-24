@@ -30,7 +30,7 @@
                 <form method="get" action="">
                     <input type="hidden" name="action" value="ocelot_info" />
                     <label>Report status of torrent (id)<br />
-                    <input type="text" name="torrentid" placeholder="Torrent ID" value="{{ torrent_stats.torrent.id }}" />
+                    <input type="text" name="torrentid" placeholder="Release ID" value="{{ torrent_stats.torrent.id }}" />
                     </label><br />
                     <input type="submit" value="Go" />
                 </form>
@@ -117,7 +117,7 @@
     {% else %}
             <tr>
                 <td class="label">Title</td>
-                <td><a href="torrents.php?torrentid={{ torrent_stats.torrent.id }}">{{ torrent_stats.torrent.link|raw }}</a></td>
+                <td><a href="releases.php?releaseid={{ torrent_stats.torrent.id }}">{{ torrent_stats.torrent.link|raw }}</a></td>
             </tr>
             <tr>
                 <td class="label">Completed</td>

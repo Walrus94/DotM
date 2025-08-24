@@ -198,7 +198,7 @@ class Activity extends \Gazelle\BaseUser {
             );
             if ($total > $threshold) {
                 $this->setAction(
-                    '<span class="sys-warning">Downloads: <a href="tools.php?action=torrent_stats" title="Downloads over past three hours">'
+                    '<span class="sys-warning">Downloads: <a href="tools.php?action=release_stats" title="Downloads over past three hours">'
                     . implode('/', array_map(
                         fn ($s) => number_format($s['total']),
                         $stats->recentDownloadTotal()

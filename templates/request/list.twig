@@ -59,7 +59,7 @@
 {%  if filtering %}
             <td class="m_hidden nobr">
 {%      if request.isFilled %}
-                <a href="torrents.php?torrentid={{ request.torrentId }}"><strong>{{ request.fillDate|time_diff(1) }}</strong></a>
+                <a href="releases.php?releaseid={{ request.torrentId }}"><strong>{{ request.fillDate|time_diff(1) }}</strong></a>
 {%      else %}
                 <strong>No</strong>
 {%      endif %}
