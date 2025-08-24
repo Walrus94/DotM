@@ -9,6 +9,7 @@ final class DropLegacyTorrentTables extends AbstractMigration {
         foreach ([
             'deleted_torrent_has_attr',
             'deleted_torrents_files',
+            'deleted_torrents_leech_stats',
             'deleted_torrents',
             'torrent_has_attr',
             'torrent_attr',
