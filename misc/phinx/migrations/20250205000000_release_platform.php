@@ -6,6 +6,10 @@ use Phinx\Migration\AbstractMigration;
 
 final class ReleasePlatform extends AbstractMigration {
     public function up(): void {
+        if ($this->hasTable('release_platform')) {
+            return;
+        }
+
         $this->table('release_platform', [
                 'id'         => false,
                 'primary_key'=> 'ID',
@@ -31,6 +35,8 @@ final class ReleasePlatform extends AbstractMigration {
     }
 
     public function down(): void {
-        $this->table('release_platform')->drop()->save();
+        if ($this->hasTable('release_platform')) {
+            $this->table('release_platform')->drop()->save();
+        }
     }
 }
