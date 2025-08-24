@@ -45,7 +45,7 @@ alert is sent just before the upload is removed.
 To leave tombstones in the catalogue, simply disable the scheduled reaper
 task.
 
-An unseeded upload is identified by the `torrents_leech_stats.last_action`
+An unseeded upload is identified by the `last_action`
 column. If it is `NULL`, the upload was never seeded. Once the grace period
 since creation (based on `torrents.Time`) has passed, a "never seeded" row
 is inserted. If there is a value for `last_action` and the grace period for

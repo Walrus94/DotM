@@ -7,7 +7,7 @@ class Artist extends \Gazelle\Collector {
 
     public function __construct(
         protected \Gazelle\User            $user,
-        protected \Gazelle\Manager\Torrent $torMan,
+        protected \Gazelle\Manager\Edition $torMan,
         protected \Gazelle\Artist          $artist,
         protected int                      $orderBy,
     ) {
@@ -31,7 +31,6 @@ class Artist extends \Gazelle\Collector {
         $this->args = array_keys($this->roleList);
         $this->sql = $this->queryPreamble($list) . "
             FROM torrents AS t
-            INNER JOIN torrents_leech_stats tls ON (tls.TorrentID = t.ID) /* FIXME: only needed if sorting by Seeders */
             INNER JOIN torrents_group AS tg ON (tg.ID = t.GroupID AND tg.CategoryID = 1 AND tg.ID IN (" . placeholders($this->args) . "))
             ORDER BY t.GroupID ASC, sequence DESC, " .  self::ORDER_BY[$this->orderBy];
 

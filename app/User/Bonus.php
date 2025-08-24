@@ -63,17 +63,8 @@ class Bonus extends \Gazelle\BaseUser {
         return $items[$label] ?? null;
     }
 
-    public function torrentValue(\Gazelle\Torrent $torrent): int {
-        if ($torrent->format() == 'FLAC') {
-            if ($torrent->isPerfectFlac()) {
-                return BONUS_AWARD_FLAC_PERFECT;
-            } else {
-                return BONUS_AWARD_FLAC;
-            }
-        } elseif ($torrent->format() == 'MP3' && in_array($torrent->encoding(), ['V0 (VBR)', '320'])) {
-            return BONUS_AWARD_MP3;
-        }
-        return BONUS_AWARD_OTHER;
+    public function torrentValue(\Gazelle\Edition $torrent): int {
+        return 0;
     }
 
     public function effectivePrice(string $label): int {
@@ -480,7 +471,7 @@ class Bonus extends \Gazelle\BaseUser {
         return self::$db->affected_rows();
     }
 
-    public function removePointsForUpload(\Gazelle\Torrent $torrent): bool {
+    public function removePointsForUpload(\Gazelle\Edition $torrent): bool {
         return $this->removePoints($this->torrentValue($torrent), true);
     }
 
@@ -506,25 +497,20 @@ class Bonus extends \Gazelle\BaseUser {
     }
 
     public function hourlyRate(): float {
-        if (!self::$db->scalar("SELECT 1 FROM information_schema.tables WHERE table_schema = ? AND table_name = 'torrents'", SQLDB)) {
-            return 0.0;
-        }
-        return (float)self::$db->scalar("
-            SELECT sum(bonus_accrual(t.Size, xfh.seedtime, tls.Seeders))
-            FROM (
-                SELECT DISTINCT uid,fid
-                FROM xbt_files_users
-                WHERE active = 1 AND remaining = 0 AND mtime > unix_timestamp(NOW() - INTERVAL 1 HOUR) AND uid = ?
-            ) AS xfu
-            INNER JOIN xbt_files_history AS xfh USING (uid, fid)
-            INNER JOIN torrents AS t ON (t.ID = xfu.fid)
-            INNER JOIN torrents_leech_stats tls ON (tls.TorrentID = t.ID)
-            WHERE xfu.uid = ?
-            ", $this->id(), $this->id()
-        );
+        return 0.0;
     }
 
     public function userTotals(): array {
+        return [
+            'total_torrents' => 0,
+            'total_size' => 0,
+            'hourly_points' => 0,
+            'daily_points' => 0,
+            'weekly_points' => 0,
+            'monthly_points' => 0,
+            'yearly_points' => 0,
+            'points_per_gb' => 0,
+        ];
         if (!self::$db->scalar("SELECT 1 FROM information_schema.tables WHERE table_schema = ? AND table_name = 'torrents'", SQLDB)) {
             return [
                 'total_torrents' => 0,
@@ -567,39 +553,7 @@ class Bonus extends \Gazelle\BaseUser {
         $stats['total_size'] = (int)$stats['total_size'];
         return $stats;
     }
-
     public function seedList(string $orderBy, string $orderWay, int $limit, int $offset): array {
-        self::$db->prepared_query("
-            SELECT
-                t.ID,
-                t.Size                   AS size,
-                GREATEST(tls.Seeders, 1) AS seeders,
-                xfh.seedtime             AS seed_time,
-                bonus_accrual(t.Size, xfh.seedtime,                           tls.Seeders)                           AS hourly_points,
-                bonus_accrual(t.Size, xfh.seedtime + (24 * 1),                tls.Seeders) * (24 * 1)                AS daily_points,
-                bonus_accrual(t.Size, xfh.seedtime + (24 * 7),                tls.Seeders) * (24 * 7)                AS weekly_points,
-                bonus_accrual(t.Size, xfh.seedtime + (24 * 365.256363004/12), tls.Seeders) * (24 * 365.256363004/12) AS monthly_points,
-                bonus_accrual(t.Size, xfh.seedtime + (24 * 365.256363004),    tls.Seeders) * (24 * 365.256363004)    AS yearly_points,
-                bonus_accrual(t.Size, xfh.seedtime + (24 * 365.256363004),    tls.Seeders) * (24 * 365.256363004)
-                    / (t.Size / (1024*1024*1024)) AS points_per_gb
-            FROM (
-                SELECT DISTINCT uid,fid FROM xbt_files_users WHERE active=1 AND remaining=0 AND mtime > unix_timestamp(NOW() - INTERVAL 1 HOUR) AND uid = ?
-            ) AS xfu
-            INNER JOIN xbt_files_history AS xfh USING (uid, fid)
-            INNER JOIN torrents AS t ON (t.ID = xfu.fid)
-            INNER JOIN torrents_leech_stats AS tls ON (tls.TorrentID = t.ID)
-            WHERE
-                xfu.uid = ?
-            ORDER BY $orderBy $orderWay
-            LIMIT ?
-            OFFSET ?
-            ", $this->id(), $this->id(), $limit, $offset
-        );
-        $list = [];
-        foreach (self::$db->to_array('ID', MYSQLI_ASSOC, false) as $r) {
-            $r['torrent'] = new \Gazelle\Torrent($r['ID']);
-            $list[] = $r;
-        }
-        return $list;
+        return [];
     }
 }

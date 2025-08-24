@@ -147,13 +147,12 @@ class Artist extends \Gazelle\BaseManager {
                     aa.Name       AS value
                 FROM artists_group AS a
                 INNER JOIN artists_alias        aa  ON (a.PrimaryAlias = aa.AliasID)
-                INNER JOIN release_artist     ta  ON (ta.AliasID = aa.AliasID)
-                INNER JOIN torrents             t   ON (t.GroupID = ta.release_id)
-                INNER JOIN torrents_leech_stats tls ON (tls.TorrentID = t.ID)
+                INNER JOIN torrents_artists     ta  ON (ta.AliasID = aa.AliasID)
+                INNER JOIN torrents             t   ON (t.GroupID = ta.GroupID)
                 WHERE aa.Name LIKE concat(?, '%')
                 GROUP BY a.ArtistID, aa.Name
                 ORDER BY aa.Name != ?,
-                    sum(tls.Snatched) DESC
+                    aa.Name
                 LIMIT 20
                 ", str_replace("%", "\\%", $prefix),
                 $prefix,

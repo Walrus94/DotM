@@ -22,10 +22,9 @@ class SingleSeeded extends AbstractBetter {
         $this->baseQuery = "
             FROM torrents t
             INNER JOIN torrents_group tg ON (tg.ID = t.GroupID)
-            INNER JOIN torrents_leech_stats tls ON (tls.TorrentID = t.ID)
         ";
 
-        $this->where[] = "t.Format = 'FLAC' AND tls.Seeders = 1";
+        $this->where[] = "t.Format = 'FLAC'";
         $this->orderBy = "ORDER BY t.LogScore DESC, rand()";
     }
 }
