@@ -506,7 +506,11 @@ class Bonus extends \Gazelle\BaseUser {
     }
 
     public function hourlyRate(): float {
-        return (float)self::$db->scalar("
+        if (!self::$db->entityExists('torrents', 'ID')) {
+            return 0.0;
+        }
+        return (float)self::$db->scalar(
+            "
             SELECT sum(bonus_accrual(t.Size, xfh.seedtime, tls.Seeders))
             FROM (
                 SELECT DISTINCT uid,fid
@@ -517,17 +521,32 @@ class Bonus extends \Gazelle\BaseUser {
             INNER JOIN torrents AS t ON (t.ID = xfu.fid)
             INNER JOIN torrents_leech_stats tls ON (tls.TorrentID = t.ID)
             WHERE xfu.uid = ?
-            ", $this->id(), $this->id()
+            ",
+            $this->id(),
+            $this->id(),
         );
     }
 
     public function userTotals(): array {
-        $stats = self::$db->rowAssoc("
+        if (!self::$db->entityExists('torrents', 'ID')) {
+            return [
+                'total_torrents' => 0,
+                'total_size' => 0,
+                'hourly_points' => 0,
+                'daily_points' => 0,
+                'weekly_points' => 0,
+                'monthly_points' => 0,
+                'yearly_points' => 0,
+                'points_per_gb' => 0,
+            ];
+        }
+        $stats = self::$db->rowAssoc(
+            "
             SELECT count(*) AS total_torrents,
                 coalesce(sum(t.Size), 0)   AS total_size,
-                coalesce(sum(bonus_accrual(t.Size, xfh.seedtime,                           tls.Seeders)), 0)                           AS hourly_points,
-                coalesce(sum(bonus_accrual(t.Size, xfh.seedtime + (24 * 1),                tls.Seeders)), 0) * (24 * 1)                AS daily_points,
-                coalesce(sum(bonus_accrual(t.Size, xfh.seedtime + (24 * 7),                tls.Seeders)), 0) * (24 * 7)                AS weekly_points,
+                coalesce(sum(bonus_accrual(t.Size, xfh.seedtime,                           tls.Seeders)), 0)       AS hourly_points,
+                coalesce(sum(bonus_accrual(t.Size, xfh.seedtime + (24 * 1),                tls.Seeders)), 0) * (24 * 1)       AS daily_points,
+                coalesce(sum(bonus_accrual(t.Size, xfh.seedtime + (24 * 7),                tls.Seeders)), 0) * (24 * 7)       AS weekly_points,
                 coalesce(sum(bonus_accrual(t.Size, xfh.seedtime + (24 * 365.256363004/12), tls.Seeders)), 0) * (24 * 365.256363004/12) AS monthly_points,
                 coalesce(sum(bonus_accrual(t.Size, xfh.seedtime + (24 * 365.256363004),    tls.Seeders)), 0) * (24 * 365.256363004)    AS yearly_points,
                 if (coalesce(sum(t.Size), 0) = 0,
@@ -547,13 +566,18 @@ class Bonus extends \Gazelle\BaseUser {
             INNER JOIN torrents AS t ON (t.ID = xfu.fid)
             INNER JOIN torrents_leech_stats tls ON (tls.TorrentID = t.ID)
             WHERE xfu.uid = ?
-            ", $this->id(), $this->id()
+            ",
+            $this->id(),
+            $this->id(),
         );
         $stats['total_size'] = (int)$stats['total_size'];
         return $stats;
     }
 
     public function seedList(string $orderBy, string $orderWay, int $limit, int $offset): array {
+        if (!self::$db->entityExists('torrents', 'ID')) {
+            return [];
+        }
         self::$db->prepared_query("
             SELECT
                 t.ID,
