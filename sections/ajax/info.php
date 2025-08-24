@@ -33,7 +33,6 @@ json_print("success", [
         'downloaded'         => $Viewer->downloadedSize(),
         'ratio'              => (float)$Ratio,
         'requiredratio'      => $Viewer->requiredRatio(),
-        'bonusPoints'        => $Viewer->bonusPointsTotal(),
         'class'              => $Viewer->userclassName(),
     ]
 ]);

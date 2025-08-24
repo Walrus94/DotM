@@ -95,15 +95,7 @@ class Edition extends \Gazelle\BaseManager {
         return $edition;
     }
 
-    public function findDeletedById(int $editionId): ?\Gazelle\TorrentDeleted {
-        $found = (bool)self::$db->scalar("
-            SELECT 1 FROM deleted_torrents WHERE ID = ?
-            ", $editionId
-        );
-        return $found ? new \Gazelle\TorrentDeleted($editionId) : null;
-    }
-
-    public function findByInfohash(string $hash): ?\Gazelle\Edition {
+    public function findByInfohash(string $hash): ?\Gazelle\Torrent {
         return $this->findById((int)self::$db->scalar("
             SELECT edition_id FROM edition WHERE info_hash = unhex(?)
             ", $hash
@@ -355,6 +347,122 @@ class Edition extends \Gazelle\BaseManager {
 
         return $affected;
     }
+
+    public function updatePeerlists(): array {
+        self::$db->prepared_query("
+            DELETE FROM xbt_files_users
+            WHERE mtime < unix_timestamp(NOW() - INTERVAL ? SECOND)
+            ", UNSEEDED_DRAIN_INTERVAL
+        );
+        $purged = self::$db->affected_rows();
+        self::$db->dropTemporaryTable("tmp_torrents_peerlists");
+        self::$db->prepared_query("
+            CREATE TEMPORARY TABLE tmp_torrents_peerlists (
+                TorrentID int NOT NULL PRIMARY KEY,
+                GroupID   int,
+                Seeders   int,
+                Leechers  int,
+                Snatches  int
+            )
+        ");
+        self::$db->prepared_query("
+            INSERT INTO tmp_torrents_peerlists
+            SELECT t.ID, t.GroupID, tls.Seeders, tls.Leechers, tls.Snatched
+            FROM torrents t
+            INNER JOIN torrents_leech_stats tls ON (tls.TorrentID = t.ID)
+        ");
+
+        self::$db->dropTemporaryTable("tpc_temp");
+        self::$db->prepared_query("
+            CREATE TEMPORARY TABLE tpc_temp (
+                TorrentID int,
+                GroupID   int,
+                Seeders   int,
+                Leechers  int,
+                Snatched  int,
+                PRIMARY KEY (GroupID, TorrentID)
+            )
+        ");
+        self::$db->prepared_query("
+            INSERT INTO tpc_temp
+            SELECT t2.*
+            FROM torrents_peerlists AS t1
+            INNER JOIN tmp_torrents_peerlists AS t2 USING (TorrentID)
+            WHERE t1.Seeders != t2.Seeders
+                OR t1.Leechers != t2.Leechers
+                OR t1.Snatches != t2.Snatches
+        ");
+
+        $StepSize = 30000;
+        self::$db->prepared_query("
+            SELECT TorrentID, GroupID, Seeders, Leechers, Snatched
+            FROM tpc_temp
+            ORDER BY GroupID ASC, TorrentID ASC
+            LIMIT ?
+            ", $StepSize
+        );
+
+        $RowNum = 0;
+        $LastGroupID = 0;
+        $UpdatedKeys = $UncachedGroups = 0;
+        [$TorrentID, $GroupID, $Seeders, $Leechers, $Snatches] = self::$db->next_record(MYSQLI_NUM, false);
+        while ($TorrentID) {
+            if ($LastGroupID != $GroupID) {
+                $CachedData = self::$cache->get_value("torrent_group_$GroupID");
+                if ($CachedData !== false) {
+                    if (isset($CachedData["ver"]) && $CachedData["ver"] == \Gazelle\Cache::GROUP_VERSION) {
+                        $CachedStats = &$CachedData["d"]["Torrents"];
+                    }
+                } else {
+                    $UncachedGroups++;
+                }
+                $LastGroupID = $GroupID;
+            }
+            $Changed = false;
+            while ($LastGroupID == $GroupID) {
+                $RowNum++;
+                if (isset($CachedStats) && is_array($CachedStats[$TorrentID])) {
+                    $OldValues = &$CachedStats[$TorrentID];
+                    $OldValues["Seeders"] = $Seeders;
+                    $OldValues["Leechers"] = $Leechers;
+                    $OldValues["Snatched"] = $Snatches;
+                    $Changed = true;
+                    unset($OldValues);
+                }
+                if (!($RowNum % $StepSize)) {
+                    self::$db->prepared_query("
+                        SELECT TorrentID, GroupID, Seeders, Leechers, Snatched
+                        FROM tpc_temp
+                        WHERE (GroupID > ? OR (GroupID = ? AND TorrentID > ?))
+                        ORDER BY GroupID ASC, TorrentID ASC
+                        LIMIT ?
+                        ", $GroupID, $GroupID, $TorrentID, $StepSize
+                    );
+                }
+                $LastGroupID = $GroupID;
+                [$TorrentID, $GroupID, $Seeders, $Leechers, $Snatches] = self::$db->next_record(MYSQLI_NUM, false);
+            }
+            if (isset($CachedData) && $Changed) {
+                self::$cache->cache_value("torrent_group_$LastGroupID", $CachedData, 7200);
+                unset($CachedStats);
+                $UpdatedKeys++;
+                $Changed = false;
+            }
+        }
+        self::$db->dropTemporaryTable("tpc_temp");
+
+        self::$db->begin_transaction();
+        self::$db->prepared_query("DELETE FROM torrents_peerlists");
+        self::$db->prepared_query("
+            INSERT INTO torrents_peerlists
+            SELECT *
+            FROM tmp_torrents_peerlists
+        ");
+        self::$db->commit();
+        self::$db->dropTemporaryTable("tmp_torrents_peerlists");
+        return [$UpdatedKeys + $purged, $UncachedGroups];
+    }
+
     /**
      * Return the N most recent lossless uploads
      * Note that if both a Lossless and 24bit Lossless are uploaded at the same time,
@@ -438,40 +546,19 @@ class Edition extends \Gazelle\BaseManager {
 
     public static function renderPL(int $id, array $attr): ?string {
         $torrent = (new self())->findById($id);
+        if (is_null($torrent)) {
+            return null;
+        }
         $meta = '';
         $wantMeta = !(in_array('nometa', $attr) || in_array('title', $attr));
-
-        if (!is_null($torrent)) {
-            $tgroup = $torrent->group();
-            if ($wantMeta && $tgroup->categoryName() === 'Music') {
-                $meta = self::metaPL(
-                    $torrent->media(), $torrent->format(), $torrent->encoding(),
-                    $torrent->hasCue(), $torrent->hasLog(), $torrent->hasLogDb(), $torrent->logScore()
-                );
-            }
-            $isDeleted = false;
-        } else {
-            $deleted = self::$db->rowAssoc("
-                SELECT GroupID, Format, Encoding, Media, HasCue, HasLog, HasLogDB, LogScore
-                FROM deleted_torrents
-                WHERE ID = ?
-                ", $id
+        $tgroup = $torrent->group();
+        if ($wantMeta && $tgroup->categoryName() === 'Music') {
+            $meta = self::metaPL(
+                $torrent->media(), $torrent->format(), $torrent->encoding(),
+                $torrent->hasCue(), $torrent->hasLog(), $torrent->hasLogDb(), $torrent->logScore()
             );
-            if (is_null($deleted)) {
-                return null;
-            }
-            $tgroup = (new \Gazelle\Manager\TGroup())->findById((int)$deleted['GroupID']);
-            if (is_null($tgroup)) {
-                return null;
-            }
-            if ($wantMeta && $tgroup->categoryName() === 'Music') {
-                $meta = self::metaPL(
-                    $deleted['Media'], $deleted['Format'], $deleted['Encoding'],
-                    (bool)$deleted['HasCue'], (bool)$deleted['HasLog'], (bool)$deleted['HasLogDB'], (int)$deleted['LogScore']
-                );
-            }
-            $isDeleted = true;
         }
+
         $year = in_array('noyear', $attr) || in_array('title', $attr) ? '' : $tgroup->year();
         $releaseType = ($tgroup->categoryName() !== 'Music' || in_array('noreleasetype', $attr) || in_array('title', $attr))
             ? '' : $tgroup->releaseTypeName();
@@ -485,7 +572,7 @@ class Edition extends \Gazelle\BaseManager {
         return $url . sprintf(
             '<a title="%s" href="/torrents.php?id=%d&torrentid=%d#torrent%d">%s%s</a>%s',
             $tgroup->hashTag(), $tgroup->id(), $id, $id, display_str($tgroup->name()), $label,
-            $meta . ($isDeleted ? ' <i>deleted</i>' : '')
+            $meta
         );
     }
 
