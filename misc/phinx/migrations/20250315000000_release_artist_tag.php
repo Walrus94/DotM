@@ -3,15 +3,17 @@ use Phinx\Migration\AbstractMigration;
 
 class ReleaseArtistTag extends AbstractMigration {
     public function up(): void {
-        // drop foreign keys on GroupID to allow column rename
+        // drop foreign keys that reference GroupID or release_id to allow column rename
         foreach (['torrents_artists', 'torrents_tags', 'torrents_tags_votes', 'release_artist', 'release_tag'] as $table) {
-            $fks = $this->fetchAll(
-                "SELECT CONSTRAINT_NAME FROM information_schema.KEY_COLUMN_USAGE " .
-                "WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = '" . $table . "' " .
-                "AND COLUMN_NAME = 'GroupID' AND REFERENCED_TABLE_NAME IS NOT NULL"
-            );
-            foreach ($fks as $fk) {
-                $this->execute("ALTER TABLE {$table} DROP FOREIGN KEY {$fk['CONSTRAINT_NAME']}");
+            foreach (['GroupID', 'release_id'] as $col) {
+                $fks = $this->fetchAll(
+                    "SELECT CONSTRAINT_NAME FROM information_schema.KEY_COLUMN_USAGE " .
+                    "WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = '" . $table . "' " .
+                    "AND COLUMN_NAME = '" . $col . "' AND REFERENCED_TABLE_NAME IS NOT NULL"
+                );
+                foreach ($fks as $fk) {
+                    $this->execute("ALTER TABLE {$table} DROP FOREIGN KEY {$fk['CONSTRAINT_NAME']}");
+                }
             }
         }
 
@@ -65,15 +67,17 @@ class ReleaseArtistTag extends AbstractMigration {
         $tg = $this->fetchRow("SHOW TABLE STATUS WHERE Name = 'torrents_group'");
         $canFk = $tg && strtolower($tg['Engine']) === 'innodb';
 
-        // drop foreign keys on release_id before reverting
+        // drop foreign keys on release_id or GroupID before reverting
         foreach (['release_artist', 'release_tag', 'torrents_tags_votes'] as $table) {
-            $fks = $this->fetchAll(
-                "SELECT CONSTRAINT_NAME FROM information_schema.KEY_COLUMN_USAGE " .
-                "WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = '" . $table . "' " .
-                "AND COLUMN_NAME = 'release_id' AND REFERENCED_TABLE_NAME IS NOT NULL"
-            );
-            foreach ($fks as $fk) {
-                $this->execute("ALTER TABLE {$table} DROP FOREIGN KEY {$fk['CONSTRAINT_NAME']}");
+            foreach (['release_id', 'GroupID'] as $col) {
+                $fks = $this->fetchAll(
+                    "SELECT CONSTRAINT_NAME FROM information_schema.KEY_COLUMN_USAGE " .
+                    "WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = '" . $table . "' " .
+                    "AND COLUMN_NAME = '" . $col . "' AND REFERENCED_TABLE_NAME IS NOT NULL"
+                );
+                foreach ($fks as $fk) {
+                    $this->execute("ALTER TABLE {$table} DROP FOREIGN KEY {$fk['CONSTRAINT_NAME']}");
+                }
             }
         }
 
