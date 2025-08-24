@@ -40,25 +40,25 @@ $artistLeaderboard = $bookmark->torrentArtistLeaderboard(new Gazelle\Manager\Art
 $tagLeaderboard    = $bookmark->torrentTagLeaderboard();
 $CollageCovers     = (int)($Viewer->option('CollageCovers') ?? 25);
 
-View::show_header($user->username() . " › Bookmarked torrent groups", ['js' => 'browse,collage']);
+View::show_header($user->username() . " › Bookmarked release groups", ['js' => 'browse,collage']);
 ?>
 <div class="thin">
     <div class="header">
         <h2>
 <?php
 if ($ownProfile) {
-    $feed = "torrents_bookmarks_t_" . $Viewer->announceKey();
+    $feed = "releases_bookmarks_e_" . $Viewer->announceKey();
 ?>
             <a href="feeds.php?feed=<?= $feed
             ?>&amp;passkey=<?= $Viewer->announceKey()
             ?>&amp;auth=<?= $Viewer->rssAuth($feed)
-            ?>&amp;name=<?= urlencode(SITE_NAME . ': Bookmarked Torrents')
+            ?>&amp;name=<?= urlencode(SITE_NAME . ': Bookmarked Releases')
             ?>"><img src="<?=STATIC_SERVER?>/common/symbols/rss.png" alt="RSS feed" /></a>&nbsp;
 <?php } ?>
-            <?= $user->link() ?> › Bookmarked torrent groups
+            <?= $user->link() ?> › Bookmarked release groups
         </h2>
         <div class="linkbox">
-            <a href="bookmarks.php?type=torrents" class="brackets">Torrents</a>
+            <a href="bookmarks.php?type=releases" class="brackets">Releases</a>
             <a href="bookmarks.php?type=artists" class="brackets">Artists</a>
             <a href="bookmarks.php?type=collages" class="brackets">Collages</a>
             <a href="bookmarks.php?type=requests" class="brackets">Requests</a>
@@ -66,7 +66,7 @@ if ($ownProfile) {
 if (count($bookmarkList) > 0) { ?>
             <br /><br />
             <a href="bookmarks.php?action=remove_snatched&amp;auth=<?= $Viewer->auth() ?>" class="brackets" onclick="return confirm('Are you sure you want to remove the bookmarks for all items you\'ve snatched?');">Remove snatched</a>
-            <a href="bookmarks.php?action=edit&amp;type=torrents" class="brackets">Manage torrents</a>
+            <a href="bookmarks.php?action=edit&amp;type=releases" class="brackets">Manage releases</a>
 <?php
 } ?>
         </div>
@@ -74,7 +74,7 @@ if (count($bookmarkList) > 0) { ?>
 <?php
 if (count($bookmarkList) === 0) { ?>
     <div class="box pad" align="center">
-        <h2>You have not bookmarked any torrents.</h2>
+        <h2>You have not bookmarked any releases.</h2>
     </div>
 </div>
 <?php

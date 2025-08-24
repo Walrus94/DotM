@@ -68,11 +68,11 @@ class Bookmark extends \Gazelle\BaseUser {
                     if (is_null($torrent)) {
                         continue;
                     }
-                    $Feed->populate('torrents_bookmarks_t_' . $this->user->announceKey(),
+                    $Feed->populate('releases_bookmarks_e_' . $this->user->announceKey(),
                         $Feed->item(
                             $torrent->name() . ' ' . '[' . $torrent->label($this->user) . ']',
                             \Text::strip_bbcode($tgroup->description()),
-                            "torrents.php?action=download&id={$id}&torrent_pass=[[PASSKEY]]",
+                            "editions.php?action=download&id={$id}&torrent_pass=[[PASSKEY]]",
                             date('r'),
                             $this->user->username(),
                             $torrent->group()->location(),

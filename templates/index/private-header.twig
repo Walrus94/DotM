@@ -18,23 +18,23 @@
 {{ rss_link(viewer, "feed_news", "News") }}
 {{ rss_link(viewer, "feed_blog", "Blog") }}
 {{ rss_link(viewer, "feed_changelog", "Change Log") }}
-{{ rss_link(viewer, "torrents_notify_" ~ viewer.announceKey, "Personal Torrent Notifications") }}
-{{ rss_link(viewer, "torrents_all", "All Torrents") }}
-{{ rss_link(viewer, "torrents_music", "Music Torrents") }}
-{{ rss_link(viewer, "torrents_apps", "Application Torrents") }}
-{{ rss_link(viewer, "torrents_ebooks", "E-Book Torrents") }}
-{{ rss_link(viewer, "torrents_abooks", "Audiobooks Torrents") }}
-{{ rss_link(viewer, "torrents_evids", "E-Learning Video Torrents") }}
-{{ rss_link(viewer, "torrents_comedy", "Comedy Torrents") }}
-{{ rss_link(viewer, "torrents_comics", "Comic Torrents") }}
-{{ rss_link(viewer, "torrents_mp3", "MP3 Torrents") }}
-{{ rss_link(viewer, "torrents_flac", "FLAC Torrents") }}
-{{ rss_link(viewer, "torrents_vinyl", "Vinyl Sourced Torrents") }}
-{{ rss_link(viewer, "torrents_lossless", "Lossless Torrents") }}
-{{ rss_link(viewer, "torrents_lossless24", "24bit Lossless Torrents") }}
+{{ rss_link(viewer, "releases_notify_" ~ viewer.announceKey, "Personal Release Notifications") }}
+{{ rss_link(viewer, "releases_all", "All Releases") }}
+{{ rss_link(viewer, "releases_music", "Music Releases") }}
+{{ rss_link(viewer, "releases_apps", "Application Releases") }}
+{{ rss_link(viewer, "releases_ebooks", "E-Book Releases") }}
+{{ rss_link(viewer, "releases_abooks", "Audiobook Releases") }}
+{{ rss_link(viewer, "releases_evids", "E-Learning Video Releases") }}
+{{ rss_link(viewer, "releases_comedy", "Comedy Releases") }}
+{{ rss_link(viewer, "releases_comics", "Comic Releases") }}
+{{ rss_link(viewer, "releases_mp3", "MP3 Releases") }}
+{{ rss_link(viewer, "releases_flac", "FLAC Releases") }}
+{{ rss_link(viewer, "releases_vinyl", "Vinyl Sourced Releases") }}
+{{ rss_link(viewer, "releases_lossless", "Lossless Releases") }}
+{{ rss_link(viewer, "releases_lossless24", "24bit Lossless Releases") }}
 {% if viewer.permitted('site_torrents_notify') %}
 {%     for id, name in viewer.notifyFilters %}
-{{          rss_link(viewer, "torrents_notify_" ~ id ~ "_" ~ viewer.announceKey, name) }}
+{{          rss_link(viewer, "releases_notify_" ~ id ~ "_" ~ viewer.announceKey, name) }}
 {%     endfor %}
 {% endif -%}
 {{ scss('global.css') }}

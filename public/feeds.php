@@ -41,19 +41,19 @@ if ($user->permitted('site_disable_ip_history')) {
 Gazelle\Base::setRequestContext($context);
 
 switch ($_GET['feed']) {
-    case 'torrents_abooks':
-    case 'torrents_all':
-    case 'torrents_apps':
-    case 'torrents_comedy':
-    case 'torrents_comics':
-    case 'torrents_ebooks':
-    case 'torrents_evids':
-    case 'torrents_flac':
-    case 'torrents_lossless':
-    case 'torrents_lossless24':
-    case 'torrents_mp3':
-    case 'torrents_music':
-    case 'torrents_vinyl':
+    case 'releases_abooks':
+    case 'releases_all':
+    case 'releases_apps':
+    case 'releases_comedy':
+    case 'releases_comics':
+    case 'releases_ebooks':
+    case 'releases_evids':
+    case 'releases_flac':
+    case 'releases_lossless':
+    case 'releases_lossless24':
+    case 'releases_mp3':
+    case 'releases_music':
+    case 'releases_vinyl':
         echo $feed->byFeedName($user, $_GET['feed']);
         break;
     case 'feed_news':
@@ -67,8 +67,8 @@ switch ($_GET['feed']) {
         break;
     default:
         echo match (true) {
-            str_starts_with($_GET['feed'], 'torrents_bookmarks_t_') => $feed->bookmark($user, $_GET['feed']),
-            str_starts_with($_GET['feed'], 'torrents_notify_') =>      $feed->personal($user, $_GET['feed'], $_GET['name'] ?? null),
+            str_starts_with($_GET['feed'], 'releases_bookmarks_e_') => $feed->bookmark($user, $_GET['feed']),
+            str_starts_with($_GET['feed'], 'releases_notify_')      => $feed->personal($user, $_GET['feed'], $_GET['name'] ?? null),
             default => $feed->blocked()
         };
 }
