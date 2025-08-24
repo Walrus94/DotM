@@ -57,4 +57,12 @@ class Release extends BaseObject {
         $list = $this->info()['TagList'] ?? '';
         return $list === '' ? [] : explode(' ', $list);
     }
+
+    public function link(): string {
+        return sprintf('<a href="%s">%s</a>', $this->url(), display_str($this->name()));
+    }
+
+    public function location(): string {
+        return 'torrents.php?id=' . $this->id;
+    }
 }
