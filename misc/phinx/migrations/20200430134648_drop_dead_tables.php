@@ -5,21 +5,28 @@ use Phinx\Db\Adapter\MysqlAdapter;
 
 class DropDeadTables extends AbstractMigration {
     public function up(): void {
-        $this->table('comments_edits_tmp')->drop()->save();
-        $this->table('concerts')->drop()->save();
-        $this->table('currency_conversion_rates')->drop()->save();
-        $this->table('last_sent_email')->drop()->save();
-        $this->table('new_info_hashes')->drop()->save();
-        $this->table('ocelot_query_times')->drop()->save();
-        $this->table('sphinx_hash')->drop()->save();
-        $this->table('staff_ignored_questions')->drop()->save();
-        $this->table('styles_backup')->drop()->save();
-        $this->table('torrents_balance_history')->drop()->save();
-        $this->table('users_points')->drop()->save();
-        $this->table('users_points_requests')->drop()->save();
-        $this->table('users_torrent_history_snatch')->drop()->save();
-        $this->table('users_torrent_history_temp')->drop()->save();
-        $this->table('upload_contest')->drop()->save();
+        $tables = [
+            'comments_edits_tmp',
+            'concerts',
+            'currency_conversion_rates',
+            'last_sent_email',
+            'new_info_hashes',
+            'ocelot_query_times',
+            'sphinx_hash',
+            'staff_ignored_questions',
+            'styles_backup',
+            'torrents_balance_history',
+            'users_points',
+            'users_points_requests',
+            'users_torrent_history_snatch',
+            'users_torrent_history_temp',
+            'upload_contest',
+        ];
+        foreach ($tables as $table) {
+            if ($this->hasTable($table)) {
+                $this->table($table)->drop()->save();
+            }
+        }
     }
 
     public function down(): void {

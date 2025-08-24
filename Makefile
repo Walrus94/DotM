@@ -3,7 +3,7 @@
 NOW := $(shell date +'%Y%m%d-%H%M%S')
 STORAGE_PATH_RIPLOG     := $(shell bin/getconf STORAGE_PATH_RIPLOG)
 STORAGE_PATH_RIPLOGHTML := $(shell bin/getconf STORAGE_PATH_RIPLOGHTML)
-STORAGE_PATH_TORRENT    := $(shell bin/getconf STORAGE_PATH_TORRENT)
+STORAGE_PATH_RELEASE    := $(shell bin/getconf STORAGE_PATH_RELEASE)
 
 .SILENT: help
 .PHONY: help
@@ -16,8 +16,8 @@ help:
 	echo '  config-css           - generate the configuration variables to build the CSS files'
 	echo '  dump-all             - create tarballs of the following:'
 	echo '  dump-riplog          - create a tarball of the rip logs'
-	echo '  dump-riploghtml      - create a tarball of the HTMLified rip logs'
-	echo '  dump-torrent         - create a tarball of the rip logs'
+        echo '  dump-riploghtml      - create a tarball of the HTMLified rip logs'
+        echo '  dump-release         - create a tarball of the release files'
 	echo '  git-submodules       - update the git submodules'
 	echo '  lint-css             - lint (style check) the CSS'
 	echo '  lint-js              - lint (style check) the Javascript'
@@ -52,7 +52,7 @@ composer-live-update:
 	composer install --no-dev --optimize-autoloader --no-progress
 
 .PHONY: dump-all
-dump-all: dump-riplog dump-riploghtml dump-torrent
+dump-all: dump-riplog dump-riploghtml dump-release
 
 .PHONY: dump-riplog
 dump-riplog:
@@ -62,9 +62,9 @@ dump-riplog:
 dump-riploghtml:
 	tar -C "$(STORAGE_PATH_RIPLOGHTML)/.." -jcf riploghtml.$(NOW).tar.bz2 "$$(basename $(STORAGE_PATH_RIPLOGHTML))"
 
-.PHONY: dump-torrent
-dump-torrent:
-	tar -C "$(STORAGE_PATH_TORRENT)/.." -jcf torrent.$(NOW).tar.bz2 "$$(basename $(STORAGE_PATH_TORRENT))"
+.PHONY: dump-release
+dump-release:
+        tar -C "$(STORAGE_PATH_RELEASE)/.." -jcf release.$(NOW).tar.bz2 "$$(basename $(STORAGE_PATH_RELEASE))"
 
 .PHONY: git-submodules
 git-submodules:

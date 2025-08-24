@@ -526,9 +526,9 @@ class Bonus extends \Gazelle\BaseUser {
         $stats = self::$db->rowAssoc("
             SELECT count(*) AS total_torrents,
                 coalesce(sum(t.Size), 0)   AS total_size,
-                coalesce(sum(bonus_accrual(t.Size, xfh.seedtime,                           tls.Seeders)), 0)                           AS hourly_points,
-                coalesce(sum(bonus_accrual(t.Size, xfh.seedtime + (24 * 1),                tls.Seeders)), 0) * (24 * 1)                AS daily_points,
-                coalesce(sum(bonus_accrual(t.Size, xfh.seedtime + (24 * 7),                tls.Seeders)), 0) * (24 * 7)                AS weekly_points,
+                coalesce(sum(bonus_accrual(t.Size, xfh.seedtime,                           tls.Seeders)), 0)       AS hourly_points,
+                coalesce(sum(bonus_accrual(t.Size, xfh.seedtime + (24 * 1),                tls.Seeders)), 0) * (24 * 1)       AS daily_points,
+                coalesce(sum(bonus_accrual(t.Size, xfh.seedtime + (24 * 7),                tls.Seeders)), 0) * (24 * 7)       AS weekly_points,
                 coalesce(sum(bonus_accrual(t.Size, xfh.seedtime + (24 * 365.256363004/12), tls.Seeders)), 0) * (24 * 365.256363004/12) AS monthly_points,
                 coalesce(sum(bonus_accrual(t.Size, xfh.seedtime + (24 * 365.256363004),    tls.Seeders)), 0) * (24 * 365.256363004)    AS yearly_points,
                 if (coalesce(sum(t.Size), 0) = 0,
@@ -548,7 +548,9 @@ class Bonus extends \Gazelle\BaseUser {
             INNER JOIN torrents AS t ON (t.ID = xfu.fid)
             INNER JOIN torrents_leech_stats tls ON (tls.TorrentID = t.ID)
             WHERE xfu.uid = ?
-            ", $this->id(), $this->id()
+            ",
+            $this->id(),
+            $this->id(),
         );
         $stats['total_size'] = (int)$stats['total_size'];
         return $stats;

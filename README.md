@@ -1,6 +1,6 @@
 # Gazelle
 
-Gazelle is a web framework geared towards private BitTorrent trackers.
+Gazelle is a web framework geared towards private release catalogues.
 Although naturally focusing on music, it can be modified for most
 needs. Gazelle is written in PHP, Twig and JavaScript. It traditionally
 uses Mysql and Sphinx, but work is under way to replace those with
@@ -26,7 +26,7 @@ depedencies through `pip`:
 We provide installation notes [here](docs/INSTALL.txt). These notes are provided
 as a best effort, and are not guaranteed to be fully up-to-date or accurate.
 
-Due to the nature of torrenting, we HIGHLY recommend not trying to run this in
+Due to the nature of release sharing, we HIGHLY recommend not trying to run this in
 production if you are not prepared or knowledgeable in setting up servers,
 proxies, and tuning TCP configs to obtain proper performance and privacy.
 

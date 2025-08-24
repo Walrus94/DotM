@@ -11,13 +11,10 @@ define('SOURCE', 'GZL');
 
 define('TMPDIR', '/tmp');
 
-define('STORAGE_PATH_TORRENT',    '/var/lib/gazelle/torrent');
+define('STORAGE_PATH_RELEASE',    '/var/lib/gazelle/release');
 define('STORAGE_PATH_RIPLOG',     '/var/lib/gazelle/riplog');
 define('STORAGE_PATH_RIPLOGHTML', '/var/lib/gazelle/riploghtml');
 
-define('TRACKER_HOST', '10.0.0.2');
-define('TRACKER_NAME', 'tracker.example.com');
-define('TRACKER_PORT', 12345);
 
 define('SQLHOST', '10.0.0.1');
 define('IRC_HOSTNAME', 'irc.example.com');
@@ -38,8 +35,6 @@ define('SPHINXQL_HOST', SPHINX_HOST);
 // If sphinx is running on the same host as the PHP interpreter
 define('SPHINXQL_SOCK', '/var/run/sphinx.sock');
 
-define('TRACKER_SECRET',    '0123456789abcdef0123456789abcdef01');
-define('TRACKER_REPORTKEY', '0123456789abcdef0123456789abcdef01');
 
 define('ENCKEY',       'changeme');
 define('AUTHKEY',      'changeme');

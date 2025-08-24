@@ -4,7 +4,9 @@ use Phinx\Migration\AbstractMigration;
 
 class NukeSiteHistory extends AbstractMigration {
     public function up(): void {
-        $this->table('site_history')->drop()->update();
+        if ($this->hasTable('site_history')) {
+            $this->table('site_history')->drop()->update();
+        }
     }
 
     public function down(): void {

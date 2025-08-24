@@ -5,10 +5,9 @@ The most up-to-date notes on a basic install setup is found through our
 docker-compose.yml setup we use for development. Please reference it before
 asking questions.
 
-Note: If overwhelmed by the these instructions, we urge you to NOT run a tracker
-in production. Doing such requires more additional steps not covered here
-(setting up proxies, tunneling, LUKS encryption, TCP tuning, etc.) that messing
-up would put the privacy / security of both yourself and your users at risk.
+Note: Deploying in production requires additional steps not covered here
+(setting up proxies, tunneling, LUKS encryption, TCP tuning, etc.) and mistakes
+could put the privacy / security of both yourself and your users at risk.
 
 The docker installation does all this for you, but in production you need
 to do this by hand.
