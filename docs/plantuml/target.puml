@@ -1,5 +1,4 @@
 @startuml
-' Core catalog tables
 entity "release" as Release {
   *ID : int
   Name : string
@@ -38,16 +37,34 @@ entity "release_platform" as ReleasePlatform {
   updated : datetime
 }
 
-' Artist crediting
-entity "artists_group" as Artist { *ArtistID : int, Name : string }
-entity "artists_alias" as ArtistAlias { *AliasID : int, ArtistID : int, Name : string }
-entity "release_artist" as ReleaseArtist { *release_id : int, *AliasID : int, role : enum, created : datetime }
+entity "artists_group" as Artist {
+  *ArtistID : int
+  Name : string
+}
 
-' Tagging
-entity "tags" as Tag { *ID : int, Name : string }
-entity "release_tag" as ReleaseTag { *TagID : int, *release_id : int }
+entity "artists_alias" as ArtistAlias {
+  *AliasID : int
+  ArtistID : int
+  Name : string
+}
 
-' Relationships
+entity "release_artist" as ReleaseArtist {
+  *release_id : int
+  *AliasID : int
+  role : enum
+  created : datetime
+}
+
+entity "tags" as Tag {
+  *ID : int
+  Name : string
+}
+
+entity "release_tag" as ReleaseTag {
+  *TagID : int
+  *release_id : int
+}
+
 Release ||--o{ Edition : has
 Release ||--o{ ReleasePlatform : available_on
 Release ||--o{ ReleaseArtist : credits
