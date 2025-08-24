@@ -1,7 +1,7 @@
 <?php
 /** @phpstan-var \Twig\Environment $Twig */
 
-$statsTor = new Gazelle\Stats\Torrent();
+$statsTor = new Gazelle\Stats\Release();
 $flow = $statsTor->flow();
 
 echo $Twig->render('stats/torrent.twig', [

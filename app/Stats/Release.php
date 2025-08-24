@@ -2,19 +2,19 @@
 
 namespace Gazelle\Stats;
 
-class Torrent extends \Gazelle\Base {
+class Release extends \Gazelle\Base {
     protected array $info;
 
-    final public const CACHE_KEY      = 'stat_global_torrent';
+    final public const CACHE_KEY      = 'stat_global_release';
     final public const PEER_KEY       = 'stat_global_peer';
-    final public const TORRENT_FLOW   = 'stat_t_flow';
-    final public const CATEGORY_TOTAL = 'stat_tcat';
+    final public const RELEASE_FLOW   = 'stat_r_flow';
+    final public const CATEGORY_TOTAL = 'stat_rcat';
 
     public function flush(): static {
         self::$cache->deleteMulti([
             self::CACHE_KEY,
             self::PEER_KEY,
-            self::TORRENT_FLOW,
+            self::RELEASE_FLOW,
             self::CATEGORY_TOTAL,
         ]);
         unset($this->info);
@@ -26,7 +26,7 @@ class Torrent extends \Gazelle\Base {
             $info = self::$cache->get_value(self::CACHE_KEY);
             if ($info === false) {
                 if (!self::$db->scalar(
-                    "SELECT 1 FROM information_schema.tables WHERE table_schema = ? AND table_name = 'torrents'",
+                    "SELECT 1 FROM information_schema.tables WHERE table_schema = ? AND table_name = 'edition'",
                     SQLDB
                 )) {
                     $info = [
@@ -54,14 +54,14 @@ class Torrent extends \Gazelle\Base {
                         SELECT count(*),
                             coalesce(sum(Size), 0),
                             coalesce(sum(FileCount), 0)
-                        FROM torrents
+                        FROM edition
                     ");
 
                     [$info['day']['count'], $info['day']['size'], $info['day']['files']] = self::$db->row("
                         SELECT count(*),
                             coalesce(sum(Size), 0),
                             coalesce(sum(FileCount), 0)
-                        FROM torrents
+                        FROM edition
                         WHERE created > now() - INTERVAL 1 DAY
                     ");
 
@@ -69,7 +69,7 @@ class Torrent extends \Gazelle\Base {
                         SELECT count(*),
                             coalesce(sum(Size), 0),
                             coalesce(sum(FileCount), 0)
-                        FROM torrents
+                        FROM edition
                         WHERE created > now() - INTERVAL 7 DAY
                     ");
 
@@ -77,7 +77,7 @@ class Torrent extends \Gazelle\Base {
                         SELECT count(*),
                             coalesce(sum(Size), 0),
                             coalesce(sum(FileCount), 0)
-                        FROM torrents
+                        FROM edition
                         WHERE created > now() - INTERVAL 30 DAY
                     ");
 
@@ -85,20 +85,20 @@ class Torrent extends \Gazelle\Base {
                         SELECT count(*),
                             coalesce(sum(Size), 0),
                             coalesce(sum(FileCount), 0)
-                        FROM torrents
+                        FROM edition
                         WHERE created > now() - INTERVAL 120 DAY
                     ');
 
                     self::$db->prepared_query("
                         SELECT Format, Encoding, count(*) as n
-                        FROM torrents
+                        FROM edition
                         GROUP BY Format, Encoding WITH ROLLUP
                     ");
                     $info['format'] = self::$db->to_array(false, MYSQLI_NUM, false);
 
                     self::$db->prepared_query("
                         SELECT Format, Encoding, count(*) as n
-                        FROM torrents
+                        FROM edition
                         WHERE created > now() - INTERVAL 1 MONTH
                         GROUP BY Format, Encoding WITH ROLLUP
                     ");
@@ -106,17 +106,17 @@ class Torrent extends \Gazelle\Base {
 
                     self::$db->prepared_query("
                         SELECT t.Media, count(*) as n
-                        FROM torrents t
+                        FROM edition t
                         GROUP BY t.Media WITH ROLLUP
                     ");
                     $info['media'] = self::$db->to_array(false, MYSQLI_NUM, false);
 
                     self::$db->prepared_query("
-                        SELECT tg.CategoryID, count(*) AS n
-                        FROM torrents_group tg
+                        SELECT r.CategoryID, count(*) AS n
+                        FROM release r
                         WHERE EXISTS (
-                            SELECT 1 FROM torrents t WHERE t.GroupID = tg.ID)
-                        GROUP BY tg.CategoryID
+                            SELECT 1 FROM edition t WHERE t.release_id = r.ID)
+                        GROUP BY r.CategoryID
                         ORDER BY 2 DESC
                     ");
                     $info['category'] = self::$db->to_array(false, MYSQLI_NUM, false);
@@ -172,7 +172,7 @@ class Torrent extends \Gazelle\Base {
      * Yearly torrent flows (added, removed and net per month)
      */
     public function flow(): array {
-        $flow = self::$cache->get_value(self::TORRENT_FLOW);
+        $flow = self::$cache->get_value(self::RELEASE_FLOW);
         if ($flow === false) {
             self::$db->prepared_query("
                 WITH RECURSIVE dates AS (
@@ -193,11 +193,11 @@ class Torrent extends \Gazelle\Base {
                     GROUP BY eom
                 )
                 SELECT date_format(dates.eom, '%Y-%m') AS Month,
-                    count(DISTINCT t.ID)               AS t_net,
+                    count(DISTINCT t.edition_id)       AS t_net,
                     coalesce(delta.t_add, 0)           AS t_add,
                     coalesce(delta.t_del, 0)           AS t_del
                 FROM dates
-                LEFT JOIN torrents t ON (last_day(t.created) = dates.eom)
+                LEFT JOIN edition t ON (last_day(t.created) = dates.eom)
                 LEFT JOIN delta USING (eom)
                 GROUP BY eom
                 ORDER BY eom
@@ -208,7 +208,7 @@ class Torrent extends \Gazelle\Base {
                 $f['t_del'] = (int)$f['t_del'];
             }
             unset($f);
-            self::$cache->cache_value(self::TORRENT_FLOW, $flow, mktime(0, 0, 0, date('n') + 1, 2)); //Tested: fine for dec -> jan
+            self::$cache->cache_value(self::RELEASE_FLOW, $flow, mktime(0, 0, 0, date('n') + 1, 2)); //Tested: fine for dec -> jan
         }
         return $flow;
     }
@@ -220,11 +220,11 @@ class Torrent extends \Gazelle\Base {
         $list = self::$cache->get_value(self::CATEGORY_TOTAL);
         if ($list === false) {
             self::$db->prepared_query("
-                SELECT tg.CategoryID,
+                SELECT r.CategoryID,
                     count(*) as total
-                FROM torrents AS t
-                INNER JOIN torrents_group AS tg ON (tg.ID = t.GroupID)
-                GROUP BY tg.CategoryID
+                FROM edition AS t
+                INNER JOIN release AS r ON (r.ID = t.release_id)
+                GROUP BY r.CategoryID
                 ORDER BY 2 DESC
             ");
             $list = self::$db->to_pair('CategoryID', 'total', false);
@@ -251,7 +251,7 @@ class Torrent extends \Gazelle\Base {
         $total = self::$cache->get_value('stats_album_count');
         if ($total === false) {
             $total = (int)self::$db->scalar("
-                SELECT count(*) FROM torrents_group WHERE CategoryID = 1
+                SELECT count(*) FROM release WHERE CategoryID = 1
             ");
             self::$cache->cache_value('stats_album_count', $total, 7200 + random_int(0, 300));
         }
@@ -280,7 +280,7 @@ class Torrent extends \Gazelle\Base {
         if ($total === false) {
             $total = (int)self::$db->scalar("
                 SELECT count(*)
-                FROM torrents
+                FROM edition
                 WHERE Format = 'FLAC'
                     AND (
                         (Media = 'CD' AND LogChecksum = '1' AND HasCue = '1' AND HasLogDB = '1' AND LogScore = 100)

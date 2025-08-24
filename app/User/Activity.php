@@ -187,7 +187,7 @@ class Activity extends \Gazelle\BaseUser {
         return $this;
     }
 
-    public function setStats(int $threshold, \Gazelle\Stats\Torrent $stats): static {
+    public function setStats(int $threshold, \Gazelle\Stats\Release $stats): static {
         if ($this->user->permitted('admin_site_debug')) {
             $total = array_reduce(
                 array_map(
