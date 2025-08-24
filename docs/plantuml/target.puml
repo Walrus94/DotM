@@ -1,0 +1,58 @@
+@startuml
+' Core catalog tables
+entity "release" as Release {
+  *ID : int
+  Name : string
+  Year : smallint
+  catalog_number : string
+  record_label : string
+  release_type : enum
+  TagList : text
+  WikiBody : text
+  WikiImage : text
+  created : datetime
+  updated : datetime
+  showcase : bool
+}
+
+entity "edition" as Edition {
+  *edition_id : int
+  release_id : int
+  format : string
+  encoding : string
+  edition_type : enum        ' original / remaster
+  remaster_year : smallint
+  file_list : text
+  size : bigint
+  description : text
+  created : datetime
+  updated : datetime
+}
+
+entity "release_platform" as ReleasePlatform {
+  *ID : int
+  ReleaseID : int
+  Platform : enum            ' Spotify / Apple Music / Bandcamp / SoundCloud / YouTube
+  Url : string
+  created : datetime
+  updated : datetime
+}
+
+' Artist crediting
+entity "artists_group" as Artist { *ArtistID : int, Name : string }
+entity "artists_alias" as ArtistAlias { *AliasID : int, ArtistID : int, Name : string }
+entity "release_artist" as ReleaseArtist { *release_id : int, *AliasID : int, role : enum, created : datetime }
+
+' Tagging
+entity "tags" as Tag { *ID : int, Name : string }
+entity "release_tag" as ReleaseTag { *TagID : int, *release_id : int }
+
+' Relationships
+Release ||--o{ Edition : has
+Release ||--o{ ReleasePlatform : available_on
+Release ||--o{ ReleaseArtist : credits
+Release ||--o{ ReleaseTag : tagged_with
+ReleaseArtist }o--|| ArtistAlias : uses_alias
+ArtistAlias }o--|| Artist : alias_of
+ReleaseTag }o--|| Tag : tag
+@enduml
