@@ -224,17 +224,17 @@ class Tag extends \Gazelle\BaseManager {
         $affectedRequests = self::$db->collect(0, false);
 
         self::$db->prepared_query("
-            SELECT DISTINCT GroupID FROM torrents_tags WHERE TagID = ?
+            SELECT DISTINCT release_id FROM release_tag WHERE TagID = ?
             ", $old->id()
         );
         $affectedTGroups = self::$db->collect(0, false);
 
         // If the torrent has the old tag, but not the replacement, add it,
         self::$db->prepared_query("
-            INSERT INTO torrents_tags (TagID, UserID, GroupID, PositiveVotes, NegativeVotes)
-                SELECT ?, ?, curr.GroupID, curr.PositiveVotes, curr.NegativeVotes
-                FROM torrents_tags curr
-                LEFT JOIN torrents_tags merge ON (merge.GroupID = curr.GroupID AND merge.TagID = ?)
+            INSERT INTO release_tag (TagID, UserID, release_id, PositiveVotes, NegativeVotes)
+                SELECT ?, ?, curr.release_id, curr.PositiveVotes, curr.NegativeVotes
+                FROM release_tag curr
+                LEFT JOIN release_tag merge ON (merge.release_id = curr.release_id AND merge.TagID = ?)
                 WHERE curr.TagID = ? AND merge.TagID IS NULL
             ", $new->id(), $user->id(), $new->id(), $old->id()
         );
@@ -268,7 +268,7 @@ class Tag extends \Gazelle\BaseManager {
                 Uses = (
                     (SELECT count(*) FROM artists_tags WHERE TagID = ?)
                     + (SELECT count(*) FROM requests_tags WHERE TagID = ?)
-                    + (SELECT count(*) FROM torrents_tags WHERE TagID = ?)
+                    + (SELECT count(*) FROM release_tag WHERE TagID = ?)
                 )
             WHERE ID = ?
             ", $new->id(), $new->id(), $new->id(), $new->id()
@@ -316,7 +316,7 @@ class Tag extends \Gazelle\BaseManager {
             FROM tags t
             LEFT JOIN artists_tags  at ON (at.TagID = t.ID)
             LEFT JOIN requests_tags rt ON (rt.TagID = t.ID)
-            LEFT JOIN torrents_tags tt ON (tt.TagID = t.ID)
+            LEFT JOIN release_tag tt ON (tt.TagID = t.ID)
             WHERE t.ID = ?
             ", $tag->id()
         );
@@ -336,7 +336,7 @@ class Tag extends \Gazelle\BaseManager {
             FROM tags t
             LEFT JOIN artists_tags  at ON (at.TagID = t.ID)
             LEFT JOIN requests_tags rt ON (rt.TagID = t.ID)
-            LEFT JOIN torrents_tags tt ON (tt.TagID = t.ID)
+            LEFT JOIN release_tag tt ON (tt.TagID = t.ID)
             WHERE t.ID = ?
             ", $tag->id()
         );
@@ -518,7 +518,7 @@ class Tag extends \Gazelle\BaseManager {
             FROM xbt_snatched AS s
             INNER JOIN torrents AS t ON (t.ID = s.fid)
             INNER JOIN torrents_group AS g ON (t.GroupID = g.ID)
-            INNER JOIN torrents_tags AS tt ON (tt.GroupID = g.ID)
+            INNER JOIN release_tag AS tt ON (tt.release_id = g.ID)
             INNER JOIN tags ON (tags.ID = tt.TagID)
             WHERE g.CategoryID = 1
                 AND tags.Uses > 10
@@ -605,7 +605,7 @@ class Tag extends \Gazelle\BaseManager {
                     sum(tt.PositiveVotes - 1) AS posVotes,
                     sum(tt.NegativeVotes - 1) AS negVotes
                 FROM tags AS t
-                INNER JOIN torrents_tags AS tt ON (tt.TagID = t.ID)
+                INNER JOIN release_tag AS tt ON (tt.TagID = t.ID)
                 GROUP BY tt.TagID
                 ORDER BY Uses DESC
                 LIMIT ?
@@ -641,7 +641,7 @@ class Tag extends \Gazelle\BaseManager {
                     sum(tt.PositiveVotes - 1) AS posVotes,
                     sum(tt.NegativeVotes - 1) AS negVotes
                 FROM tags AS t
-                INNER JOIN torrents_tags AS tt ON (tt.TagID = t.ID)
+                INNER JOIN release_tag AS tt ON (tt.TagID = t.ID)
                 GROUP BY tt.TagID
                 ORDER BY PosVotes DESC
                 LIMIT ?

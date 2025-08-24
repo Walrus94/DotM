@@ -241,18 +241,18 @@ class Vote extends \Gazelle\BaseUser {
                     foreach ($this->topConfig['tagList'] as $tag) {
                         $this->topWhere[] = "EXISTS (
                             SELECT 1
-                            FROM torrents_tags tt
+                            FROM release_tag tt
                             INNER JOIN tags t ON (t.ID = tt.TagID)
-                            WHERE tt.GroupID = tg.ID
+                            WHERE tt.release_id = tg.ID
                                 AND t.Name = ?
                         )";
                     }
                 } else {
                     $this->topWhere[] = "EXISTS (
                         SELECT 1
-                        FROM torrents_tags tt
+                        FROM release_tag tt
                         INNER JOIN tags t ON (t.ID = tt.TagID)
-                        WHERE tt.GroupID = tg.ID
+                        WHERE tt.release_id = tg.ID
                             AND t.Name IN (" . placeholders($this->topConfig['tagList']) . ")
                     )";
                 }

@@ -405,7 +405,7 @@ class Users extends \Gazelle\Base {
         self::$db->prepared_query("
             INSERT INTO user_summary_new (user_id, artist_added_total)
                 SELECT ta.UserID, count(*)
-                FROM torrents_artists ta
+                FROM release_artist ta
                 INNER JOIN users_main um ON (um.ID = ta.UserID)
                 GROUP BY ta.UserID
             ON DUPLICATE KEY UPDATE

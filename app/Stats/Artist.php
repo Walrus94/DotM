@@ -31,7 +31,7 @@ class Artist extends \Gazelle\BaseObject {
                     count(DISTINCT tg.ID)          AS tgroup_total
                 FROM torrents_artists           ta
                 INNER JOIN artists_alias        aa  ON (ta.AliasID = aa.AliasID)
-                INNER JOIN torrents_group       tg  ON (tg.ID = ta.GroupID)
+                INNER JOIN torrents_group       tg  ON (tg.ID = ta.release_id)
                 INNER JOIN torrents             t   ON (t.GroupID = tg.ID)
                 WHERE aa.ArtistID = ?
                 ", $this->id()

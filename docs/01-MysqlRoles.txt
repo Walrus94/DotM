@@ -50,7 +50,7 @@ GRANT SELECT ON `gazelle`.`requests_tags` TO 'spx'@'localhost';
 GRANT SELECT ON `gazelle`.`requests_votes` TO 'spx'@'localhost';
 GRANT SELECT ON `gazelle`.`requests` TO 'spx'@'localhost';
 GRANT SELECT ON `gazelle`.`tags` TO 'spx'@'localhost';
-GRANT SELECT ON `gazelle`.`torrents_artists` TO 'spx'@'localhost';
+GRANT SELECT ON `gazelle`.`release_artist` TO 'spx'@'localhost';
 GRANT SELECT ON `gazelle`.`torrents_group` TO 'spx'@'localhost';
 GRANT SELECT ON `gazelle`.`torrents` TO 'spx'@'localhost';
 

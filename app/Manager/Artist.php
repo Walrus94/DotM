@@ -8,7 +8,7 @@ class Artist extends \Gazelle\BaseManager {
 
     protected array $role;
     protected int $groupId; // torrent or request context
-    protected int $userId; // who is manipulating the torrents_artists or requests_artists tables
+    protected int $userId; // who is manipulating the release_artist or requests_artists tables
 
     public function __construct() {
         $role = self::$cache->get_value(self::ROLE_KEY);
@@ -175,7 +175,7 @@ class Artist extends \Gazelle\BaseManager {
 
     public function tgroupList(int $aliasId, \Gazelle\Manager\TGroup $tgMan): array {
         self::$db->prepared_query("
-            SELECT GroupID FROM torrents_artists WHERE AliasID = ?
+            SELECT release_id FROM release_artist WHERE AliasID = ?
             ", $aliasId
         );
         return array_filter(

@@ -25,84 +25,102 @@ class Torrent extends \Gazelle\Base {
         if (!isset($this->info)) {
             $info = self::$cache->get_value(self::CACHE_KEY);
             if ($info === false) {
-                $info = [
-                    'day'       => [],
-                    'week'      => [],
-                    'month'     => [],
-                    'quarter'   => [],
-                ];
+                if (!self::$db->scalar(
+                    "SELECT 1 FROM information_schema.tables WHERE table_schema = ? AND table_name = 'torrents'",
+                    SQLDB
+                )) {
+                    $info = [
+                        'torrent-total' => 0,
+                        'total-size'    => 0,
+                        'total-files'   => 0,
+                        'day'       => ['count' => 0, 'size' => 0, 'files' => 0],
+                        'week'      => ['count' => 0, 'size' => 0, 'files' => 0],
+                        'month'     => ['count' => 0, 'size' => 0, 'files' => 0],
+                        'quarter'   => ['count' => 0, 'size' => 0, 'files' => 0],
+                        'format'       => [],
+                        'format-month' => [],
+                        'media'        => [],
+                        'category'     => [],
+                    ];
+                } else {
+                    $info = [
+                        'day'       => [],
+                        'week'      => [],
+                        'month'     => [],
+                        'quarter'   => [],
+                    ];
 
-                [$info['torrent-total'], $info['total-size'], $info['total-files']] = self::$db->row("
-                    SELECT count(*),
-                        coalesce(sum(Size), 0),
-                        coalesce(sum(FileCount), 0)
-                    FROM torrents
-                ");
+                    [$info['torrent-total'], $info['total-size'], $info['total-files']] = self::$db->row("
+                        SELECT count(*),
+                            coalesce(sum(Size), 0),
+                            coalesce(sum(FileCount), 0)
+                        FROM torrents
+                    ");
 
-                [$info['day']['count'], $info['day']['size'], $info['day']['files']] = self::$db->row("
-                    SELECT count(*),
-                        coalesce(sum(Size), 0),
-                        coalesce(sum(FileCount), 0)
-                    FROM torrents
-                    WHERE created > now() - INTERVAL 1 DAY
-                ");
+                    [$info['day']['count'], $info['day']['size'], $info['day']['files']] = self::$db->row("
+                        SELECT count(*),
+                            coalesce(sum(Size), 0),
+                            coalesce(sum(FileCount), 0)
+                        FROM torrents
+                        WHERE created > now() - INTERVAL 1 DAY
+                    ");
 
-                [$info['week']['count'], $info['week']['size'], $info['week']['files']] = self::$db->row("
-                    SELECT count(*),
-                        coalesce(sum(Size), 0),
-                        coalesce(sum(FileCount), 0)
-                    FROM torrents
-                    WHERE created > now() - INTERVAL 7 DAY
-                ");
+                    [$info['week']['count'], $info['week']['size'], $info['week']['files']] = self::$db->row("
+                        SELECT count(*),
+                            coalesce(sum(Size), 0),
+                            coalesce(sum(FileCount), 0)
+                        FROM torrents
+                        WHERE created > now() - INTERVAL 7 DAY
+                    ");
 
-                [$info['month']['count'], $info['month']['size'], $info['month']['files']] = self::$db->row("
-                    SELECT count(*),
-                        coalesce(sum(Size), 0),
-                        coalesce(sum(FileCount), 0)
-                    FROM torrents
-                    WHERE created > now() - INTERVAL 30 DAY
-                ");
+                    [$info['month']['count'], $info['month']['size'], $info['month']['files']] = self::$db->row("
+                        SELECT count(*),
+                            coalesce(sum(Size), 0),
+                            coalesce(sum(FileCount), 0)
+                        FROM torrents
+                        WHERE created > now() - INTERVAL 30 DAY
+                    ");
 
-                [$info['quarter']['count'], $info['quarter']['size'], $info['quarter']['files']] = self::$db->row('
-                    SELECT count(*),
-                        coalesce(sum(Size), 0),
-                        coalesce(sum(FileCount), 0)
-                    FROM torrents
-                    WHERE created > now() - INTERVAL 120 DAY
-                ');
+                    [$info['quarter']['count'], $info['quarter']['size'], $info['quarter']['files']] = self::$db->row('
+                        SELECT count(*),
+                            coalesce(sum(Size), 0),
+                            coalesce(sum(FileCount), 0)
+                        FROM torrents
+                        WHERE created > now() - INTERVAL 120 DAY
+                    ');
 
-                self::$db->prepared_query("
-                    SELECT Format, Encoding, count(*) as n
-                    FROM torrents
-                    GROUP BY Format, Encoding WITH ROLLUP
-                ");
-                $info['format'] = self::$db->to_array(false, MYSQLI_NUM, false);
+                    self::$db->prepared_query("
+                        SELECT Format, Encoding, count(*) as n
+                        FROM torrents
+                        GROUP BY Format, Encoding WITH ROLLUP
+                    ");
+                    $info['format'] = self::$db->to_array(false, MYSQLI_NUM, false);
 
-                self::$db->prepared_query("
-                    SELECT Format, Encoding, count(*) as n
-                    FROM torrents
-                    WHERE created > now() - INTERVAL 1 MONTH
-                    GROUP BY Format, Encoding WITH ROLLUP
-                ");
-                $info['format-month'] = self::$db->to_array(false, MYSQLI_NUM, false);
+                    self::$db->prepared_query("
+                        SELECT Format, Encoding, count(*) as n
+                        FROM torrents
+                        WHERE created > now() - INTERVAL 1 MONTH
+                        GROUP BY Format, Encoding WITH ROLLUP
+                    ");
+                    $info['format-month'] = self::$db->to_array(false, MYSQLI_NUM, false);
 
-                self::$db->prepared_query("
-                    SELECT t.Media, count(*) as n
-                    FROM torrents t
-                    GROUP BY t.Media WITH ROLLUP
-                ");
-                $info['media'] = self::$db->to_array(false, MYSQLI_NUM, false);
+                    self::$db->prepared_query("
+                        SELECT t.Media, count(*) as n
+                        FROM torrents t
+                        GROUP BY t.Media WITH ROLLUP
+                    ");
+                    $info['media'] = self::$db->to_array(false, MYSQLI_NUM, false);
 
-                self::$db->prepared_query("
-                    SELECT tg.CategoryID, count(*) AS n
-                    FROM torrents_group tg
-                    WHERE EXISTS (
-                        SELECT 1 FROM torrents t WHERE t.GroupID = tg.ID)
-                    GROUP BY tg.CategoryID
-                    ORDER BY 2 DESC
-                ");
-                $info['category'] = self::$db->to_array(false, MYSQLI_NUM, false);
-
+                    self::$db->prepared_query("
+                        SELECT tg.CategoryID, count(*) AS n
+                        FROM torrents_group tg
+                        WHERE EXISTS (
+                            SELECT 1 FROM torrents t WHERE t.GroupID = tg.ID)
+                        GROUP BY tg.CategoryID
+                        ORDER BY 2 DESC
+                    ");
+                    $info['category'] = self::$db->to_array(false, MYSQLI_NUM, false);
+                }
                 self::$cache->cache_value(self::CACHE_KEY, $info, 7200);
             }
             $this->info = $info;
