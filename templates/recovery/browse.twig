@@ -23,22 +23,14 @@
 <th>Username</th>
 <th>ID</th>
 <th>Email</th>
-<th>Uploaded</th>
-<th>Downloaded</th>
 <th>Enabled</th>
-<th>Torrents</th>
-<th>Announce</th>
 </tr>
         {% endif %}
 <tr>
 <td>{{ r.Username }}</td>
 <td>{{ r.UserID }}</td>
 <td>{{ r.Email }}</td>
-<td title="{{ r.Uploaded }}">{{ r.Uploaded|octet_size }}</td>
-<td title="{{ r.Downloaded }}">{{ r.Downloaded|octet_size }}</td>
 <td>{{ r.Enabled }}</td>
-<td>{{ r.nr_torrents }}</td>
-<td>{{ r.torrent_pass }}</td>
 </tr>
         {% if loop.last %}
 </table>
@@ -63,10 +55,6 @@
             <tr>
                 <th>Email</th>
                 <td><input type="text" name="email" width="20" /></td>
-            </tr>
-            <tr>
-                <th>Announce</th>
-                <td><input type="text" name="announce" width="20" /></td>
             </tr>
             <tr>
                 <td></td>
