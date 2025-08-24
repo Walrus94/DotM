@@ -6,7 +6,13 @@ use Phinx\Migration\AbstractMigration;
 
 final class ReleasePlatform extends AbstractMigration {
     public function up(): void {
-        $this->table('release_platform', ['id' => false, 'primary_key' => 'ID'])
+        $this->table('release_platform', [
+                'id'         => false,
+                'primary_key'=> 'ID',
+                'engine'     => 'InnoDB',
+                'encoding'   => 'utf8mb4',
+                'collation'  => 'utf8mb4_unicode_ci',
+            ])
             ->addColumn('ID', 'integer', ['limit' => 10, 'identity' => true])
             ->addColumn('ReleaseID', 'integer', ['limit' => 10])
             ->addColumn('Platform', 'enum', ['values' => [
