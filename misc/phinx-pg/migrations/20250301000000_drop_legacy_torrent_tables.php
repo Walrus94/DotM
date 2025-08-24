@@ -12,6 +12,7 @@ final class DropLegacyTorrentTables extends AbstractMigration {
             'deleted_torrents_leech_stats',
             'deleted_torrents',
             'torrent_has_attr',
+            'torrent_group_has_attr',
             'torrent_attr',
             'torrent_group_attr',
             'torrent_report_configuration_log',
