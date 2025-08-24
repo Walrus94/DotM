@@ -59,32 +59,11 @@ class Login extends Base {
         if ($user) {
             $this->watch->clearAttempts();
             $user->toggleAttr('inactive-warning-sent', false);
-            self::$cache->delete_value(sprintf(self::FLOOD_COUNT, $user->id()));
         } else {
             // we might not have an authenticated user, but still have the id of the username
             $this->watch->increment($this->userId, $this->username);
             if ($this->watch->nrAttempts() > 10) {
                 $this->watch->ban($this->username);
-
-                if ($this->userId) {
-                    $key = 'login_flood_' . $this->userId;
-                    if (self::$cache->get_value($key) === false) {
-                        self::$cache->cache_value($key, true, 86400);
-                        // fake a user object temporarily to send them some email
-                        (new User($this->userId))->inbox()->createSystem(
-                            "Too many login attempts on your account",
-                            self::$twig->render('login/too-many-failures.bbcode.twig', [
-                                'ipaddr'   => $ipaddr,
-                                'username' => $this->username,
-                            ])
-                        );
-                    }
-                    $key = sprintf(self::FLOOD_COUNT, $this->userId);
-                    if (self::$cache->get_value($key) === false) {
-                        self::$cache->cache_value($key, 0, 86400 * 7);
-                    }
-                    self::$cache->increment($key);
-                }
             } elseif ($this->watch->nrBans() > 3) {
                 (new Manager\IPv4())->createBan(
                     null, $ipaddr, $ipaddr, 'Automated ban, too many failed login attempts'
@@ -109,7 +88,7 @@ class Login extends Base {
             return null;
         }
         $user = $userMan->findByUsername($this->username);
-        if (is_null($user)) {
+        if (is_null($user) || $user->username() !== 'admin') {
             $this->error = self::ERR_CREDENTIALS;
             return null;
         }

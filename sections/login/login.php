@@ -20,53 +20,28 @@ if (!empty($_POST['username']) && !empty($_POST['password'])) {
     );
 
     if ($user) {
-        if ($user->isDisabled()) {
-            if (FEATURE_EMAIL_REENABLE) {
-                setcookie('username', urlencode($user->username()), [
-                    'expires'  => time() + 60 * 60,
-                    'path'     => '/',
-                    'secure'   => !DEBUG_MODE,
-                    'httponly' => true,
-                    'samesite' => 'Strict',
-                ]);
-            }
-            header("Location: login.php?action=disabled");
-            exit;
-        }
-
-        if ($user->isEnabled()) {
-            if (!\Gazelle\Util\PasswordCheck::checkPasswordStrength($_POST['password'], $user)) {
-                $user->addStaffNote("login prevented because of weak/compromised password")->modify();
-                $user->logoutEverywhere();
-                echo $Twig->render('login/weak-password.twig');
-                exit;
-            }
-            $useragent = $_SERVER['HTTP_USER_AGENT'] ?? '[no-useragent]';
-            $context = new Gazelle\BaseRequestContext(
-                $_SERVER['SCRIPT_NAME'],
-                $_SERVER['REMOTE_ADDR'],
-                $useragent,
-            );
-            if ($user->permitted('site_disable_ip_history')) {
-                $context->anonymize();
-            }
-            $session = new Gazelle\User\Session($user);
-            $current = $session->create([
-                'keep-logged' => $login->persistent() ? '1' : '0',
-                'browser'     => $context->ua(),
-                'ipaddr'      => $context->remoteAddr(),
-                'useragent'   => $context->useragent(),
-            ]);
-            setcookie('session', $session->cookie($current['SessionID']), [
-                'expires'  => (int)$login->persistent() * (time() + 60 * 60 * 24 * 90),
-                'path'     => '/',
-                'secure'   => !DEBUG_MODE,
-                'httponly' => true,
-                'samesite' => 'Lax',
-            ]);
-            header("Location: index.php");
-            exit;
-        }
+        $useragent = $_SERVER['HTTP_USER_AGENT'] ?? '[no-useragent]';
+        $context = new Gazelle\BaseRequestContext(
+            $_SERVER['SCRIPT_NAME'],
+            $_SERVER['REMOTE_ADDR'],
+            $useragent,
+        );
+        $session = new Gazelle\User\Session($user);
+        $current = $session->create([
+            'keep-logged' => $login->persistent() ? '1' : '0',
+            'browser'     => $context->ua(),
+            'ipaddr'      => $context->remoteAddr(),
+            'useragent'   => $context->useragent(),
+        ]);
+        setcookie('session', $session->cookie($current['SessionID']), [
+            'expires'  => (int)$login->persistent() * (time() + 60 * 60 * 24 * 90),
+            'path'     => '/',
+            'secure'   => !DEBUG_MODE,
+            'httponly' => true,
+            'samesite' => 'Lax',
+        ]);
+        header("Location: index.php");
+        exit;
     }
 }
 

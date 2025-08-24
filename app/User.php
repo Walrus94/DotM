@@ -26,26 +26,12 @@ class User extends BaseObject {
     protected array $staffNote = [];
 
     protected Stats\User      $stats;
-    protected User\AuditTrail $auditTrail;
-    protected User\Invite     $invite;
-    protected User\Ordinal    $ordinal;
+    // Features unrelated to an admin-only configuration have been
+    // intentionally stubbed out.
     protected User\Privilege  $privilege;
-    protected User\Snatch     $snatch;
 
     public function flush(): static {
-        self::$cache->delete_multi([
-            sprintf(self::CACHE_KEY, $this->id),
-            sprintf('user_inv_pending_%d', $this->id),
-            sprintf('user_invited_%d', $this->id),
-            sprintf('user_last_access_%d', $this->id),
-            sprintf('user_siteip_count_%d', $this->id),
-            sprintf('user_stat_%d', $this->id),
-            sprintf('users_tokens_%d', $this->id),
-        ]);
-        $this->stats()->flush();
-        $this->ordinal()->flush();
-        $this->privilege()->flush();
-        unset($this->info, $this->ordinal, $this->privilege, $this->stats, $this->tokenCache);
+        unset($this->info, $this->privilege, $this->stats, $this->tokenCache);
         return $this;
     }
 
@@ -58,28 +44,23 @@ class User extends BaseObject {
     }
 
     /**
-     * Delegate privilege methods to the User\AuditTrail class
-     * This delegation is stateful.
+     * Methods unrelated to the administrator configuration are stubbed
+     * and will raise an exception if called.
      */
     public function auditTrail(): User\AuditTrail {
-        return $this->auditTrail ??= new User\AuditTrail($this);
+        throw new \BadMethodCallException('Audit trail is disabled in admin-only mode');
     }
 
-    /**
-     * Delegate snatch status methods to the User\Inbox class.
-     * A new object is instantiated each time. This is nearly
-     * always what you need, if just creating a new conversation.
-     */
     public function inbox(): User\Inbox {
-        return new User\Inbox($this);
+        throw new \BadMethodCallException('Inbox is disabled in admin-only mode');
     }
 
     public function invite(): User\Invite {
-        return $this->invite ??= new User\Invite($this);
+        throw new \BadMethodCallException('Invites are disabled in admin-only mode');
     }
 
     public function ordinal(): User\Ordinal {
-        return $this->ordinal ??= new User\Ordinal($this);
+        throw new \BadMethodCallException('Ordinal data is disabled in admin-only mode');
     }
 
     public function privilege(): User\Privilege {
@@ -87,11 +68,11 @@ class User extends BaseObject {
     }
 
     public function snatch(): User\Snatch {
-        return $this->snatch ??= new User\Snatch($this);
+        throw new \BadMethodCallException('Snatch data is disabled in admin-only mode');
     }
 
     public function stats(): \Gazelle\Stats\User {
-        return $this->stats ??= new Stats\User($this->id);
+        throw new \BadMethodCallException('User statistics are disabled in admin-only mode');
     }
 
     /**
@@ -919,22 +900,7 @@ class User extends BaseObject {
      * Warn a user. Returns expiry date.
      */
     public function warn(int $duration, string $reason, \Gazelle\User $staff, string $userMessage): string {
-        $warnTime = Time::offset($duration * 7 * 86_400);
-        $warning  = new \Gazelle\User\Warning($this);
-        $expiry   = $warning->warningExpiry();
-        if ($expiry) {
-            $subject = 'You have received a new warning';
-            $message = "You have received a new warning by [user]{$staff->username()}[/user]. "
-                . "You had an existing warning (set to expire at $expiry).\n\nDue to this prior warning, "
-                . "you will remain warned until $warnTime.\nReason: $userMessage";
-        } else {
-            $subject = 'You have been warned';
-            $message = "You have been warned by [user]{$staff->username()}[/user]. "
-                . "The warning is set to expire on $warnTime. Remember, repeated warnings may jeopardize "
-                . "your account.\nReason: $userMessage";
-        }
-        $this->inbox()->createSystem($subject, $message);
-        return $warning->add($reason, "$duration week" . plural($duration), $staff);
+        throw new \BadMethodCallException('Warnings are disabled in admin-only mode');
     }
 
     /**
@@ -947,19 +913,7 @@ class User extends BaseObject {
         string $staffReason,
         string $userMessage
     ): void {
-        if (!$weekDuration) {  // verbal warning
-            $warned  = "Verbally warned";
-            $this->inbox()->createSystem(
-                "You have received a verbal warning",
-                "You have received a verbal warning by [user]{$staffer->username()}[/user] for {$post->publicLocation()}.\n\n[quote]{$userMessage}[/quote]"
-            );
-        } else {
-            $message = "for {$post->publicLocation()}.\n\n[quote]{$userMessage}[/quote]";
-            $expiry  = $this->warn($weekDuration, "{$post->publicLocation()} - $staffReason", $staffer, $message);
-            $warned  = "Warned until $expiry";
-        }
-        $this->addForumWarning("$warned by {$staffer->username()} for {$post->publicLocation()}\nReason: $staffReason")
-            ->modify();
+        throw new \BadMethodCallException('Warnings are disabled in admin-only mode');
     }
 
     public function modifyOption(string $name, $value): static {
@@ -1428,7 +1382,7 @@ class User extends BaseObject {
     }
 
     public function warningExpiry(): ?string {
-        return $this->info()['warning_expiry'];
+        return null;
     }
 
     /**
