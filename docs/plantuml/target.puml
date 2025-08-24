@@ -1,4 +1,5 @@
 @startuml
+' Admin-only configuration: user tables are intentionally omitted
 entity "release" as Release {
   *ID : int
   Name : string
