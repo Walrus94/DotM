@@ -5,7 +5,7 @@ namespace Gazelle\Collector;
 class Collage extends \Gazelle\Collector {
     public function __construct(
         protected \Gazelle\User            $user,
-        protected \Gazelle\Manager\Torrent $torMan,
+        protected \Gazelle\Manager\Edition $torMan,
         protected \Gazelle\Collage         $collage,
         protected int                      $orderBy,
     ) {
@@ -15,7 +15,6 @@ class Collage extends \Gazelle\Collector {
     public function prepare(array $list): bool {
         $this->sql = $this->queryPreamble($list) . "
             FROM torrents AS t
-            INNER JOIN torrents_leech_stats tls ON (tls.TorrentID = t.ID) /* FIXME: only needed if sorting by Seeders */
             INNER JOIN collages_torrents AS c ON (t.GroupID = c.GroupID AND c.CollageID = ?)
             INNER JOIN torrents_group AS tg ON (tg.ID = t.GroupID AND tg.CategoryID = 1)
             ORDER BY t.GroupID ASC, sequence DESC, " .  self::ORDER_BY[$this->orderBy];

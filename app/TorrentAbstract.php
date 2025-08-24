@@ -90,7 +90,7 @@ abstract class TorrentAbstract extends BaseObject {
             foreach (['last_action', 'LastReseedRequest', 'RemasterCatalogueNumber', 'RemasterRecordLabel', 'RemasterTitle', 'RemasterYear'] as $nullable) {
                 $info[$nullable] = $info[$nullable] == '' ? null : $info[$nullable];
             }
-            foreach (['LogChecksum', 'HasCue', 'HasLog', 'HasLogDB', 'Remastered', 'Scene'] as $zerotruth) {
+            foreach (['HasCue', 'HasLog', 'HasLogDB', 'Scene'] as $zerotruth) {
                 $info[$zerotruth] = !($info[$zerotruth] == '0');
             }
             self::$cache->cache_value($key, $info, ($info['Seeders'] ?? 0) > 0 ? 600 : 3600);
@@ -215,7 +215,7 @@ abstract class TorrentAbstract extends BaseObject {
         }
         if ($rebuild) {
             $fileList = (string)self::$db->scalar("
-                SELECT FileList FROM torrents WHERE ID = ?
+                SELECT FileList FROM edition WHERE edition_id = ?
                 ", $this->id
             );
             $chunkSize  = (int)(1024 ** 2);
@@ -428,7 +428,7 @@ abstract class TorrentAbstract extends BaseObject {
      * Is this a remastered release?
      */
     public function isRemastered(): bool {
-        return $this->info()['Remastered'] ?? false;
+        return ($this->info()['edition_type'] ?? 'original') === 'remaster';
     }
 
     public function isRemasteredUnknown(): bool {
@@ -468,10 +468,6 @@ abstract class TorrentAbstract extends BaseObject {
     /**
      * The log score of this torrent
      */
-    public function logChecksum(): bool {
-        return $this->info()['LogChecksum'];
-    }
-
     /**
      * The log score of this torrent
      */
@@ -603,30 +599,25 @@ abstract class TorrentAbstract extends BaseObject {
     public function shortLabelList(): array {
         $info = $this->info();
         $label = [];
-        if (!empty($info['Media'])) {
-            $label[] = $info['Media'];
-        }
         if (!empty($info['Format'])) {
             $label[] = $info['Format'];
         }
         if (!empty($info['Encoding'])) {
             $label[] = $info['Encoding'];
         }
-        if ($info['Media'] === 'CD') {
-            if ($info['HasLog']) {
-                if (!$info['HasLogDB']) {
-                    $label[] = '<span class="tooltip" style="float: none" title="There is a logifile in the torrent, but it has not been uploaded to the site!">Log</span>';
+        if ($info['HasLog']) {
+            if (!$info['HasLogDB']) {
+                $label[] = '<span class="tooltip" style="float: none" title="There is a logfile in the torrent, but it has not been uploaded to the site!">Log</span>';
+            } else {
+                if (isset($this->viewer) && $this->viewer->isStaff()) {
+                    $label[] = "<a href=\"torrents.php?action=viewlog&torrentid={$this->id}&groupid={$this->groupId()}\">Log ({$info['LogScore']}%)</a>";
                 } else {
-                    if (isset($this->viewer) && $this->viewer->isStaff()) {
-                        $label[] = "<a href=\"torrents.php?action=viewlog&torrentid={$this->id}&groupid={$this->groupId()}\">Log ({$info['LogScore']}%)</a>";
-                    } else {
-                        $label[] = "Log ({$info['LogScore']}%)";
-                    }
+                    $label[] = "Log ({$info['LogScore']}%)";
                 }
             }
-            if ($info['HasCue']) {
-                $label[] = 'Cue';
-            }
+        }
+        if ($info['HasCue']) {
+            $label[] = 'Cue';
         }
         if ($info['Scene']) {
             $label[] = 'Scene';
