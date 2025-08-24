@@ -506,6 +506,22 @@ class Bonus extends \Gazelle\BaseUser {
     }
 
     public function hourlyRate(): float {
+        // avoid exception if bonus tables are missing in a minimal install
+        foreach ([
+            'xbt_files_users',
+            'xbt_files_history',
+            'torrents',
+            'torrents_leech_stats',
+        ] as $table) {
+            if (!self::$db->scalar(
+                "SELECT 1 FROM information_schema.tables WHERE table_schema = ? AND table_name = ?",
+                SQLDB,
+                $table
+            )) {
+                return 0.0;
+            }
+        }
+
         return (float)self::$db->scalar("
             SELECT sum(bonus_accrual(t.Size, xfh.seedtime, tls.Seeders))
             FROM (
