@@ -22,7 +22,7 @@ json_print("success", [
     'authkey'  => $Viewer->auth(),
     'passkey'  => $Viewer->announceKey(),
     'notifications' => [
-        'messages'         => $Viewer->inbox()->unreadTotal(),
+        'messages'         => 0,
         'notifications'    => (new \Gazelle\User\Notification\Torrent($Viewer))->unread(),
         'newAnnouncement'  => (new \Gazelle\Manager\News())->latestId() < (new \Gazelle\WitnessTable\UserReadNews())->lastRead($Viewer),
         'newBlog'          => $latestBlog && $latestBlog->createdEpoch() < (new \Gazelle\WitnessTable\UserReadBlog())->lastRead($Viewer),

@@ -20,12 +20,7 @@ class Inbox extends AbstractNotification {
     }
 
     public function load(): bool {
-        $total = $this->user->inbox()->unreadTotal();
-        if ($total) {
-            $this->title = 'You have ' . article($total) . ' new message' . plural($total);
-            $this->url   = "inbox.php";
-            return true;
-        }
+        // The personal inbox is disabled in admin-only mode.
         return false;
     }
 }

@@ -16,8 +16,8 @@ help:
 	echo '  config-css           - generate the configuration variables to build the CSS files'
 	echo '  dump-all             - create tarballs of the following:'
 	echo '  dump-riplog          - create a tarball of the rip logs'
-        echo '  dump-riploghtml      - create a tarball of the HTMLified rip logs'
-        echo '  dump-release         - create a tarball of the release files'
+	echo '  dump-riploghtml      - create a tarball of the HTMLified rip logs'
+	echo '  dump-release         - create a tarball of the release files'
 	echo '  git-submodules       - update the git submodules'
 	echo '  lint-css             - lint (style check) the CSS'
 	echo '  lint-js              - lint (style check) the Javascript'
@@ -64,7 +64,7 @@ dump-riploghtml:
 
 .PHONY: dump-release
 dump-release:
-        tar -C "$(STORAGE_PATH_RELEASE)/.." -jcf release.$(NOW).tar.bz2 "$$(basename $(STORAGE_PATH_RELEASE))"
+	tar -C "$(STORAGE_PATH_RELEASE)/.." -jcf release.$(NOW).tar.bz2 "$$(basename $(STORAGE_PATH_RELEASE))"
 
 .PHONY: git-submodules
 git-submodules:

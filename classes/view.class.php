@@ -73,6 +73,9 @@ class View {
         $navLinks = [];
         foreach ((new Gazelle\Manager\UserNavigation())->userControlList($Viewer) as $n) {
             [$ID, $Key, $Title, $Target, $Tests, $TestUser, $Mandatory] = array_values($n);
+            if ($Key === 'inbox') {
+                continue;
+            }
             if (str_contains($Tests, ':')) {
                 $testList = [];
                 foreach (array_map('trim', explode(',', $Tests)) as $Part) {
@@ -88,12 +91,7 @@ class View {
             }
 
             $extraClass = [];
-            if ($Key === 'inbox') {
-                $Target = 'inbox.php';
-                if ((new \Gazelle\User\Inbox($Viewer))->unreadTotal()) {
-                    $extraClass[] = 'new-subscriptions';
-                }
-            } elseif ($Key === 'subscriptions') {
+            if ($Key === 'subscriptions') {
                 if (
                     isset($alertList['Subscription'])
                     && (new \Gazelle\User\Subscription($Viewer))->unread()
