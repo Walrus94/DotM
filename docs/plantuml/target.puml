@@ -51,8 +51,24 @@ entity "artists_alias" as ArtistAlias {
 entity "release_artist" as ReleaseArtist {
   *release_id : int
   *AliasID : int
-  role : enum
+  ArtistRoleID : int
   created : datetime
+}
+
+entity "artist_role" as ArtistRole {
+  *ArtistRoleID : int
+  Name : string
+}
+
+entity "artist_attr" as ArtistAttr {
+  *ArtistAttrID : int
+  Name : string
+  Description : text
+}
+
+entity "artist_has_attr" as ArtistHasAttr {
+  *ArtistID : int
+  *ArtistAttrID : int
 }
 
 entity "tags" as Tag {
@@ -70,6 +86,74 @@ Release ||--o{ ReleasePlatform : available_on
 Release ||--o{ ReleaseArtist : credits
 Release ||--o{ ReleaseTag : tagged_with
 ReleaseArtist }o--|| ArtistAlias : uses_alias
+ReleaseArtist }o--|| ArtistRole : role
 ArtistAlias }o--|| Artist : alias_of
+Artist ||--o{ ArtistHasAttr : has
+ArtistHasAttr }o--|| ArtistAttr : attr
 ReleaseTag }o--|| Tag : tag
+
+entity "collages" as Collage {
+  *CollageID : int
+  Name : string
+  Description : text
+  TagList : text
+  created : datetime
+  updated : datetime
+}
+
+entity "collages_torrents" as CollageRelease {
+  *CollageID : int
+  *release_id : int
+  Sort : int
+  AddedOn : datetime
+}
+
+entity "collages_artists" as CollageArtist {
+  *CollageID : int
+  *ArtistID : int
+  Sort : int
+  AddedOn : datetime
+}
+
+entity "collage_attr" as CollageAttr {
+  *CollageAttrID : int
+  Name : string
+  Description : text
+}
+
+entity "collage_has_attr" as CollageHasAttr {
+  *CollageID : int
+  *CollageAttrID : int
+}
+
+Collage ||--o{ CollageRelease : includes
+CollageRelease }o--|| Release : release
+Collage ||--o{ CollageArtist : features
+CollageArtist }o--|| Artist : artist
+Collage ||--o{ CollageHasAttr : categorized_by
+CollageHasAttr }o--|| CollageAttr : attr
+
+entity "artist_discogs" as ArtistDiscogs {
+  *ArtistDiscogsID : int
+  ArtistID : int
+  Name : string
+  is_preferred : bool
+  created : datetime
+}
+
+Artist ||--o{ ArtistDiscogs : discogs_entry
+
+entity "blog" as Blog {
+  *ID : int
+  Title : string
+  Body : text
+  Time : datetime
+}
+
+entity "news" as News {
+  *ID : int
+  Title : string
+  Body : text
+  Time : datetime
+}
 @enduml
