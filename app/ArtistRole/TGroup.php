@@ -22,10 +22,10 @@ class TGroup extends \Gazelle\ArtistRole {
                 aa.ArtistID,
                 aa.Name,
                 ta.AliasID
-            FROM torrents_artists AS ta
+            FROM release_artist AS ta
             INNER JOIN artists_alias AS aa USING (AliasID)
-            WHERE ta.GroupID = ?
-            ORDER BY ta.GroupID, ta.Importance ASC, aa.Name ASC
+            WHERE ta.release_id = ?
+            ORDER BY ta.release_id, ta.Importance ASC, aa.Name ASC
             ", $this->object->id()
         );
     }
@@ -146,10 +146,10 @@ class TGroup extends \Gazelle\ArtistRole {
     public function modifyList(array $roleAliasList, int $role, \Gazelle\User $user): int {
         $aliasList = array_map(fn ($tuple) => $tuple[1], $roleAliasList);
         self::$db->prepared_query("
-            UPDATE IGNORE torrents_artists SET
+            UPDATE IGNORE release_artist SET
                 artist_role_id = ?,
                 Importance = ?
-            WHERE GroupID = ?
+            WHERE release_id = ?
                 AND AliasID IN (" . placeholders($aliasList) . ")
             ", $role, $role, $this->object->id(), ...$aliasList
         );
@@ -180,8 +180,8 @@ class TGroup extends \Gazelle\ArtistRole {
         $changed  = [];
         foreach ($roleAliasList as [$role, $aliasId]) {
             self::$db->prepared_query("
-                DELETE FROM torrents_artists
-                WHERE GroupID = ?
+                DELETE FROM release_artist
+                WHERE release_id = ?
                     AND AliasID = ?
                     AND Importance = ?
                 ", $this->object->id(), $aliasId, $role

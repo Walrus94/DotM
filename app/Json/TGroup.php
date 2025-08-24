@@ -45,6 +45,7 @@ class TGroup extends \Gazelle\Json {
             'vanityHouse'     => $tgroup->isShowcase(),
             'isBookmarked'    => (new \Gazelle\User\Bookmark($this->user))->isTorrentBookmarked($tgroup->id()),
             'tags'            => array_values($tgroup->tagNameList()),
+            'platforms'       => (new \Gazelle\Manager\ReleasePlatform())->listByRelease($tgroup->id()),
             'musicInfo'       => $musicInfo,
         ];
     }

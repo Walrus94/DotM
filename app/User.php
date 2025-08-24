@@ -1582,15 +1582,15 @@ class User extends BaseObject {
                 SELECT tg.Name AS name,
                     tg.ID AS id,
                     count(*) AS n
-                FROM torrents_tags tt
+                FROM release_tag tt
                 INNER JOIN tags tg ON (tg.ID = tt.TagID)
                 INNER JOIN (
-                    SELECT DISTINCT t.GroupID
+                    SELECT DISTINCT t.GroupID AS release_id
                     FROM xbt_snatched xs
                     INNER JOIN torrents t ON (t.id = xs.fid)
                     WHERE tstamp > unix_timestamp(now() - INTERVAL 6 MONTH)
                         AND xs.uid = ?
-                ) SN USING (GroupID)
+                ) SN USING (release_id)
                 GROUP BY tg.ID
                 ORDER BY 3 DESC, 1
                 LIMIT ?

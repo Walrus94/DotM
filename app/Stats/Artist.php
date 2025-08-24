@@ -28,18 +28,17 @@ class Artist extends \Gazelle\BaseObject {
         if ($info === false) {
             $info = self::$db->rowAssoc("
                 SELECT count(*)                    AS torrent_total,
-                    count(DISTINCT tg.ID)          AS tgroup_total,
-                    coalesce(sum(tls.Leechers), 0) AS leecher_total,
-                    coalesce(sum(tls.Seeders), 0)  AS seeder_total,
-                    coalesce(sum(tls.Snatched), 0) AS snatch_total
+                    count(DISTINCT tg.ID)          AS tgroup_total
                 FROM torrents_artists           ta
                 INNER JOIN artists_alias        aa  ON (ta.AliasID = aa.AliasID)
-                INNER JOIN torrents_group       tg  ON (tg.ID = ta.GroupID)
+                INNER JOIN torrents_group       tg  ON (tg.ID = ta.release_id)
                 INNER JOIN torrents             t   ON (t.GroupID = tg.ID)
-                INNER JOIN torrents_leech_stats tls ON (tls.TorrentID = t.ID)
                 WHERE aa.ArtistID = ?
                 ", $this->id()
             );
+            $info['leecher_total'] = 0;
+            $info['seeder_total']  = 0;
+            $info['snatch_total']  = 0;
             self::$cache->cache_value($key, $info, 3600);
         }
         $this->info = $info;

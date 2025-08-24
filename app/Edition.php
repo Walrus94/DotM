@@ -1,35 +1,32 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Gazelle;
 
 use Gazelle\Enum\TorrentFlag;
 
-class TorrentDeleted extends TorrentAbstract {
-    final public const tableName = 'deleted_torrents';
-    final public const CACHE_KEY = 'tdel_%d';
-
-    public function location(): string {
-        return "log.php?search=Torrent+" . $this->id;
-    }
+class Edition extends TorrentAbstract {
+    final public const tableName = 'edition';
+    final public const CACHE_KEY = 't_%d';
 
     public function infoRow(): ?array {
-        $info = self::$db->rowAssoc("
+        $info = self::$db->rowAssoc(" 
             SELECT t.GroupID,
                 t.UserID,
-                t.Media,
+                t.release_id,
                 t.Format,
                 t.Encoding,
-                t.Remastered,
+                t.edition_type,
                 t.RemasterYear,
                 t.RemasterTitle,
-                t.RemasterCatalogueNumber,
                 t.RemasterRecordLabel,
+                t.RemasterCatalogueNumber,
                 t.Scene,
                 t.HasLog,
                 t.HasCue,
                 t.HasLogDB,
                 t.LogScore,
-                t.LogChecksum,
                 t.info_hash,
                 t.FileCount,
                 t.FileList,
@@ -45,15 +42,15 @@ class TorrentDeleted extends TorrentAbstract {
                 0             AS Snatched,
                 NULL          AS last_action,
                 ''            AS ripLogIds
-            FROM deleted_torrents t
-            WHERE t.ID = ?
-            GROUP BY t.ID
+            FROM edition t
+            WHERE t.edition_id = ?
+            GROUP BY t.edition_id
             ", $this->id
         );
         if ($info) {
-            self::$db->prepared_query("
+            self::$db->prepared_query(" 
                 SELECT a.Name
-                FROM torrent_attr a JOIN deleted_torrent_has_attr ha ON (a.ID = ha.TorrentAttrID)
+                FROM torrent_attr a JOIN torrent_has_attr ha ON (a.ID = ha.TorrentAttrID)
                 WHERE ha.TorrentID = ?
             ", $this->id);
             $info['attr'] = [];
@@ -62,9 +59,5 @@ class TorrentDeleted extends TorrentAbstract {
             }
         }
         return $info;
-    }
-
-    public function isDeleted(): bool {
-        return true;
     }
 }

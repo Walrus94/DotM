@@ -82,15 +82,15 @@ class Artist extends AbstractCollage {
     public function rebuildTagList(): array {
         self::$db->prepared_query("
             SELECT tag.Name FROM (
-                SELECT DISTINCT ta.GroupID
+                SELECT DISTINCT ta.release_id
                 FROM collages_artists ca
                 INNER JOIN artists_alias aa USING (ArtistID)
-                INNER JOIN torrents_artists ta ON (aa.AliasID = ta.AliasID)
+                INNER JOIN release_artist ta ON (aa.AliasID = ta.AliasID)
                 INNER JOIN artist_role ar USING (artist_role_id)
                 WHERE ar.slug in ('main', 'remixer', 'composer', 'conductor', 'dj', 'producer', 'arranger')
                     AND ca.CollageID = ?
             ) G
-            INNER JOIN torrents_tags tt USING (GroupID)
+            INNER JOIN release_tag tt USING (release_id)
             INNER JOIN tags tag on (tag.ID = tt.TagID)
             GROUP BY tag.Name
             HAVING count(*) > 1

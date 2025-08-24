@@ -227,17 +227,6 @@
         </td>
     </tr>
 {%  endif %}
-{%  for flag in torrent_flags %}
-{%      if (not flag.permission or user.permitted(flag.permission)) and not add_format %}
-    <tr>
-        <td class="label">{{ flag.label }}:</td>
-        <td>
-            <label><input type="checkbox" id="{{ flag.value }}" name="{{ flag.value }}"{{ checked(torrent[flag.value]) }} />
-            {{ flag.description }}</label>
-        </td>
-    </tr>
-{%      endif %}
-{%  endfor %}
 {% endif %}
 {% if not tgroup %}
 {%  include 'upload/tag.twig' with {

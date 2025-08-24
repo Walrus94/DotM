@@ -168,19 +168,6 @@ class Helper {
         );
     }
 
-    public static function addTorrentTraffic(\Gazelle\Torrent $torrent, int $leechTotal, int $seedTotal, int $snatchTotal): int {
-        $db = \Gazelle\DB::DB();
-        $db->prepared_query("
-            UPDATE torrents_leech_stats SET
-                Leechers = ?,
-                Seeders  = ?,
-                Snatched = ?
-            WHERE TorrentID = ?
-            ", $leechTotal, $seedTotal, $snatchTotal, $torrent->id()
-        );
-        return $db->affected_rows();
-    }
-
     public static function generateTorrentSeed(\Gazelle\Torrent $torrent, \Gazelle\User $user): int {
         $db = \Gazelle\DB::DB();
         $db->prepared_query("

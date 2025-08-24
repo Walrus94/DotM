@@ -15,11 +15,10 @@ class Checksum extends AbstractBetter {
         $this->field = 't.ID';
         $this->baseQuery = "
             FROM torrents t
-            INNER JOIN torrents_group tg ON (tg.ID = t.GroupID)
-            INNER JOIN torrents_leech_stats tls ON (tls.TorrentID = t.ID)";
+            INNER JOIN torrents_group tg ON (tg.ID = t.GroupID)";
 
         $this->where[] = "t.HasLogDB = '1' AND t.LogChecksum = '0'";
-        $this->orderBy = "ORDER BY tls.Snatched DESC, t.created ASC";
+        $this->orderBy = "ORDER BY t.created ASC";
 
         if ($this->filter === 'snatched') {
             $this->where[] = "EXISTS (
