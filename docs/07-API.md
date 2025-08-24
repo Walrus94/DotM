@@ -115,7 +115,6 @@ If the request is invalid, or a problem occurs, the `status` will be `failure`. 
             "ratio": 3.29,
             "requiredratio": 0.6,
             "bonusPoints": 220903,
-            "bonusPointsPerHour": 1.28,
             "class": "VIP"
         }
     }

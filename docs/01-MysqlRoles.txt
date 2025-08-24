@@ -50,13 +50,11 @@ GRANT SELECT ON `gazelle`.`requests_tags` TO 'spx'@'localhost';
 GRANT SELECT ON `gazelle`.`requests_votes` TO 'spx'@'localhost';
 GRANT SELECT ON `gazelle`.`requests` TO 'spx'@'localhost';
 GRANT SELECT ON `gazelle`.`tags` TO 'spx'@'localhost';
-GRANT SELECT ON `gazelle`.`torrents_artists` TO 'spx'@'localhost';
+GRANT SELECT ON `gazelle`.`release_artist` TO 'spx'@'localhost';
 GRANT SELECT ON `gazelle`.`torrents_group` TO 'spx'@'localhost';
-GRANT SELECT ON `gazelle`.`torrents_leech_stats` TO 'spx'@'localhost';
 GRANT SELECT ON `gazelle`.`torrents` TO 'spx'@'localhost';
 
 -- Grants for tracker
-GRANT DELETE, INSERT, SELECT, UPDATE ON `gazelle`.`torrents_leech_stats` TO 'trk'@'localhost';
 GRANT DELETE, INSERT, SELECT, UPDATE ON `gazelle`.`users_leech_stats` TO 'trk'@'localhost';
 GRANT INSERT, SELECT, UPDATE ON `gazelle`.`xbt_files_users` TO 'trk'@'localhost';
 GRANT INSERT ON `gazelle`.`xbt_snatched` TO 'trk'@'localhost';

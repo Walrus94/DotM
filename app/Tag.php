@@ -110,9 +110,9 @@ class Tag extends BaseObject {
     public function addTGroup(\Gazelle\TGroup $tgroup, \Gazelle\User $user, int $weight): int {
         self::$db->begin_transaction();
         self::$db->prepared_query("
-            INSERT INTO torrents_tags
-                   (TagID, GroupID, UserID, PositiveVotes)
-            VALUES (?,     ?,       ?,      ?)
+            INSERT INTO release_tag
+                   (TagID, release_id, UserID, PositiveVotes)
+            VALUES (?,     ?,          ?,      ?)
             ON DUPLICATE KEY UPDATE
                 PositiveVotes = PositiveVotes + 2
             ", $this->id, $tgroup->id(), $user->id(), $weight
@@ -144,8 +144,8 @@ class Tag extends BaseObject {
                 tg.ID       AS torrentGroupId,
                 tg.Name     AS torrentGroupName
             FROM torrents_group        tg
-            INNER JOIN torrents_tags   t  ON (t.GroupID = tg.ID)
-            LEFT JOIN torrents_artists ta ON (ta.GroupID = tg.ID)
+            INNER JOIN release_tag   t  ON (t.release_id = tg.ID)
+            LEFT JOIN release_artist ta ON (ta.release_id = tg.ID)
             LEFT JOIN artists_group    ag ON (ag.PrimaryAlias = ta.AliasID)
             LEFT JOIN artists_alias    aa ON (ag.PrimaryAlias = aa.AliasID)
             WHERE t.TagID = ?
@@ -160,7 +160,7 @@ class Tag extends BaseObject {
             SELECT TagID
             FROM torrents_tags_votes
             WHERE TagID = ?
-                AND GroupID = ?
+                AND release_id = ?
                 AND UserID = ?
                 AND Way = ?
             ", $this->id, $tgroup->id(), $user->id(), $way
@@ -177,17 +177,17 @@ class Tag extends BaseObject {
             $pos = 2;
         }
         self::$db->prepared_query("
-            UPDATE torrents_tags SET
+            UPDATE release_tag SET
                 NegativeVotes = NegativeVotes + ?,
                 PositiveVotes = PositiveVotes + ?
             WHERE TagID = ?
-                AND GroupID = ?
+                AND release_id = ?
             ", $neg, $pos, $this->id, $tgroup->id()
         );
         self::$db->prepared_query("
             INSERT INTO torrents_tags_votes
-                   (TagID, GroupID, UserID, Way)
-            VALUES (?,     ?,       ?,      ?)
+                   (TagID, release_id, UserID, Way)
+            VALUES (?,     ?,          ?,      ?)
             ", $this->id, $tgroup->id(), $user->id(), $way
         );
         $affected = self::$db->affected_rows();
@@ -201,7 +201,7 @@ class Tag extends BaseObject {
             SELECT 1
             FROM torrents_tags_votes
             WHERE TagID = ?
-                AND GroupID = ?
+                AND release_id = ?
                 AND UserID = ?
             ", $this->id, $tgroup->id(), $user->id()
         );
@@ -211,11 +211,11 @@ class Tag extends BaseObject {
         $tgroupId = $tgroup->id();
         self::$db->begin_transaction();
         self::$db->prepared_query("
-            DELETE FROM torrents_tags_votes WHERE GroupID = ? AND TagID = ?
+            DELETE FROM torrents_tags_votes WHERE release_id = ? AND TagID = ?
             ", $tgroupId, $this->id
         );
         self::$db->prepared_query("
-            DELETE FROM torrents_tags WHERE GroupID = ? AND TagID = ?
+            DELETE FROM release_tag WHERE release_id = ? AND TagID = ?
             ", $tgroupId, $this->id
         );
         if (!self::$db->affected_rows()) {
@@ -224,7 +224,7 @@ class Tag extends BaseObject {
 
         // Was this the last occurrence?
         $inUse = (int)self::$db->scalar("
-            SELECT count(*) FROM torrents_tags WHERE TagID = ?
+            SELECT count(*) FROM release_tag WHERE TagID = ?
             ", $this->id
         ) + (int)self::$db->scalar("
             SELECT count(*)
