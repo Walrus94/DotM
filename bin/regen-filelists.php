@@ -4,7 +4,7 @@ require_once __DIR__ . '/../lib/bootstrap.php';
 $Cache->disableLocalCache();
 
 $torMan  = new Gazelle\Manager\Torrent();
-$filer   = new Gazelle\File\Torrent();
+$filer   = new Gazelle\File\Release();
 $encoder = new OrpheusNET\BencodeTorrent\BencodeTorrent();
 $db      = Gazelle\DB::DB();
 $max     = $db->scalar("SELECT max(ID) FROM torrents");

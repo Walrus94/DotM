@@ -1,7 +1,7 @@
 <?php
 
-/* Scan all the torrent storage directory and look for things that
- * don't belong, and orphaned files of torrents that have been
+/* Scan all the release storage directory and look for things that
+ * don't belong, and orphaned files of releases that have been
  * deleted (via moderation or catastrophe).
  * Once it has been determined that all files reported do need to
  * be removed, the output can be piped as follows:
@@ -35,18 +35,18 @@ $allConfig = [
         'MATCH' => '~/(\d+)_(\d+)\.log$~',
         'NEWLN' => false,
     ],
-    '-torrent' => [
+    '-release' => [
         'CHECK' => 'SELECT 1 FROM torrents WHERE ID = ?',
-        'FILER' => new Gazelle\File\Torrent(),
+        'FILER' => new Gazelle\File\Release(),
         'HASH'  => 'SELECT File AS digest FROM torrents_files WHERE TorrentID = ?',
-        'PIPE'  => '/usr/bin/find ' . STORAGE_PATH_TORRENT . ' -type f',
-        'MATCH' => '~/(\d+)\.torrent$~',
+        'PIPE'  => '/usr/bin/find ' . STORAGE_PATH_RELEASE . ' -type f',
+        'MATCH' => '~/(\d+)\.release$~',
         'NEWLN' => false,
     ],
 ];
 
 if ($argc < 2 || !isset($allConfig[$argv[1]])) {
-    die('usage: ' . basename($argv[0]) . " <-html|-log|-torrent>\n");
+    die('usage: ' . basename($argv[0]) . " <-html|-log|-release>\n");
 }
 $config = $allConfig[$argv[1]];
 

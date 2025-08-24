@@ -12,7 +12,7 @@ $offset    = 0;
 $processed = 0;
 $new       = 0;
 
-$filer = new Gazelle\File\Torrent();
+$filer = new Gazelle\File\Release();
 
 while (true) {
     $db->prepared_query('
@@ -29,8 +29,8 @@ while (true) {
 
     $last = $offset;
     $list = $db->to_array(false, MYSQLI_NUM, false);
-    foreach ($list as $torrent) {
-        list($id, $file) = $torrent;
+    foreach ($list as $release) {
+        list($id, $file) = $release;
         $last = $id;
         ++$processed;
         if (file_exists($filer->path($id))) {

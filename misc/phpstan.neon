@@ -43,7 +43,6 @@ parameters:
         - BITCOIN_DONATION_XYZPUB
         - BLOCK_TOR
         - DISABLE_IRC
-        - DISABLE_TRACKER
         - DEBUG
         - DEBUG_CONTEST_PAYOUT
         - DEBUG_EMAIL

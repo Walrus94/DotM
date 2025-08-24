@@ -65,7 +65,7 @@ defined('TMPDIR') or define('TMPDIR', '/tmp');
 
 // Paths for storing uploaded assets outside the database. See bin/generate-storage-dirs
 // Should also be moved out of the root partition.
-defined('STORAGE_PATH_TORRENT')    or define('STORAGE_PATH_TORRENT',    '/var/lib/gazelle/torrent');
+defined('STORAGE_PATH_RELEASE')    or define('STORAGE_PATH_RELEASE',    '/var/lib/gazelle/release');
 defined('STORAGE_PATH_RIPLOG')     or define('STORAGE_PATH_RIPLOG',     '/var/lib/gazelle/riplog');
 defined('STORAGE_PATH_RIPLOGHTML') or define('STORAGE_PATH_RIPLOGHTML', '/var/lib/gazelle/riploghtml');
 
@@ -113,7 +113,7 @@ defined('BITCOIN_DONATION_XYZPUB') or define('BITCOIN_DONATION_XYZPUB', '');
 // The password is sent in the request body of a POST request as a 20 byte binary sha1 hash.
 defined('PASSWORD_CHECK_URL') or define('PASSWORD_CHECK_URL', '');
 
-// Top 10 history date. Previous days and weeks of Top 10 torrents are
+// Top 10 history date. Previous days and weeks of Top 10 releases are
 // recorded in a task. There is not point going back prior to the start
 // of recorded history.
 defined('TOP_TEN_HISTORY_BEGIN') or define('TOP_TEN_HISTORY_BEGIN', '2023-06-23');
@@ -253,7 +253,6 @@ defined('SPHINX_MAX_MATCHES') or define('SPHINX_MAX_MATCHES', 1000);
 
 // If you have set Ocelot up in the development environment then this
 // should be overridden and set to true.
-defined('DISABLE_TRACKER') or define('DISABLE_TRACKER', false);
 
 // This is the name of the docker Ocelot container
 // In production this will be the IP address of the Ocelot instance on your internal network
@@ -484,7 +483,7 @@ defined('BYTES_PER_FREELEECH_TOKEN') or define('BYTES_PER_FREELEECH_TOKEN', 512 
 // How long does an activated token last before it is purged?
 defined('FREELEECH_TOKEN_EXPIRY_DAYS') or define('FREELEECH_TOKEN_EXPIRY_DAYS', 30);
 
-// When setting torrent groups or collages freeleech, "large" torrents
+// When setting release groups or collages freeleech, "large" releases
 // can be set to neutral leech, to avoid tanking the economy.
 // Scale of the neutral leech threshold (k, m, g for KiB, MiB and TiB, respectively)
 defined('NEUTRAL_LEECH_UNIT') or define('NEUTRAL_LEECH_UNIT', 'm');

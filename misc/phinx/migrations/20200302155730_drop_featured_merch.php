@@ -5,7 +5,9 @@ use Phinx\Migration\AbstractMigration;
 class DropFeaturedMerch extends AbstractMigration
 {
     public function up(): void {
-        $this->table('featured_merch')->drop()->update();
+        if ($this->hasTable('featured_merch')) {
+            $this->table('featured_merch')->drop()->update();
+        }
     }
 
     public function down(): void {

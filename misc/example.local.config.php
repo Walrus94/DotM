@@ -5,7 +5,6 @@
 
 define('SITE_URL', 'http://localhost:7001');
 
-define('DISABLE_TRACKER', true);
 define('DISABLE_IRC', true);
 
 define('DEBUG_EMAIL', true);

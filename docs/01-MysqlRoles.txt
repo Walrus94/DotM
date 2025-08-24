@@ -18,7 +18,6 @@ You should define names (be creative!) for the following roles:
 
 admin   - e.g. adm (a non-privileged user on the system to run phinx)
 sphinx  - e.g. spx
-tracker - e.g. trk
 website - e.g. www
 
 These mysql roles should be configured with different passwords and used in
@@ -54,14 +53,6 @@ GRANT SELECT ON `gazelle`.`torrents_artists` TO 'spx'@'localhost';
 GRANT SELECT ON `gazelle`.`torrents_group` TO 'spx'@'localhost';
 GRANT SELECT ON `gazelle`.`torrents_leech_stats` TO 'spx'@'localhost';
 GRANT SELECT ON `gazelle`.`torrents` TO 'spx'@'localhost';
-
--- Grants for tracker
-GRANT DELETE, INSERT, SELECT, UPDATE ON `gazelle`.`torrents_leech_stats` TO 'trk'@'localhost';
-GRANT DELETE, INSERT, SELECT, UPDATE ON `gazelle`.`users_leech_stats` TO 'trk'@'localhost';
-GRANT INSERT, SELECT, UPDATE ON `gazelle`.`xbt_files_users` TO 'trk'@'localhost';
-GRANT INSERT ON `gazelle`.`xbt_snatched` TO 'trk'@'localhost';
-GRANT INSERT, SELECT, UPDATE ON `gazelle`.`users_freeleeches` TO 'trk'@'localhost';
-GRANT INSERT, SELECT, UPDATE ON `gazelle`.`users_main` TO 'trk'@'localhost';
 
 -- Grants for website
 GRANT CREATE TEMPORARY TABLES, DELETE, INSERT, SELECT, UPDATE ON `gazelle`.* TO 'www'@'localhost';

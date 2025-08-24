@@ -5,7 +5,7 @@ Subject: Orpheus Development Papers #5 - Invite Sources
 Version: 1
 
 This feature helps you keep track of how people were invited via interviews
-and recruitments from other trackers. Most people who buy invites from the
+and recruitments from other sites. Most people who buy invites from the
 Bonus Shop for personal friends are not concerned by this. But for people
 who interview or recruit, it is helpful for them to be able to keep the
 source origins distinguished, as it is for staff.
@@ -19,7 +19,7 @@ Run the seeder: `phinx seed:run -s InviteSource`
 
 /tools.php?action=permission
 
-2. Add the invite sources: mnemonic names of trackers that everyone
+2. Add the invite sources: mnemonic names of sites that everyone
 understands. Consider adding an Interview source as well if you do
 interviews, for interviewers and personal invites. These are stored in the
 invite_source table.
