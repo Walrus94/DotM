@@ -16,7 +16,6 @@ $artist->loadArtistRole();
 $artistId = $artist->id();
 
 $bookmark   = new Gazelle\User\Bookmark($Viewer);
-$collageMan = new Gazelle\Manager\Collage();
 $tgMan      = (new Gazelle\Manager\TGroup())->setViewer($Viewer);
 $torMan     = (new Gazelle\Manager\Torrent())->setViewer($Viewer);
 $stats      = new Gazelle\Stats\Artist($artistId);
@@ -62,13 +61,6 @@ foreach ($sections as $sectionId => $groupList) {
             </ul>
         </div>
 <?php
-if ($Viewer->permitted('site_collages_manage') || $Viewer->activePersonalCollages()) {
-    echo $Twig->render('artist/collage-add.twig', [
-        'collage_list' => $collageMan->addToArtistCollageDefault($artist, $Viewer),
-        'artist_id'    => $artistId,
-        'viewer'       => $Viewer,
-    ]);
-}
 ?>
         <div class="box box_info box_metadata_artist">
             <div class="head"><strong>Metadata</strong></div>
@@ -157,12 +149,6 @@ echo ' selected="selected"'; } ?>>Prefer Bonus Tracks</option>
 
     </div>
     <div class="main_column">
-
-<?= $Twig->render('collage/summary.twig', [
-    'class'   => 'collage_rows',
-    'object'  => 'artist',
-    'summary' => $collageMan->artistSummary($artist),
-]); ?>
 <div id="discog_table">
     <div class="box center">
 <?php

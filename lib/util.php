@@ -713,10 +713,6 @@ function time_diff(
 // artistsadded: the number of artists the user has added
 // torrentcomments: the list of comments the user has added to torrents
 //   +
-// collages: the list of collages the user has created
-//   +
-// collagecontribs: the list of collages the user has contributed to
-//   +
 // invitedcount: the number of users this user has directly invited
 
 /**

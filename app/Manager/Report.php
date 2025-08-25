@@ -57,7 +57,6 @@ class Report extends \Gazelle\BaseManager {
 
     public function decorate(
         array $idList,
-        \Gazelle\Manager\Collage     $collageMan,
         \Gazelle\Manager\Comment     $commentMan,
         \Gazelle\Manager\ForumThread $threadMan,
         \Gazelle\Manager\ForumPost   $postMan,
@@ -67,12 +66,6 @@ class Report extends \Gazelle\BaseManager {
         foreach ($idList as $id) {
             $report = $this->findById($id);
             switch ($report-> subjectType()) {
-                case 'collage':
-                    $context = [
-                        'label'   => 'collage',
-                        'subject' => $collageMan->findById($report->subjectId()),
-                    ];
-                    break;
                 case 'comment':
                     $context = [
                         'label'   => 'comment',

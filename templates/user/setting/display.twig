@@ -96,23 +96,6 @@
             </ul>
         </td>
     </tr>
-    <tr id="tor_cover_coll_tr">
-        <td class="label tooltip" title="This option allows you to change the number of album covers to display within a single collage page.">
-            <strong>Cover art (collages)</strong>
-        </td>
-        <td>
-            <select name="collagecovers" id="collagecovers">
-                {%- set n = user.option('CollageCovers') -%}
-                <option value="10"{{ selected(n == 10) }}>10</option>
-                <option value="25"{{ selected(n is null or n == 25) }}>25 (default)</option>
-                <option value="50"{{ selected(n == 50) }}>50</option>
-                <option value="100"{{ selected(n == 100) }}>100</option>
-                <option value="1000000"{{ selected(n == 1000000) }}>All</option>
-                <option value="0"{{ selected(n == 0 or (n is null and user.option('HideCollage'))) }}>None</option>
-            </select>
-            covers per page
-        </td>
-    </tr>
     <tr id="tor_autocomp_tr">
         <td class="label tooltip" title="Autocomplete will try to predict the word or phrase that you're typing. Selecting &quot;Everywhere&quot; will enable autocomplete on artist and tag fields across the site. Selecting &quot;Searches only&quot; will enable autocomplete in searches.">
             <strong>Autocompletion</strong>
@@ -127,7 +110,7 @@
         </td>
     </tr>
     <tr id="tor_voting_tr">
-        <td class="label tooltip" title="This option allows you to enable or disable &quot;up&quot; and &quot;down&quot; voting links on artist pages, collages, and snatched lists.">
+        <td class="label tooltip" title="This option allows you to enable or disable &quot;up&quot; and &quot;down&quot; voting links on artist pages and snatched lists.">
             <strong>Voting links</strong>
         </td>
         <td>

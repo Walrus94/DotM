@@ -8,9 +8,6 @@ switch ($_GET['p'] ?? '') {
             'list' => (new Gazelle\Manager\ClientWhitelist())->list(),
         ]);
         break;
-    case 'collages':
-        echo $Twig->render('rules/collage.twig');
-        break;
     case 'ratio':
         $b   = $Viewer->downloadedSize();
         $GiB = 1024 * 1024 * 1024;

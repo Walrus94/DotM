@@ -10,7 +10,6 @@ describe('page loads as admin', () => {
         "/bookmarks.php",
         "/comments.php",
         "/contest.php",
-        "/collages.php",
         "/donate.php",
         "/forums.php",
         "/inbox.php",

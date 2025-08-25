@@ -131,7 +131,6 @@ $rank = new Gazelle\UserRank(
         'posts'      => $stats->forumPostTotal(),
         'bounty'     => $stats->requestVoteSize(),
         'artists'    => check_paranoia_here('artistsadded') ? $stats->artistAddedTotal() : 0,
-        'collage'    => check_paranoia_here('collagecontribs+') ? $stats->collageTotal() : 0,
         'votes'      => $vote->userTotal(Vote::UPVOTE | Vote::DOWNVOTE),
         'bonus'      => $userBonus->pointsSpent(),
         'comment-t'  => check_paranoia_here('torrentcomments++') ? $stats->commentTotal('torrents') : 0,
@@ -150,7 +149,6 @@ $statList = [
     ['bounty', 'requestsvoted_bounty', 'Request votes', $byteFormatter, 'spent'],
     ['posts', null, 'Forum posts made', $numberFormatter, 'posts'],
     ['comment-t', 'torrentcomments++', 'Torrent comments', $numberFormatter, 'posted'],
-    ['collage', 'collagecontribs+', 'Collage contributions', $numberFormatter, 'contributions'],
     ['artists', 'artistsadded', 'Artists added', $numberFormatter, 'added'],
     ['votes', null, 'Release votes cast', $numberFormatter, 'votes'],
 ]
@@ -170,7 +168,7 @@ if ($OwnProfile || $Viewer->permitted('admin_bp_history')) { ?>
                 <li class="tooltip<?= !$OwnProfile && $Viewer->permitted('admin_bp_history') ? ' paranoia_override' : '' ?>" title="<?=number_format($rank->raw('bonus')) ?> spent">Bonus points spent: <?= $rank->rank('bonus') ?></li>
 <?php
 }
-if ($user->propertyVisibleMulti($previewer, ['artistsadded', 'collagecontribs+', 'downloaded', 'requestsfilled_count', 'requestsvoted_bounty', 'torrentcomments++', 'uploaded', 'uploads+', ])) {
+if ($user->propertyVisibleMulti($previewer, ['artistsadded', 'downloaded', 'requestsfilled_count', 'requestsvoted_bounty', 'torrentcomments++', 'uploaded', 'uploads+', ])) {
 ?>
                 <li<?= $user->classLevel() >= 900 ? ' title="Infinite"' : '' ?>><strong>Overall rank: <?= is_null($rank->score())
                     ? 'Server busy'
@@ -225,10 +223,6 @@ echo $Twig->render('user/sidebar-stats.twig', [
     'user'           => $user,
     'viewer'         => $Viewer,
     'visible'        => [
-        'collages+'             => check_paranoia_here('collages+'),
-        'collages'              => check_paranoia_here('collages'),
-        'collagescontrib+'      => check_paranoia_here('collagecontribs+'),
-        'collagecontribs'       => check_paranoia_here('collagecontribs'),
         'downloaded'            => $OwnProfile || $Viewer->permitted('site_view_torrent_snatchlist'),
         'invitedcount'          => check_paranoia_here('invitedcount'),
         'leeching+'             => check_paranoia_here('leeching+'),
@@ -323,10 +317,6 @@ if ($OwnProfile || !$user->hasAttr('hide-vote-recent') || $Viewer->permitted('vi
     ]);
 }
 
-echo $Twig->render('user/collage-list.twig', [
-    'list'    => (new Gazelle\Manager\Collage())->findPersonalByUser($user),
-    'manager' => $tgMan,
-]);
 
 // Linked accounts
 if ($Viewer->permitted('users_linked_users')) {

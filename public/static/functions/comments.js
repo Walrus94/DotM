@@ -14,9 +14,6 @@ function QuoteJump(event, post) {
             case 't': // torrent comment
                 url = 'torrents';
                 break;
-            case 'c': // collage comment
-                url = 'collages';
-                break;
             case 'r': // request comment
                 url = 'requests';
                 break;
@@ -85,7 +82,7 @@ async function quote(post) {
         dest   = 'quickpost';
         field  = 'post' + post_id;
         requrl = '/comments.php?action=get&postid=' + post_id;
-        const page = path.match('^/(?:artist|collages|requests|torrents).php$');
+        const page = path.match('^/(?:artist|requests|torrents).php$');
         if (page) {
             username += '|' + page[0].charAt(1) + post_id;
         }
