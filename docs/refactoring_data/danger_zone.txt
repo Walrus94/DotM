@@ -7,5 +7,8 @@ app/Contest.php
 app/Request
 app/Request.php
 app/Stats
-app/User
-app/User.php
+app/User/Bonus.php
+app/User/History.php
+app/User/Notification.php
+app/User/Privilege.php
+app/User/Vote.php
