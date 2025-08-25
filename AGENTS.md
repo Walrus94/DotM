@@ -9,5 +9,5 @@ Follow these guidelines when modifying code in this repository:
 4. **Preserve necessary code**: Leave code unchanged when it is necessary for the site to function or can be used directly (e.g., search logic, music release metadata, artwork handling).
 5. **Questionable reuse**: If the reusability of a domain, field or entry is uncertain, leave the code unchanged and describe it in the final output with exact paths and line numbers along with how it might be reused.
 6. **Code quality and tests**: Write clean, maintainable code covered by tests. When reasonable, follow existing design and architectural patterns. Keep the code coverage percentage unchanged when possible by adding or adjusting tests for newly created or modified code. Run `make lint-staged` and `make test` after making changes.
-7. **Refactoring workflow**: Refactor features in the following order: view templates → controllers → domain logic → database schema.
+7. **Refactoring workflow**: Refactor features in the following order: view templates → controllers → domain logic → database schema. In this repository, `templates/` renders views, `sections/` contains controllers, and `app/` holds domain logic.
 
