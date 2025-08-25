@@ -88,7 +88,7 @@ class Login extends Base {
             return null;
         }
         $user = $userMan->findByUsername($this->username);
-        if (is_null($user) || $user->username() !== 'admin') {
+        if (is_null($user) || !$user->isStaff()) {
             $this->error = self::ERR_CREDENTIALS;
             return null;
         }

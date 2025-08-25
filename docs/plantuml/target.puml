@@ -1,5 +1,21 @@
 @startuml
-' Admin-only configuration: user tables are intentionally omitted
+' Admin-only configuration: only administrator accounts are stored
+entity "users_main" as Admin {
+  *ID : int
+  Username : string
+  PassHash : string
+  PermissionID : int
+  Enabled : enum
+}
+
+entity "permissions" as Permission {
+  *ID : int
+  Name : string
+  Level : int
+}
+
+Admin }o--|| Permission : class
+
 entity "release" as Release {
   *ID : int
   Name : string
