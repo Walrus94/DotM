@@ -3,16 +3,10 @@
 /** @phpstan-var \Gazelle\User $Viewer */
 /** @phpstan-var \Twig\Environment $Twig */
 
-function notify($Viewer, $Channel, $Message) {
-    // IRC notifications removed
-    (void)$Viewer; (void)$Channel; (void)$Message;
-}
-
 switch ($Error) {
     case '403':
         $Title = "Error 403";
         $Description = "You tried to go to a page that you don't have enough permission to view.";
-        notify($Viewer, IRC_CHAN_STATUS, 403);
         break;
     case '404':
         $Title = "Error 404";

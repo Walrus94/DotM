@@ -292,7 +292,6 @@ class Upload extends \Gazelle\Base {
         return $n;
     }
 
-
     public function sendPushNotification(): void {
         $torrent  = $this->torrent;
         $notifMan = new \Gazelle\Manager\Notification();
