@@ -50,18 +50,12 @@ foreach ($sections as $sectionId => $groupList) {
     }
     $artistReleaseType[$sectionId]++;
 }
+echo $Twig->render('artist/stats.twig', [
+    'release_total'  => $stats->releaseTotal(),
+    'platform_total' => $stats->platformTotal(),
+]);
+
 ?>
-        <div class="box box_info box_statistics_artist">
-            <div class="head"><strong>Statistics</strong></div>
-            <ul class="stats nobullet">
-                <li>Number of groups: <?= number_format($stats->tgroupTotal()) ?></li>
-                <li>Number of torrents: <?= number_format($stats->torrentTotal()) ?></li>
-                <li>Number of snatches: <?= number_format($stats->snatchTotal()) ?></li>
-                <li>Number of seeders: <?= number_format($stats->seederTotal()) ?></li>
-                <li>Number of leechers: <?= number_format($stats->leecherTotal()) ?></li>
-            </ul>
-        </div>
-<?php
 if ($Viewer->permitted('site_collages_manage') || $Viewer->activePersonalCollages()) {
     echo $Twig->render('artist/collage-add.twig', [
         'collage_list' => $collageMan->addToArtistCollageDefault($artist, $Viewer),

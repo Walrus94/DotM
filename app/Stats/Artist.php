@@ -26,16 +26,17 @@ class Artist extends \Gazelle\BaseObject {
         $key = sprintf(self::CACHE_KEY, $this->id);
         $info = self::$cache->get_value($key);
         if ($info === false) {
-            $info = self::$db->rowAssoc("
-                SELECT count(*)                    AS torrent_total,
-                    count(DISTINCT tg.ID)          AS tgroup_total
-                FROM torrents_artists           ta
-                INNER JOIN artists_alias        aa  ON (ta.AliasID = aa.AliasID)
-                INNER JOIN torrents_group       tg  ON (tg.ID = ta.release_id)
-                INNER JOIN torrents             t   ON (t.GroupID = tg.ID)
-                WHERE aa.ArtistID = ?
-                ", $this->id()
-            );
+            $info = self::$db->rowAssoc(
+                "SELECT count(DISTINCT ra.release_id) AS release_total,
+                    count(DISTINCT rp.Platform)      AS platform_total
+                FROM release_artist            ra
+                INNER JOIN artists_alias       aa ON (ra.AliasID = aa.AliasID)
+                LEFT JOIN release_platform     rp ON (rp.ReleaseID = ra.release_id)
+                WHERE aa.ArtistID = ?",
+                $this->id()
+            ) ?? ['release_total' => 0, 'platform_total' => 0];
+            $info['tgroup_total']  = $info['release_total'];
+            $info['torrent_total'] = $info['release_total'];
             $info['leecher_total'] = 0;
             $info['seeder_total']  = 0;
             $info['snatch_total']  = 0;
@@ -57,6 +58,14 @@ class Artist extends \Gazelle\BaseObject {
         return $this->info()['snatch_total'];
     }
 
+    public function releaseTotal(): int {
+        return $this->info()['release_total'];
+    }
+
+    public function platformTotal(): int {
+        return $this->info()['platform_total'];
+    }
+
     public function tgroupTotal(): int {
         return $this->info()['tgroup_total'];
     }
@@ -65,3 +74,4 @@ class Artist extends \Gazelle\BaseObject {
         return $this->info()['torrent_total'];
     }
 }
+
