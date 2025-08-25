@@ -53,8 +53,9 @@ class DemoArtist extends AbstractSeed {
         ])->save();
 
         // map artist to the release
+        $idCol = $this->fetchRow("SHOW COLUMNS FROM release_artist LIKE 'release_id'") ? 'release_id' : 'GroupID';
         $this->table('release_artist')->insert([
-            'release_id'     => 1,
+            $idCol          => 1,
             'AliasID'        => 1,
             'UserID'         => 1,
             'Importance'     => 1,
