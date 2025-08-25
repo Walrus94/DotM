@@ -138,9 +138,8 @@ class Debug {
         if (empty($report)) {
             $report = $message;
         }
-        $case = $this->saveCase($report);
-        // IRC status messages removed
-        (void)$case; // suppress unused variable warnings
+        // previously used to trigger IRC status messages
+        $this->saveCase($report);
     }
 
     public function saveError(\Exception $e): int {
