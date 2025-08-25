@@ -53,9 +53,9 @@ class DemoArtist extends AbstractSeed {
             'showcase'      => 0,
         ])->save();
 
-        // map artist to the release
+        // map artist to the release (legacy schema uses GroupID)
         $this->table('release_artist')->insert([
-            'release_id' => 1,
+            'GroupID'    => 1,
             'ArtistID'   => 1,
             'AliasID'    => 1,
             'UserID'     => 1,
