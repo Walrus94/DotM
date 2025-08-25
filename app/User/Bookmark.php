@@ -22,7 +22,6 @@ class Bookmark extends \Gazelle\BaseUser {
     public function schema($type): array {
         return match ($type) {
             'artist'  => ['bookmarks_artists',  'ArtistID'],
-            'collage' => ['bookmarks_collages', 'CollageID'],
             'request' => ['bookmarks_requests', 'RequestID'],
             'torrent' => ['bookmarks_torrents', 'GroupID'],
             default   => [null, null],
@@ -32,7 +31,7 @@ class Bookmark extends \Gazelle\BaseUser {
     /**
      * Bookmark an object by a user
      *
-     * @param string $type (on of artist, collage, request, torrent)
+     * @param string $type (one of artist, request, torrent)
      * @param int $id The ID of the object
      */
     public function create(string $type, int $id): bool {
@@ -139,13 +138,6 @@ class Bookmark extends \Gazelle\BaseUser {
     }
 
     /**
-     * Check if a collage is bookmarked by a user
-     */
-    public function isCollageBookmarked(int $collageId): bool {
-        return in_array($collageId, $this->allBookmarks('collage'));
-    }
-
-    /**
      * Check if a request is bookmarked by a user
      */
     public function isRequestBookmarked(int $requestId): bool {
@@ -160,7 +152,7 @@ class Bookmark extends \Gazelle\BaseUser {
     }
 
     /**
-     * Returns an array with User Bookmark data: group IDs, collage data, torrent data
+     * Returns an array with User Bookmark data: group IDs and torrent data
      * @return array Group IDs, Bookmark Data, Torrent List
      */
     public function tgroupBookmarkList(): array {

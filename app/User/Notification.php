@@ -110,9 +110,6 @@ class Notification extends \Gazelle\BaseUser {
             if ($display) {
                 // are we on the page of the alert?
                 if (isset($this->document)) {
-                    if ($class === 'Collage' && $this->document === 'userhistory' && $this->action === 'subscribed_collages') {
-                        continue;
-                    }
                     if ($class === 'Inbox' && $this->document === 'inbox') {
                         continue;
                     }

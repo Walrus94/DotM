@@ -111,7 +111,6 @@ class Quote extends \Gazelle\BaseUser {
 
         $cond = [
             "q.UserID = ?",
-            "(q.Page != 'collages' OR c.Deleted = '0')",
             "(q.Page != 'forums' OR " . join(' AND ', $forumCond) . ")",
         ];
         $args = array_merge(
@@ -136,7 +135,6 @@ class Quote extends \Gazelle\BaseUser {
             LEFT JOIN forums_topics  AS t ON (t.ID = q.PageID)
             LEFT JOIN forums         AS f ON (f.ID = t.ForumID)
             LEFT JOIN artists_group  AS a ON (a.ArtistID = q.PageID)
-            LEFT JOIN collages       AS c ON (c.ID = q.PageID)
             WHERE " . join(' AND ', $cond), ...$args
         );
     }
@@ -148,10 +146,10 @@ class Quote extends \Gazelle\BaseUser {
      * @param int $offset How far from the beginning of the list (offset)
      * @return array of quote results, each having
      *  jump: url that points to the quote' => "torrents.php?id={$q['PageID']}&amp;postid={$q['PostID']}#post{$q['PostID']}",
-     *  link: html href that points to the context (artist, collage, forum, request, torrent)
-     *  title: name of the context (Artist, Collage, ...)
+     *  link: html href that points to the context (artist, forum, request, torrent)
+     *  title: name of the context (Artist, Forums, ...)
      *  date: date the quote was made
-     *  page: (artist, collage, forums, ...)
+     *  page: (artist, forums, requests, torrents)
      *  quoter_id: user id
      *  unread: has the viewer seen the quote
      */
@@ -168,12 +166,10 @@ class Quote extends \Gazelle\BaseUser {
                 f.ID    AS ForumID,
                 f.Name  AS ForumName,
                 t.ID    AS threadId,
-                t.Title AS ForumTitle,
-                c.Name  AS CollageName
+                t.Title AS ForumTitle
             FROM users_notify_quoted AS q
             LEFT JOIN forums_topics  AS t ON (t.ID = q.PageID)
             LEFT JOIN forums         AS f ON (f.ID = t.ForumID)
-            LEFT JOIN collages       AS c ON (c.ID = q.PageID)
             WHERE " . join(' AND ', $cond) . "
             ORDER BY q.Date DESC
             LIMIT ? OFFSET ?
@@ -196,13 +192,6 @@ class Quote extends \Gazelle\BaseUser {
                         'jump'  => "artist.php?id={$q['PageID']}&amp;postid={$q['PostID']}#post{$q['PostID']}",
                         'link'  => $artist->link(),
                         'title' => 'Artist',
-                    ];
-                    break;
-                case 'collages':
-                    $context = [
-                        'jump'  => "collages.php?action=comments&amp;collageid={$q['PageID']}&amp;postid={$q['PostID']}#post{$q['PostID']}",
-                        'link'  => sprintf('<a href="collages.php?id=%d">%s</a>', $q['PageID'], display_str($q['CollageName'])),
-                        'title' => 'Collage',
                     ];
                     break;
                 case 'forums':
@@ -260,17 +249,15 @@ class Quote extends \Gazelle\BaseUser {
             $forMan = new \Gazelle\Manager\Forum();
             [$cond, $args] = $forMan->configureForUser(new \Gazelle\User($this->user->id()));
             $args[] = $this->user->id(); // for q.UserID
-            $total = (int)self::$db->scalar("
-                SELECT count(*)
+            $total = (int)self::$db->scalar(
+                "SELECT count(*)
                 FROM users_notify_quoted AS q
                 LEFT JOIN forums_topics AS t ON (t.ID = q.PageID)
                 LEFT JOIN forums AS f ON (f.ID = t.ForumID)
-                LEFT JOIN collages AS c ON (q.Page = 'collages' AND c.ID = q.PageID)
                 WHERE q.UnRead = true
                     AND (q.Page != 'forums' OR " . implode(' AND ', $cond) . ")
-                    AND (q.Page != 'collages' OR c.Deleted = '0')
-                    AND q.UserID = ?
-                ", ...$args
+                    AND q.UserID = ?",
+                ...$args
             );
             self::$cache->cache_value($key, $total, 0);
         }
