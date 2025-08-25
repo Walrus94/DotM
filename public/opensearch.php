@@ -28,7 +28,7 @@ switch ($Type) {
         break;
     case 'releases':
 ?>
-    <Url type="text/html" method="get" template="<?=SITE_URL?>/releases.php?action=basic&amp;searchstr={searchTerms}"></Url>
+    <Url type="text/html" method="get" template="<?=SITE_URL?>/releases.php?searchstr={searchTerms}"></Url>
     <moz:SearchForm><?=SITE_URL?>/releases.php</moz:SearchForm>
 <?php
         break;

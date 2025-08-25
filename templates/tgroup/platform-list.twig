@@ -1,0 +1,7 @@
+{% if platforms %}
+<div class="platforms">
+{%   for p in platforms %}
+    <a href="{{ p.Url }}" class="brackets" target="_blank">{{ p.Platform }}</a>
+{%   endfor %}
+</div>
+{% endif %}

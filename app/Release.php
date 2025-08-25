@@ -26,7 +26,7 @@ class Release extends BaseObject {
         if (!isset($this->info)) {
             $this->info = self::$db->rowAssoc(
                 "SELECT ID, Name, Year, record_label, catalog_number, WikiBody, WikiImage, TagList, release_type, showcase
-                 FROM release WHERE ID = ?",
+                 FROM `release` WHERE ID = ?",
                 $this->id
             ) ?? [];
         }

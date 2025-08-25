@@ -1,0 +1,31 @@
+{% set title = 'Release search' %}
+{% if query %}
+    {% set title = 'Search results for ' ~ query %}
+{% endif %}
+{{ header(title) }}
+<div class="thin">
+    <h2>{{ title }}</h2>
+    <div class="box pad">
+        <form method="get" action="releases.php">
+            <input type="text" name="searchstr" value="{{ query }}" />
+            <input type="submit" value="Search" />
+        </form>
+    </div>
+    {% if query %}
+    <div class="box pad">
+        <ul>
+        {% for r in results %}
+            <li>
+                {% if r.ArtistName %}{{ r.ArtistName }} - {% endif %}{{ r.Name }}{% if r.Year %} ({{ r.Year }}){% endif %}
+                {% for p in r.platforms %}
+                    [<a href="{{ p.Url }}">{{ p.Platform }}</a>]
+                {% endfor %}
+            </li>
+        {% else %}
+            <li>No releases found.</li>
+        {% endfor %}
+        </ul>
+    </div>
+    {% endif %}
+</div>
+{{ footer() }}
