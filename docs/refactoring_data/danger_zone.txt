@@ -1,0 +1,11 @@
+app/Artist
+app/Artist.php
+app/Collage
+app/Collage.php
+app/Contest
+app/Contest.php
+app/Request
+app/Request.php
+app/Stats
+app/User
+app/User.php
