@@ -2,7 +2,6 @@
 
 namespace Gazelle\Task;
 
-use Gazelle\Util\Irc;
 use Gazelle\Util\Time;
 
 class DisableStuckTasks extends \Gazelle\Task {
@@ -22,7 +21,6 @@ class DisableStuckTasks extends \Gazelle\Task {
             [$id, $historyId, $launchTime, $name] = array_values($task);
             $duration = Time::diff(time() - strtotime($launchTime) + time(), 2, false);
 
-            Irc::sendMessage(IRC_CHAN_DEV, "Marking stuck task $name ($duration) as insane");
             $this->processed++;
             $this->info("Marking stuck task $name ($duration) as insane", $id);
 

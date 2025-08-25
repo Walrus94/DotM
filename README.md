@@ -180,9 +180,8 @@ this means doing the following;
  - import the dump to the docker pg container
 
 ## Contact and Discussion
-Feel free to join #develop on irc.orpheus.network to discuss any
-questions concerning Gazelle (or any of the repos published by
-Orpheus).
+For questions concerning Gazelle (or any of the repos published by
+Orpheus), please consult the documentation or issue tracker.
 
 ## Open source
 Run `bin/setup-git-hooks` once, to install a git precommit hook that will run linting

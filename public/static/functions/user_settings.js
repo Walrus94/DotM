@@ -221,12 +221,6 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     };
 
-    document.getElementById('gen-irc-key').addEventListener('click', () => {
-        document.getElementById('irckey').value = Array(32)
-            .fill('0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz')
-            .map((str) => { return str[Math.floor(Math.random() * str.length)]; })
-            .join('');
-    });
 
     document.getElementById('paranoid-none').addEventListener('click', () => { paranoia_none(); });
     document.getElementById('paranoid-stats').addEventListener('click', () => { paranoia_stats(); });

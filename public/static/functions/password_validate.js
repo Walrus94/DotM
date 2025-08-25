@@ -8,10 +8,9 @@ var CLEAR = 0;
 var WEAK = 1;
 var STRONG = 3;
 var SHORT = 4;
-var MATCH_IRCKEY = 5;
-var MATCH_USERNAME = 6;
-var COMMON = 7;
-var MATCH_OLD_PASSWORD = 8;
+var MATCH_USERNAME = 5;
+var COMMON = 6;
+var MATCH_OLD_PASSWORD = 7;
 
 var USER_PATH = "/user.php";
 
@@ -84,11 +83,10 @@ async function validatePassword(password) {
 
 function calculateComplexity(password) {
     const length = password.length;
-    let username, oldPassword, irckey;
+    let username, oldPassword;
 
     if (isUserPage()) {
         username = document.getElementsByClassName("username")[0].innerText;
-        irckey = document.getElementById('irckey').value;
         oldPassword = document.getElementById('password').value;
     } else {
         username = document.getElementById('username')?.value;
@@ -100,8 +98,6 @@ function calculateComplexity(password) {
         setStatus(SHORT);
     } else if (username && password.toLowerCase() === username.toLowerCase()) {
         setStatus(MATCH_USERNAME);
-    } else if (irckey && password.toLowerCase() === irckey.toLowerCase()) {
-        setStatus(MATCH_IRCKEY);
     } else if (oldPassword && password === oldPassword) {
         setStatus(MATCH_OLD_PASSWORD);
     } else if (isStrongPassword(password) || length >= 20) {
@@ -153,10 +149,6 @@ function setStatus(strength) {
     } else if (strength === SHORT) {
         disableSubmit();
         el.textContent = "Too Short";
-        el.style.color = "red";
-    } else if (strength === MATCH_IRCKEY) {
-        disableSubmit();
-        el.textContent = "Password cannot match IRC Key";
         el.style.color = "red";
     } else if (strength === MATCH_USERNAME) {
         disableSubmit();

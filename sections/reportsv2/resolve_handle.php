@@ -39,7 +39,6 @@ if (is_null($report)) {
         torrent:     $torrent,
         user:        $Viewer,
         reportType:  $reportType,
-        irc:         new Gazelle\Util\Irc(),
         reason:      '',
         otherIdList: '',
     );

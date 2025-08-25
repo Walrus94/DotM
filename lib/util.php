@@ -4,7 +4,6 @@
 // that it'd just be annoying to stick them in namespaces.
 
 use Gazelle\Enum\CacheBucket;
-use Gazelle\Util\Irc;
 use Gazelle\Util\Time;
 use Gazelle\Util\Type;
 
@@ -332,10 +331,7 @@ function authorize(bool $Ajax = false): void {
             return;
         }
     }
-    Irc::sendMessage(IRC_CHAN_STATUS,
-        "{$Viewer->username()} authorize failed on {$_SERVER['REQUEST_URI']}"
-        . (!empty($_SERVER['HTTP_REFERER']) ? " coming from " . $_SERVER['HTTP_REFERER'] : "")
-    );
+    // IRC status notification removed
     error('Invalid authorization key. Go back, refresh, and try again.', $Ajax);
 }
 
@@ -677,19 +673,6 @@ function proxyCheck(string $IP): bool {
         }
     }
     return false;
-}
-
-function sanitize_irc_nick(string $nick): string {
-    $nick = iconv("UTF-8", "ASCII//TRANSLIT", $nick);
-    if (!$nick) {
-        return '';
-    }
-    $nick = str_replace(['.', ':', '#', ' '], ['[dot]', '[col]', '[hash]', '_'], $nick);
-    $nick = preg_replace('/[^a-z0-9\[\]|_-]/i', '', $nick);
-    if (is_numeric(substr($nick, 0, 1))) {
-        $nick = '_' . $nick;
-    }
-    return $nick;
 }
 
 /*** Time and date functions ***/

@@ -5,7 +5,6 @@ namespace Gazelle;
 use Gazelle\Enum\AvatarDisplay;
 use Gazelle\Enum\UserStatus;
 use Gazelle\User\MultiFactorAuth;
-use Gazelle\Util\Irc;
 use Gazelle\Util\Mail;
 use Gazelle\Util\Time;
 
@@ -142,7 +141,6 @@ class User extends BaseObject {
                 um.Email,
                 um.Enabled,
                 um.Invites,
-                um.IRCKey,
                 um.nav_list,
                 um.Paranoia,
                 um.PassHash,
@@ -396,10 +394,6 @@ class User extends BaseObject {
         return $this->hasAttr('disable-invites');
     }
 
-    public function disableIRC(): bool {
-        return $this->hasAttr('disable-irc');
-    }
-
     public function disablePm(): bool {
         return $this->hasAttr('disable-pm');
     }
@@ -455,10 +449,6 @@ class User extends BaseObject {
 
     public function ipaddr(): string {
         return $this->info()['IP'];
-    }
-
-    public function IRCKey(): ?string {
-        return $this->info()['IRCKey'];
     }
 
     public function label(): string {
@@ -1157,10 +1147,6 @@ class User extends BaseObject {
         );
         self::$cache->delete_value('user_pw_count_' . $this->id);
         if ($notify) {
-            Irc::sendMessage(
-                $this->username(),
-                "Security alert: Your password was changed via $ipaddr with $useragent"
-            );
             (new Mail())->send(
                 $this->email(),
                 'Password changed information for ' . SITE_NAME,

@@ -3,9 +3,6 @@
 /** @phpstan-var \Twig\Environment $Twig */
 
 switch ($_GET['p'] ?? '') {
-    case 'chat':
-        echo $Twig->render('rules/chat.twig');
-        break;
     case 'clients':
         echo $Twig->render('rules/client-whitelist.twig', [
             'list' => (new Gazelle\Manager\ClientWhitelist())->list(),

@@ -44,7 +44,7 @@ $Types = [
         "guidelines" => [
             "Please use the &quot;Report thread&quot; option in the following situations:
             <ul>
-            <li>Reporting when <a href=\"rules.php?p=chat\">chat rules</a> have been broken, such as posts containing racism, offensive language, flaming, pornography, and other rules violations. We encourage all users to use this feature when they see a rules violation of any form.</li>
+            <li>Reporting when forum rules have been broken, such as posts containing racism, offensive language, flaming, pornography, and other rules violations. We encourage all users to use this feature when they see a rules violation of any form.</li>
             <li>Requesting that a thread be unlocked.</li>
             <li>Reporting threads that are in the wrong forum.</li>
             <li>Reporting answered questions in the Help forum.</li>
@@ -56,7 +56,7 @@ $Types = [
     "post" => [
         "title" => "Forum Post",
         "guidelines" => [
-            "The report comment option is specifically for reporting when the <a href=\"rules.php?p=chat\">chat rules</a> have been broken, such as posts containing racism, offensive language, flaming, pornography, and other rules violations.",
+            "The report comment option is specifically for reporting when the forum rules have been broken, such as posts containing racism, offensive language, flaming, pornography, and other rules violations.",
             "We encourage all users to use this feature when they see a rules violation of any form.",
             "This will get quicker action than PMing a staff member will.",
             "Please restrict the use of this feature to reporting rules violations, and remember, this is for reporting comments, not replying to them."
@@ -74,7 +74,7 @@ $Types = [
     "comment" => [
         "title" => "Comment",
         "guidelines" => [
-            "The report comment option is specifically for reporting when the <a href=\"rules.php?p=chat\">chat rules</a> have been broken, such as posts containing racism, offensive language, flaming, pornography, and other rules violations.",
+            "The report comment option is specifically for reporting when the forum rules have been broken, such as posts containing racism, offensive language, flaming, pornography, and other rules violations.",
             "We encourage all users to use this feature when they see a rules violation of any form.",
             "This will get quicker action than PMing a staff member will.",
             "Please restrict the use of this feature to reporting rules violations, and remember, this is for reporting comments, not replying to them."

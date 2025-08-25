@@ -76,7 +76,6 @@ $disableTagging       = isset($_POST['DisableTagging']);
 $disableUpload        = isset($_POST['DisableUpload']);
 $disableWiki          = isset($_POST['DisableWiki']);
 $disablePM            = isset($_POST['DisablePM']);
-$disableIRC           = isset($_POST['DisableIRC']);
 $disableRequests      = isset($_POST['DisableRequests']);
 $disableLeech         = isset($_POST['DisableLeech']) ? 0 : 1;
 $editWikiEditReadable = isset($_POST['wiki-edit-readable']);
@@ -475,11 +474,6 @@ if ($Viewer->permitted('users_disable_posts')) {
     }
 }
 
-if ($disableIRC !== $user->disableIRC()) {
-    $privChange[] = 'Your IRC privileges have been ' . revoked($disableIRC);
-    $editSummary[] = 'IRC privileges ' . revoked($disableIRC);
-    $user->toggleAttr('disable-irc', $disableIRC);
-}
 
 if ($privChange && $userReason) {
     sort($privChange);

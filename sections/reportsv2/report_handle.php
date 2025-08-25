@@ -113,7 +113,6 @@ $report = $reportMan->create(
     track:       $trackList,
     image:       $Images,
     link:        $Links,
-    irc:         new Gazelle\Util\Irc(),
 );
 
 if (!$reportType->isInvisible() && $torrent->uploaderId() != $Viewer->id()) {

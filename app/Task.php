@@ -2,7 +2,6 @@
 
 namespace Gazelle;
 
-use Gazelle\Util\Irc;
 
 abstract class Task extends Base {
     protected array $events = [];
@@ -59,10 +58,7 @@ abstract class Task extends Base {
             ', $this->taskId);
             self::$cache->delete_value(TaskScheduler::CACHE_TASKS);
 
-            Irc::sendMessage(
-                IRC_CHAN_DEV,
-                "Task {$this->name} is no longer sane " . SITE_URL . "/tools.php?action=periodic&mode=detail&id={$this->taskId}"
-            );
+            // IRC notifications removed
         } elseif ($errorCount == 0 && !$sane) {
             self::$db->prepared_query('
                 UPDATE periodic_task SET
@@ -71,7 +67,7 @@ abstract class Task extends Base {
             ', $this->taskId);
             self::$cache->delete_value(TaskScheduler::CACHE_TASKS);
 
-            Irc::sendMessage(IRC_CHAN_DEV, "Task {$this->name} is now sane");
+            // IRC notifications removed
         }
         return $this->processed;
     }

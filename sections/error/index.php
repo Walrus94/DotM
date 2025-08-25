@@ -3,20 +3,9 @@
 /** @phpstan-var \Gazelle\User $Viewer */
 /** @phpstan-var \Twig\Environment $Twig */
 
-use Gazelle\Util\Irc;
-
 function notify($Viewer, $Channel, $Message) {
-    $ipaddr = $Viewer->requestContext()->remoteAddr();
-    Irc::sendMessage($Channel,
-        $Message . " error by "
-        . ($Viewer
-            ? $Viewer->publicLocation() . " (" . $Viewer->username() . ")"
-            : $ipaddr
-        )
-        . " (" . (new \Gazelle\Util\GeoIP(new \Gazelle\Util\Curl()))->countryISO($ipaddr) . ")"
-        . " accessing " . SITE_URL . $_SERVER['REQUEST_URI'] . ' (' . $_SERVER['REQUEST_METHOD'] . ')'
-        . (!empty($_SERVER['HTTP_REFERER']) ? " from " . $_SERVER['HTTP_REFERER'] : '')
-    );
+    // IRC notifications removed
+    (void)$Viewer; (void)$Channel; (void)$Message;
 }
 
 switch ($Error) {
