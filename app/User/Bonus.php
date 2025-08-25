@@ -2,6 +2,8 @@
 
 namespace Gazelle\User;
 
+use Gazelle\DB\MysqlException;
+
 /**
  * Note: there is no userHasItem() method to check if a user has bought a
  * particular item in the shop. Due to the wide disparity between items that can
@@ -506,19 +508,27 @@ class Bonus extends \Gazelle\BaseUser {
     }
 
     public function hourlyRate(): float {
-        return (float)self::$db->scalar("
-            SELECT sum(bonus_accrual(t.Size, xfh.seedtime, tls.Seeders))
-            FROM (
-                SELECT DISTINCT uid,fid
-                FROM xbt_files_users
-                WHERE active = 1 AND remaining = 0 AND mtime > unix_timestamp(NOW() - INTERVAL 1 HOUR) AND uid = ?
-            ) AS xfu
-            INNER JOIN xbt_files_history AS xfh USING (uid, fid)
-            INNER JOIN torrents AS t ON (t.ID = xfu.fid)
-            INNER JOIN torrents_leech_stats tls ON (tls.TorrentID = t.ID)
-            WHERE xfu.uid = ?
-            ", $this->id(), $this->id()
-        );
+        try {
+            return (float)self::$db->scalar(
+                "SELECT sum(bonus_accrual(t.Size, xfh.seedtime, tls.Seeders))
+                FROM (
+                    SELECT DISTINCT uid,fid
+                    FROM xbt_files_users
+                    WHERE active = 1
+                        AND remaining = 0
+                        AND mtime > unix_timestamp(NOW() - INTERVAL 1 HOUR)
+                        AND uid = ?
+                ) AS xfu
+                INNER JOIN xbt_files_history AS xfh USING (uid, fid)
+                INNER JOIN torrents AS t ON (t.ID = xfu.fid)
+                INNER JOIN torrents_leech_stats tls ON (tls.TorrentID = t.ID)
+                WHERE xfu.uid = ?",
+                $this->id(),
+                $this->id()
+            );
+        } catch (MysqlException) {
+            return 0.0;
+        }
     }
 
     public function userTotals(): array {
