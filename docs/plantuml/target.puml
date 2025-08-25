@@ -72,9 +72,9 @@ entity "artist_has_attr" as ArtistHasAttr {
 }
 
 entity "artist_stats" as ArtistStats {
-  *ArtistID : int
-  ReleaseTotal : int
-  PlatformTotal : int
+  *ArtistID      : int
+  release_total  : int
+  platform_total : int
 }
 
 entity "tags" as Tag {
