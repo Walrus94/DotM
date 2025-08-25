@@ -71,6 +71,12 @@ entity "artist_has_attr" as ArtistHasAttr {
   *ArtistAttrID : int
 }
 
+entity "artist_stats" as ArtistStats {
+  *ArtistID : int
+  ReleaseTotal : int
+  PlatformTotal : int
+}
+
 entity "tags" as Tag {
   *ID : int
   Name : string
@@ -90,6 +96,7 @@ ReleaseArtist }o--|| ArtistRole : role
 ArtistAlias }o--|| Artist : alias_of
 Artist ||--o{ ArtistHasAttr : has
 ArtistHasAttr }o--|| ArtistAttr : attr
+Artist ||--|| ArtistStats : stats
 ReleaseTag }o--|| Tag : tag
 
 entity "collages" as Collage {

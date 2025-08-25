@@ -23,7 +23,7 @@ class Artist extends \Gazelle\BaseObject {
         if (isset($this->info)) {
             return $this->info;
         }
-        $key = sprintf(self::CACHE_KEY, $this->id);
+        $key  = sprintf(self::CACHE_KEY, $this->id);
         $info = self::$cache->get_value($key);
         if ($info === false) {
             $info = self::$db->rowAssoc(
@@ -33,29 +33,12 @@ class Artist extends \Gazelle\BaseObject {
                 INNER JOIN artists_alias       aa ON (ra.AliasID = aa.AliasID)
                 LEFT JOIN release_platform     rp ON (rp.ReleaseID = ra.release_id)
                 WHERE aa.ArtistID = ?",
-                $this->id()
+                $this->id(),
             ) ?? ['release_total' => 0, 'platform_total' => 0];
-            $info['tgroup_total']  = $info['release_total'];
-            $info['torrent_total'] = $info['release_total'];
-            $info['leecher_total'] = 0;
-            $info['seeder_total']  = 0;
-            $info['snatch_total']  = 0;
             self::$cache->cache_value($key, $info, 3600);
         }
         $this->info = $info;
         return $this->info;
-    }
-
-    public function leecherTotal(): int {
-        return $this->info()['leecher_total'];
-    }
-
-    public function seederTotal(): int {
-        return $this->info()['seeder_total'];
-    }
-
-    public function snatchTotal(): int {
-        return $this->info()['snatch_total'];
     }
 
     public function releaseTotal(): int {
@@ -64,14 +47,6 @@ class Artist extends \Gazelle\BaseObject {
 
     public function platformTotal(): int {
         return $this->info()['platform_total'];
-    }
-
-    public function tgroupTotal(): int {
-        return $this->info()['tgroup_total'];
-    }
-
-    public function torrentTotal(): int {
-        return $this->info()['torrent_total'];
     }
 }
 
