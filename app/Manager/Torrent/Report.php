@@ -40,9 +40,6 @@ class Report extends \Gazelle\BaseManager {
         );
 
         $report = new \Gazelle\Torrent\Report(self::$db->inserted_id(), $this->torMan);
-        if ($reportType->type() == 'urgent') {
-            // IRC notifications have been removed.
-        }
 
         self::$cache->delete_value(sprintf(\Gazelle\TorrentAbstract::CACHE_REPORTLIST, $torrent->id()));
         self::$cache->increment('num_torrent_reportsv2');

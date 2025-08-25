@@ -250,7 +250,7 @@ foreach (
 
 $history = new \Gazelle\User\History($user);
 if ($NewEmail) {
-$history->registerNewEmail($NewEmail, $ownProfile, new \Gazelle\Manager\IPv4(), new \Gazelle\Util\Mail());
+    $history->registerNewEmail($NewEmail, $ownProfile, new \Gazelle\Util\Mail());
 }
 
 if (isset($_POST['resetpasskey'])) {

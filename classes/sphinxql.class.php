@@ -94,7 +94,6 @@ class Sphinxql extends mysqli {
             $Viewer->requestContext()->module(),
             'SphinxQL Error',
             $error,
-            86_400,
         );
         if ($halt === true) {
             if (DEBUG_MODE || $Viewer->permitted('site_debug')) {

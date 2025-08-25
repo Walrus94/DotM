@@ -285,7 +285,6 @@ class Mysql {
                     : $Viewer->requestContext()->module(),
                 'Non-Fatal Deadlock:',
                 $Query,
-                86_400,
             );
             trigger_error("Database deadlock, attempt $i");
 

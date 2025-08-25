@@ -94,7 +94,6 @@ class History extends \Gazelle\BaseUser {
     public function registerNewEmail(
         string $newEmail,
         bool $notify,
-        \Gazelle\Manager\IPv4 $ipv4,
         \Gazelle\Util\Mail $mailer
     ): int {
         $ipaddr = $this->requestContext()->remoteAddr();

@@ -139,7 +139,7 @@ class Debug {
             $report = $message;
         }
         // previously used to trigger IRC status messages
-        $this->saveCase($report);
+        $this->saveCase($module !== '' ? "[$module] $report" : $report);
     }
 
     public function saveError(\Exception $e): int {
