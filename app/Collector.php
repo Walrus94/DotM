@@ -34,15 +34,14 @@ SELECT
     a.Name,
     t.Size
 FROM torrents AS t
-INNER JOIN torrents_leech_stats tls ON (tls.TorrentID = t.ID)
 INNER JOIN torrents_group AS tg ON tg.ID = t.GroupID AND tg.CategoryID = '1'
 INNER JOIN artists_group AS a ON a.ArtistID = tg.ArtistID AND a.ArtistID = 123
-ORDER BY t.GroupID ASC, sequence DESC, tls.Seeders ASC
+ORDER BY t.GroupID ASC, sequence DESC
 */
 
 abstract class Collector extends Base  {
     final public const CHUNK_SIZE = 100;
-    final public const ORDER_BY = ['t.RemasterTitle DESC', 'tls.Seeders ASC', 't.Size ASC'];
+    final public const ORDER_BY = ['t.RemasterTitle DESC', 't.Size ASC'];
 
     protected string $sql  = '';
     protected array $args = [];
@@ -62,7 +61,7 @@ abstract class Collector extends Base  {
 
     public function __construct(
         protected \Gazelle\User $user,
-        protected \Gazelle\Manager\Torrent $torMan,
+        protected \Gazelle\Manager\Edition $torMan,
         protected readonly string          $title,
         protected int                      $orderBy,
     ) {

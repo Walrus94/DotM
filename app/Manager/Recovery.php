@@ -21,14 +21,6 @@ class Recovery extends \Gazelle\Base {
         return self::$db->to_array(false, MYSQLI_ASSOC, false);
     }
 
-    public function findByAnnounce(string $announce): array {
-        self::$db->prepared_query($this->candidateSql() . "
-            WHERE m.torrent_pass LIKE ? GROUP BY m.torrent_pass
-            ", $announce
-        );
-        return self::$db->to_array(false, MYSQLI_ASSOC, false);
-    }
-
     public function findByEmail(string $email): array {
         self::$db->prepared_query($this->candidateSql() . "
             WHERE m.Email LIKE ? GROUP BY m.Email
@@ -53,7 +45,7 @@ class Recovery extends \Gazelle\Base {
 
     public function validate(array $info): array {
         $data = [];
-        foreach (explode(' ', 'username email announce invite info') as $key) {
+        foreach (explode(' ', 'username email invite info') as $key) {
             if (!isset($info[$key])) {
                 continue;
             }
@@ -125,7 +117,7 @@ class Recovery extends \Gazelle\Base {
             $info['password_ok'],
             $info['email'],
             $info['email_clean'],
-            $info['announce'],
+            $info['announce'] ?? '',
             $info['screenshot'],
             $info['invite'],
             $info['info']
@@ -142,7 +134,7 @@ class Recovery extends \Gazelle\Base {
     }
 
     public function page(int $limit, int $offset, string $state, int $admin_id): array {
-        $sql_header = 'SELECT recovery_id, username, token, email, announce, created_dt, updated_dt, state FROM recovery';
+        $sql_header = 'SELECT recovery_id, username, token, email, created_dt, updated_dt, state FROM recovery';
         $sql_footer = 'ORDER BY updated_dt DESC LIMIT ? OFFSET ?';
         match (strtoupper($state)) {
             'CLAIMED' => self::$db->prepared_query("$sql_header
@@ -168,8 +160,8 @@ class Recovery extends \Gazelle\Base {
     public function validatePending(): void {
         self::$db->prepared_query("SELECT recovery_id
             FROM recovery r
-            INNER JOIN " . RECOVERY_DB . ".users_main m ON (m.torrent_pass = r.announce)
-            WHERE r.state = 'PENDING' AND r.admin_user_id IS NULL AND char_length(r.announce) = 32
+            INNER JOIN " . RECOVERY_DB . ".users_main m ON (m.Email = r.email)
+            WHERE r.state = 'PENDING' AND r.admin_user_id IS NULL AND locate('@', r.email) > 1
             LIMIT ?
             ", RECOVERY_AUTOVALIDATE_LIMIT);
         $recover = self::$db->to_array();
@@ -298,7 +290,7 @@ class Recovery extends \Gazelle\Base {
             SELECT
                 recovery_id, state, admin_user_id, created_dt, updated_dt,
                 token, username, ipaddr, password_ok, email, email_clean,
-                announce, screenshot, invite, info, log
+                screenshot, invite, info, log
             FROM recovery
             WHERE recovery_id = ?
             ", $id
@@ -320,7 +312,7 @@ class Recovery extends \Gazelle\Base {
             SELECT
                 recovery_id, state, admin_user_id, created_dt, updated_dt,
                 token, username, ipaddr, password_ok, email, email_clean,
-                announce, screenshot, invite, info, log
+                screenshot, invite, info, log
             FROM recovery
             WHERE $condition
             ", ...$args
@@ -328,28 +320,14 @@ class Recovery extends \Gazelle\Base {
     }
 
     protected function candidateSql(): string {
-        return match (true) {
-            self::$db->entityExists('users_main', 'Uploaded') =>
-                sprintf('
-                    SELECT m.Username, m.torrent_pass, m.Email, m.Uploaded, m.Downloaded, m.Enabled, m.PermissionID, m.ID as UserID,
-                        (SELECT count(t.ID) FROM %s.torrents t WHERE m.ID = t.UserID) as nr_torrents,
-                        group_concat(DISTINCT(h.IP) ORDER BY h.ip) as ips
-                    FROM %s.users_main m
-                    LEFT JOIN %s.users_history_ips h ON (m.ID = h.UserID)
-                    ', RECOVERY_DB, RECOVERY_DB, RECOVERY_DB
-                ),
-            self::$db->entityExists('users_leech_stats', 'Uploaded') =>
-                sprintf('
-                    SELECT m.Username, m.torrent_pass, m.Email, uls.Uploaded, uls.Downloaded, m.Enabled, m.PermissionID, m.ID as UserID,
-                        (SELECT count(t.ID) FROM %s.torrents t WHERE m.ID = t.UserID) as nr_torrents,
-                        group_concat(DISTINCT(h.IP) ORDER BY h.ip) as ips
-                    FROM %s.users_main m
-                    INNER JOIN %s.users_leech_stats uls ON (uls.UserID = m.ID)
-                    LEFT JOIN %s.users_history_ips h ON (m.ID = h.UserID)
-                    ', RECOVERY_DB, RECOVERY_DB, RECOVERY_DB, RECOVERY_DB
-                ),
-            default => throw new \Exception('Cannot determine recovery schema')
-        };
+        return sprintf('
+            SELECT m.Username, m.Email, m.Enabled, p.Name AS user_class, m.ID AS UserID,
+                group_concat(DISTINCT(h.IP) ORDER BY h.ip) AS ips
+            FROM %s.users_main m
+            INNER JOIN %s.permissions p ON (p.ID = m.PermissionID)
+            LEFT JOIN %s.users_history_ips h ON (m.ID = h.UserID)
+            ', RECOVERY_DB, RECOVERY_DB, RECOVERY_DB
+        );
     }
 
     public function findCandidate(string $username): ?array {
@@ -370,12 +348,10 @@ class Recovery extends \Gazelle\Base {
             $torrents_t   = 'torrents';
         }
         return "
-            SELECT u.ID, u.Username, u.Email, u.torrent_pass, p.Name as UserClass, count(t.ID) as nr_torrents
+            SELECT u.ID, u.Username, u.Email, p.Name as UserClass
             FROM $users_main_t u
             INNER JOIN $permission_t p ON (p.ID = u.PermissionID)
-            LEFT JOIN $torrents_t t ON (t.UserID = u.ID)
             WHERE u.ID = ?
-            GROUP BY u.ID, u.Username, u.Email, u.torrent_pass, p.Name
         ";
     }
 

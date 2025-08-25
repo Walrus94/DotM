@@ -18,7 +18,7 @@ if (isset($_GET['id']) && (int)$_GET['id'] > 0) {
 
 $terms = [];
 if ($search) {
-    foreach (['token', 'username', 'email', 'announce'] as $key) {
+    foreach (['token', 'username', 'email'] as $key) {
         if (isset($_GET[$key])) {
             $terms[] = [$key => $_GET[$key]];
         }

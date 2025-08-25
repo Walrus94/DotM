@@ -15,10 +15,6 @@ if (isset($_POST['username']) && strlen($_POST['username'])) {
     $class = 'email';
     $target = trim($_POST['email']);
     $list = $recovery->findByEmail($target);
-} elseif (isset($_POST['announce']) && strlen($_POST['announce'])) {
-    $class = 'announce';
-    $target = trim($_POST['announce']);
-    $list = $recovery->findByAnnounce($target);
 }
 
 echo $Twig->render('recovery/browse.twig', [

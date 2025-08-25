@@ -7,9 +7,8 @@ class Torrent extends \Gazelle\Base {
         SELECT
             t.ID,
             g.ID,
-            ((t.Size * tls.Snatched) + (t.Size * 0.5 * tls.Leechers)) AS Data
+            t.Size AS Data
         FROM torrents AS t
-        INNER JOIN torrents_leech_stats tls ON (tls.TorrentID = t.ID)
         INNER JOIN torrents_group AS g ON (g.ID = t.GroupID)
         %s
         GROUP BY %s
@@ -46,7 +45,7 @@ class Torrent extends \Gazelle\Base {
         $where[] = $this->freeleechWhere($getParameters);
         $where[] = $this->detailsWhere($details);
 
-        $where[] = ["parameters" => null, "where" => "tls.Seeders > 0"];
+        $where[] = ["parameters" => null, "where" => "1=1"];
 
         $whereFilter = fn($value) => $value["where"] ?? null;
 
@@ -97,10 +96,8 @@ class Torrent extends \Gazelle\Base {
 
     private function orderBy($details): string {
         return match ($details) {
-            'snatched' => 'tls.Snatched',
-            'seeded'   => 'tls.Seeders',
             'data'     => 'Data',
-            default    => '(tls.Seeders + tls.Leechers)',
+            default    => 't.Size',
         };
     }
 
@@ -119,12 +116,12 @@ class Torrent extends \Gazelle\Base {
         if ($artists) {
             return [
                 " LEFT JOIN (
-                    SELECT COUNT(*) AS ArtistCount, ta.GroupID
-                    FROM torrents_artists AS ta
+                    SELECT COUNT(*) AS ArtistCount, ta.release_id
+                    FROM release_artist AS ta
                     INNER JOIN artists_alias AS aa ON (ta.AliasID = aa.AliasID)
                     WHERE ta.Importance != '2' AND aa.Name IN (" . placeholders($artists) . ")
-                    GROUP BY ta.GroupID
-                ) AS ta ON (g.ID = ta.GroupID)",
+                    GROUP BY ta.release_id
+                ) AS ta ON (g.ID = ta.release_id)",
                 array_map('trim', $artists)
             ];
         }
@@ -156,11 +153,11 @@ class Torrent extends \Gazelle\Base {
             $where = implode(' OR ', array_fill(0,  count($tags), "t.Name = ?"));
             $clause = "
         g.ID IN (
-            SELECT tt.GroupID
-            FROM torrents_tags tt
+            SELECT tt.release_id
+            FROM release_tag tt
             INNER JOIN tags t ON (t.ID = tt.TagID)
             WHERE $where
-            GROUP BY tt.GroupID
+            GROUP BY tt.release_id
             HAVING count(*) >= ?
         )";
             $tags[] = $any ? 1 : count($tags);

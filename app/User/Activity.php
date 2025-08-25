@@ -187,7 +187,7 @@ class Activity extends \Gazelle\BaseUser {
         return $this;
     }
 
-    public function setStats(int $threshold, \Gazelle\Stats\Torrent $stats): static {
+    public function setStats(int $threshold, \Gazelle\Stats\Release $stats): static {
         if ($this->user->permitted('admin_site_debug')) {
             $total = array_reduce(
                 array_map(
@@ -198,7 +198,7 @@ class Activity extends \Gazelle\BaseUser {
             );
             if ($total > $threshold) {
                 $this->setAction(
-                    '<span class="sys-warning">Downloads: <a href="tools.php?action=torrent_stats" title="Downloads over past three hours">'
+                    '<span class="sys-warning">Downloads: <a href="tools.php?action=release_stats" title="Downloads over past three hours">'
                     . implode('/', array_map(
                         fn ($s) => number_format($s['total']),
                         $stats->recentDownloadTotal()

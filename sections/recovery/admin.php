@@ -28,7 +28,7 @@ if (isset($_GET['task'])) {
         }
     }
 } else {
-    foreach (explode(' ', 'token username announce email') as $field) {
+    foreach (explode(' ', 'token username email') as $field) {
         if (array_key_exists($field, $_POST)) {
             $value = trim($_POST[$field]);
             if (strlen($value)) {

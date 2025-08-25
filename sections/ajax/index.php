@@ -32,6 +32,7 @@ $LimitedPages = [
     'tcomments'       => [5, 10],
     'top10'           => [2, 60],
     'torrentgroup'    => [15, 60],
+    'release_platform'=> [5, 10],
     'user'            => [4, 60],
     'user_recents'    => [5, 10],
     'userhistory'     => [5, 10],
@@ -119,6 +120,9 @@ switch ($Action) {
         break;
     case 'torrentgroupalbumart':        // so the album art script can function without breaking the ratelimit
         include_once 'torrentgroupalbumart.php';
+        break;
+    case 'release_platform':
+        include_once 'release_platform.php';
         break;
     case 'torrent_remove_cover_art':
         include_once 'torrent_remove_cover_art.php';
@@ -231,8 +235,8 @@ switch ($Action) {
     case 'user_stats':
         include_once 'stats/users.php';
         break;
-    case 'torrent_stats':
-        include_once 'stats/torrents.php';
+    case 'release_stats':
+        include_once 'stats/releases.php';
         break;
     case 'logchecker':
         include_once 'logchecker.php';

@@ -141,67 +141,6 @@ class Bonus extends \Gazelle\Base {
     }
 
     public function givePoints(\Gazelle\Task|null $task = null): int {
-        //------------------------ Update Bonus Points -------------------------//
-        // calculation:
-        // Size * (0.0754 + (0.1207 * ln(1 + seedtime)/ (seeders ^ 0.55)))
-        // Size (convert from bytes to GB) is in torrents
-        // Seedtime (convert from hours to days) is in xbt_files_history
-        // Seeders is in torrents_leech_stats
-
-        self::$db->dropTemporaryTable("bonus_update");
-        self::$db->prepared_query("
-            CREATE TEMPORARY TABLE bonus_update (
-                user_id int NOT NULL PRIMARY KEY,
-                delta float(20, 5) NOT NULL
-            )
-        ");
-        self::$db->prepared_query("
-            SET SESSION TRANSACTION ISOLATION LEVEL READ UNCOMMITTED
-        ");
-        self::$db->prepared_query("
-            INSERT INTO bonus_update (user_id, delta)
-            SELECT xfu.uid,
-                sum(bonus_accrual(t.Size, xfh.seedtime, tls.Seeders))
-            FROM xbt_files_users            AS xfu
-            INNER JOIN xbt_files_history    AS xfh USING (uid, fid)
-            INNER JOIN users_main           AS um ON (um.ID = xfu.uid)
-            INNER JOIN torrents             AS t  ON (t.ID = xfu.fid)
-            INNER JOIN torrents_leech_stats AS tls ON (tls.TorrentID = t.ID)
-            WHERE xfu.active         = 1
-                AND xfu.remaining    = 0
-                AND xfu.mtime        > unix_timestamp(now() - INTERVAL 1 HOUR)
-                AND um.Enabled       = '1'
-                AND NOT EXISTS (
-                    SELECT 1 FROM user_has_attr uha
-                    INNER JOIN user_attr ua ON (ua.ID = uha.UserAttrID AND ua.Name IN ('disable-bonus-points'))
-                    WHERE uha.UserID = um.ID
-                )
-            GROUP BY xfu.uid
-        ");
-        self::$db->prepared_query("
-            SET SESSION TRANSACTION ISOLATION LEVEL REPEATABLE READ
-        ");
-        $task?->info('bonus_update table constructed');
-
-        self::$db->prepared_query("
-            INSERT INTO user_bonus
-                     (user_id, points)
-            SELECT bu.user_id, bu.delta
-            FROM bonus_update bu
-            ON DUPLICATE KEY UPDATE points = points + bu.delta
-        ");
-        $processed = self::$db->affected_rows();
-        $task?->info('user_bonus updated');
-
-        /* flush their stats */
-        self::$db->prepared_query("
-            SELECT concat('u_', bu.user_id) FROM bonus_update bu
-        ");
-        if (self::$db->has_results()) {
-            self::$cache->delete_multi(self::$db->collect(0, false));
-        }
-        self::$db->dropTemporaryTable("bonus_update");
-
-        return $processed;
+        return 0;
     }
 }

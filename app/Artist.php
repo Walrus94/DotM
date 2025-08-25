@@ -38,8 +38,8 @@ class Artist extends BaseObject implements CollageEntry {
 
     public function flush(): static {
         self::$db->prepared_query("
-            SELECT DISTINCT concat('groups_artists_', GroupID)
-            FROM torrents_artists ta
+            SELECT DISTINCT concat('release_artist_', release_id)
+            FROM release_artist ta
             INNER JOIN artists_alias aa USING (AliasID)
             WHERE aa.ArtistID = ?
             ", $this->id
@@ -132,11 +132,11 @@ class Artist extends BaseObject implements CollageEntry {
 
     public function loadArtistRole(): static {
         self::$db->prepared_query("
-            SELECT ta.GroupID AS group_id,
+            SELECT ta.release_id AS release_id,
                 ta.Importance as artist_role,
                 rt.ID as release_type_id
-            FROM torrents_artists AS ta
-            INNER JOIN torrents_group AS tg ON (tg.ID = ta.GroupID)
+            FROM release_artist AS ta
+            INNER JOIN torrents_group AS tg ON (tg.ID = ta.release_id)
             INNER JOIN release_type AS rt ON (rt.ID = tg.ReleaseType)
             INNER JOIN artists_alias aa ON (ta.AliasID = aa.AliasID)
             WHERE aa.ArtistID = ?
@@ -154,7 +154,7 @@ class Artist extends BaseObject implements CollageEntry {
             ARTIST_ARRANGER => 0,
         ];
 
-        while ([$groupId, $role, $releaseTypeId] = self::$db->next_record(MYSQLI_NUM, false)) {
+        while ([$releaseId, $role, $releaseTypeId] = self::$db->next_record(MYSQLI_NUM, false)) {
             $role = (int)$role;
             $sectionId = match ($role) {
                 ARTIST_ARRANGER => ARTIST_SECTION_ARRANGER,
@@ -167,11 +167,11 @@ class Artist extends BaseObject implements CollageEntry {
             if (!isset($this->section[$sectionId])) {
                 $this->section[$sectionId] = [];
             }
-            $this->section[$sectionId][$groupId] = true;
-            if (!isset($this->groupRole[$groupId])) {
-                $this->groupRole[$groupId] = [];
+            $this->section[$sectionId][$releaseId] = true;
+            if (!isset($this->groupRole[$releaseId])) {
+                $this->groupRole[$releaseId] = [];
             }
-            $this->groupRole[$groupId][] = $role;
+            $this->groupRole[$releaseId][] = $role;
             ++$this->artistRole[$role];
         }
         return $this;
@@ -356,9 +356,9 @@ class Artist extends BaseObject implements CollageEntry {
         self::$db->prepared_query("
             SELECT t.Name AS name,
                 count(*)  AS total
-            FROM torrents_artists ta
-            INNER JOIN torrents_group tg ON (tg.ID = ta.GroupID)
-            INNER JOIN torrents_tags tt USING (GroupID)
+            FROM release_artist ta
+            INNER JOIN torrents_group tg ON (tg.ID = ta.release_id)
+            INNER JOIN release_tag tt USING (release_id)
             INNER JOIN tags t ON (t.ID = tt.TagID)
             INNER JOIN artists_alias aa ON (ta.AliasID = aa.AliasID)
             WHERE tg.CategoryID NOT IN (3, 7)
@@ -503,7 +503,7 @@ class Artist extends BaseObject implements CollageEntry {
         self::$db->prepared_query("
             SELECT DISTINCT tg.ID
             FROM torrents_group AS tg
-            INNER JOIN torrents_artists AS ta ON (ta.GroupID = tg.ID)
+            INNER JOIN release_artist AS ta ON (ta.release_id = tg.ID)
             INNER JOIN artists_alias       aa ON (ta.AliasID = aa.AliasID)
             WHERE aa.ArtistID = ?
             ", $this->id
@@ -633,8 +633,8 @@ class Artist extends BaseObject implements CollageEntry {
         );
         $artistCollageList = self::$db->collect(0, false);
         self::$db->prepared_query("
-            SELECT DISTINCT GroupID
-            FROM torrents_artists ta
+            SELECT DISTINCT release_id
+            FROM release_artist ta
             INNER JOIN artists_alias aa ON (ta.AliasID = aa.AliasID)
             WHERE aa.ArtistID = ?
             ", $oldId
@@ -653,7 +653,7 @@ class Artist extends BaseObject implements CollageEntry {
         self::$db->prepared_query("
             SELECT DISTINCT ct.CollageID
             FROM collages_torrents      ct
-            INNER JOIN torrents_artists ta USING (GroupID)
+            INNER JOIN release_artist ta USING (release_id)
             INNER JOIN artists_alias    aa ON (ta.AliasID = aa.AliasID)
             WHERE aa.ArtistID = ?
             ", $oldId
@@ -705,7 +705,7 @@ class Artist extends BaseObject implements CollageEntry {
                 ", $this->primaryAliasId(), $old->primaryAliasId(), $old->primaryAliasId(), $newId
             );
             self::$db->prepared_query("
-                UPDATE IGNORE torrents_artists SET AliasID = ?  WHERE AliasID = ?
+                UPDATE IGNORE release_artist SET AliasID = ?  WHERE AliasID = ?
             ", $this->primaryAliasId(), $old->primaryAliasId()
             );
             self::$db->prepared_query("
@@ -713,7 +713,7 @@ class Artist extends BaseObject implements CollageEntry {
             ", $this->primaryAliasId(), $old->primaryAliasId()
             );
             self::$db->prepared_query("
-                DELETE FROM torrents_artists WHERE AliasID = ?
+                DELETE FROM release_artist WHERE AliasID = ?
             ", $old->primaryAliasId()
             );
             self::$db->prepared_query("
@@ -839,12 +839,12 @@ class Artist extends BaseObject implements CollageEntry {
 
         // process artists in torrents
         self::$db->prepared_query("
-            SELECT GroupID FROM torrents_artists WHERE AliasID = ?
+            SELECT release_id FROM release_artist WHERE AliasID = ?
             ", $aliasId
         );
-        $groups = self::$db->collect('GroupID');
+        $groups = self::$db->collect('release_id');
         self::$db->prepared_query("
-            UPDATE IGNORE torrents_artists SET AliasID = ?  WHERE AliasID = ?
+            UPDATE IGNORE release_artist SET AliasID = ?  WHERE AliasID = ?
             ", $newId, $aliasId
         );
         foreach ($groups as $groupId) {
@@ -865,7 +865,7 @@ class Artist extends BaseObject implements CollageEntry {
         if ($aliasId !== $newId) {
             // delete entries that exist for both old + new alias
             self::$db->prepared_query("
-                DELETE FROM torrents_artists WHERE AliasID = ?
+                DELETE FROM release_artist WHERE AliasID = ?
                 ", $aliasId
             );
             self::$db->prepared_query("

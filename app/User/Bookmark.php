@@ -68,11 +68,11 @@ class Bookmark extends \Gazelle\BaseUser {
                     if (is_null($torrent)) {
                         continue;
                     }
-                    $Feed->populate('torrents_bookmarks_t_' . $this->user->announceKey(),
+                    $Feed->populate('releases_bookmarks_e_' . $this->user->announceKey(),
                         $Feed->item(
                             $torrent->name() . ' ' . '[' . $torrent->label($this->user) . ']',
                             \Text::strip_bbcode($tgroup->description()),
-                            "torrents.php?action=download&id={$id}&torrent_pass=[[PASSKEY]]",
+                            "editions.php?action=download&id={$id}&torrent_pass=[[PASSKEY]]",
                             date('r'),
                             $this->user->username(),
                             $torrent->group()->location(),
@@ -186,7 +186,7 @@ class Bookmark extends \Gazelle\BaseUser {
             SELECT aa.ArtistID AS id,
                 count(*) AS total
             FROM bookmarks_torrents b
-            INNER JOIN torrents_artists ta USING (GroupID)
+            INNER JOIN release_artist ta USING (release_id)
             INNER JOIN artists_alias aa USING (AliasID)
             WHERE b.userid = ?
             GROUP BY aa.ArtistID
@@ -210,7 +210,7 @@ class Bookmark extends \Gazelle\BaseUser {
         return (int)self::$db->scalar("
             SELECT count(*) AS total
             FROM bookmarks_torrents b
-            INNER JOIN torrents_artists ta USING (GroupID)
+            INNER JOIN release_artist ta USING (release_id)
             WHERE b.UserID = ?
             ", $this->user->id()
         );
@@ -221,7 +221,7 @@ class Bookmark extends \Gazelle\BaseUser {
             SELECT t.Name AS name,
                 count(*)  AS total
             FROM bookmarks_torrents b
-            INNER JOIN torrents_tags ta USING (GroupID)
+            INNER JOIN release_tag ta USING (release_id)
             INNER JOIN tags t ON (t.ID = ta.TagID)
             WHERE b.UserID = ?
             GROUP BY t.Name

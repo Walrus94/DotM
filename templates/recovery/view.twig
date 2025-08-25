@@ -45,10 +45,8 @@
     {% if candidate %}
         <tr>
             <td>{{ candidate.enabled }}</td>
-            <td>{{ candidate.user_class }}</th>
-            <td>{{ candidate.nr_torrents|number_format }} torrent{{ candidate.nr_torrents|plural }}</td>
-            <td>{{ candidate.uploaded|octet_size }} up</td>
-            <td>{{ candidate.downloaded|octet_size }} down</td>
+            <td>{{ candidate.user_class }}</td>
+            <td colspan="3"></td>
         </tr>
     {% endif %}
         <tr>
@@ -70,11 +68,8 @@
             <td>{{ info.created_dt|time_diff }}</td>
         </tr>
         <tr>
-            <th>Announce key</th>
-            <td>{{ info.announce }}</td>
-            <td>{{ candidate.torrent_pass }}</td>
             <th>Updated</th>
-            <td>{{ info.updated_dt|time_diff }}</td>
+            <td colspan="4">{{ info.updated_dt|time_diff }}</td>
         </tr>
         <tr>
             <th>Remote IP</th>

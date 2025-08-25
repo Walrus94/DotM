@@ -4,8 +4,11 @@ use Phinx\Migration\AbstractMigration;
 
 class NukeRecommendations extends AbstractMigration {
     public function up(): void {
-        $this->table('torrents_recommended')->drop()->update();
-        $this->table('users_enable_recommendations')->drop()->update();
+        foreach (['torrents_recommended', 'users_enable_recommendations'] as $table) {
+            if ($this->hasTable($table)) {
+                $this->table($table)->drop()->update();
+            }
+        }
     }
 
     public function down(): void {

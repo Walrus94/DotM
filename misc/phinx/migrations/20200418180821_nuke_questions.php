@@ -6,8 +6,11 @@ use Phinx\Db\Adapter\MysqlAdapter;
 class NukeQuestions extends AbstractMigration
 {
     public function up(): void {
-        $this->table('staff_answers')->drop()->update();
-        $this->table('user_questions')->drop()->update();
+        foreach (['staff_answers', 'user_questions'] as $table) {
+            if ($this->hasTable($table)) {
+                $this->table($table)->drop()->update();
+            }
+        }
     }
 
     public function down(): void {

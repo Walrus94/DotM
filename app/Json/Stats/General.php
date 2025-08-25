@@ -5,7 +5,7 @@ namespace Gazelle\Json\Stats;
 class General extends \Gazelle\Json {
     public function __construct(
         protected \Gazelle\Stats\Request $reqStat,
-        protected \Gazelle\Stats\Torrent $torStat,
+        protected \Gazelle\Stats\Release $torStat,
         protected \Gazelle\Stats\Users   $userStat,
     ) {}
 

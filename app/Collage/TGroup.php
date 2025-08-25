@@ -37,7 +37,7 @@ class TGroup extends AbstractCollage {
             SELECT count(*) AS \"count\",
                 tag.name AS tag
             FROM collages_torrents   AS ct
-            INNER JOIN torrents_tags AS tt USING (groupid)
+            INNER JOIN release_tag AS tt USING (release_id)
             INNER JOIN tags          AS tag ON (tag.id = tt.tagid)
             WHERE ct.collageid = ?
             GROUP BY tag.name
@@ -121,7 +121,7 @@ class TGroup extends AbstractCollage {
         self::$db->prepared_query("
             SELECT tag.Name
             FROM collages_torrents ct
-            INNER JOIN torrents_tags tt USING (GroupID)
+            INNER JOIN release_tag tt USING (release_id)
             INNER JOIN tags tag ON (tag.ID = tt.TagID)
             WHERE ct.CollageID = ?
             GROUP BY tag.Name

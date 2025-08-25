@@ -1,11 +1,11 @@
-{{ header(user.username ~ ' › Organize torrent bookmarks', {'js': 'browse,vendor/jquery-ui,vendor/jquery.tablesorter,sort'}) }}
+{{ header(user.username ~ ' › Organize release bookmarks', {'js': 'browse,vendor/jquery-ui,vendor/jquery.tablesorter,sort'}) }}
 {% for b in list %}
     {% if loop.first %}
 <div class="thin">
 <div class="header">
-    <h2>{{ user.id|user_url }} › <a href="bookmarks.php?type=torrents
+    <h2>{{ user.id|user_url }} › <a href="bookmarks.php?type=releases
         {%- if user.id != viewer.id %}&amp;user_id={{ user.id }}{% endif -%}
-        ">Torrent Bookmarks</a> › Manage</h2>
+        ">Release Bookmarks</a> › Manage</h2>
 </div>
 <table width="100%" class="layout">
     <tr class="colhead"><td id="sorting_head">Sorting</td></tr>
@@ -32,7 +32,7 @@
             <th style="width: 1%;"><span><abbr class="tooltip" title="Current order">#</abbr></span></th>
             <th style="width: 1%;"><span>Year</span></th>
             <th style="width: 15%;" data-sorter="ignoreArticles"><span>Artist</span></th>
-            <th data-sorter="ignoreArticles"><span>Torrent</span></th>
+            <th data-sorter="ignoreArticles"><span>Release</span></th>
             <th style="width: 5%;" data-sorter="relativeTime"><span>Bookmarked</span></th>
             <th style="width: 1%;" id="check_all" data-sorter="false"><span>Remove</span></th>
         </tr>

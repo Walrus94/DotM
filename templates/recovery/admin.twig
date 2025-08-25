@@ -15,8 +15,7 @@
 <table>
 <tr><th>Token</th><td><input type="text" width="30" name="token" /></td>
 <th>Username</th><td><input type="text" width="30" name="username" /></td></tr>
-<tr><th>Announce</th><td><input type="text" width="30" name="announce" /></td>
-<th>Email</th><td><input type="text" width="30" name="email" /></td></tr>
+<tr><th>Email</th><td colspan="3"><input type="text" width="30" name="email" /></td></tr>
 <tr><td></td><td colspan="3"><input type="submit" value="Search" /></td></tr>
 </table>
 
@@ -37,7 +36,6 @@
                 <th>Username</th>
                 <th>Token</th>
                 <th>Email</th>
-                <th>Announce</th>
                 <th>Created</th>
                 <th>Updated</th>
                 <th>Action</th>
@@ -48,7 +46,6 @@
                 <td>{{ r.username }}</td>
                 <td><tt>{{ r.token }}</tt></td>
                 <td>{{ r.email }}</td>
-                <td>{{ r.announce }}</td>
                 <td><?= r.created_dt|time_diff }}</td>
                 <td><?= r.updated_dt|time_diff }}</td>
                 <td>

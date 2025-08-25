@@ -1,0 +1,1617 @@
+@startuml
+' Auto-generated from GraphML (ER diagram)
+entity "api_applications" as api_applications {
+  ID
+  UserID
+  Token
+  Name
+}
+entity "api_tokens" as api_tokens {
+  id
+  user_id
+  name
+  token
+  created
+  revoked
+}
+entity "applicant" as applicant {
+  ID
+  RoleID
+  UserID
+  ThreadID
+  Body
+  Created
+  Modified
+  Resolved
+}
+entity "applicant_role" as applicant_role {
+  ID
+  Title
+  Published
+  Description
+  UserID
+  Created
+  Modified
+}
+entity "applicant_role_has_user" as applicant_role_has_user {
+  applicant_role_id
+  user_id
+}
+entity "artist_attr" as artist_attr {
+  artist_attr_id
+  name
+  description
+}
+entity "artist_discogs" as artist_discogs {
+  artist_discogs_id
+  artist_id
+  user_id
+  created
+  is_preferred
+  sequence
+  stem
+  name
+}
+entity "artist_has_attr" as artist_has_attr {
+  artist_id
+  artist_attr_id
+}
+entity "artist_role" as artist_role {
+  artist_role_id
+  sequence
+  slug
+  name
+  title
+  collection
+}
+entity "artist_usage" as artist_usage {
+  artist_id
+  role
+  uses
+}
+entity "artists_alias" as artists_alias {
+  AliasID
+  ArtistID
+  Name
+  Redirect
+  UserID
+}
+entity "artists_group" as artists_group {
+  ArtistID
+  RevisionID
+  VanityHouse
+  LastCommentID
+  PrimaryAlias
+}
+entity "artists_similar" as artists_similar {
+  ArtistID
+  SimilarID
+}
+entity "artists_similar_scores" as artists_similar_scores {
+  SimilarID
+  Score
+}
+entity "artists_similar_votes" as artists_similar_votes {
+  SimilarID
+  UserID
+  Way
+}
+entity "artists_tags" as artists_tags {
+  TagID
+  ArtistID
+  PositiveVotes
+  NegativeVotes
+  UserID
+}
+entity "better_transcode_music" as better_transcode_music {
+  tgroup_id
+  want_v0
+  want_320
+  edition
+}
+entity "blog" as blog {
+  ID
+  UserID
+  Title
+  Body
+  Time
+  ThreadID
+  Important
+}
+entity "bonus_history" as bonus_history {
+  ID
+  ItemID
+  UserID
+  Price
+  OtherUserID
+  PurchaseDate
+}
+entity "bonus_item" as bonus_item {
+  ID
+  Price
+  Amount
+  MinClass
+  FreeClass
+  Label
+  Title
+  sequence
+}
+entity "bonus_pool" as bonus_pool {
+  bonus_pool_id
+  name
+  since_date
+  until_date
+  total
+}
+entity "bonus_pool_contrib" as bonus_pool_contrib {
+  bonus_pool_contrib_id
+  bonus_pool_id
+  user_id
+  amount_recv
+  amount_sent
+  created
+}
+entity "bookmarks_artists" as bookmarks_artists {
+  UserID
+  ArtistID
+  Time
+}
+entity "bookmarks_collages" as bookmarks_collages {
+  UserID
+  CollageID
+  Time
+}
+entity "bookmarks_requests" as bookmarks_requests {
+  UserID
+  RequestID
+  Time
+}
+entity "bookmarks_torrents" as bookmarks_torrents {
+  UserID
+  GroupID
+  Time
+  Sort
+}
+entity "category" as category {
+  category_id
+  is_system
+  is_grouped
+  upload
+  name
+}
+entity "changelog" as changelog {
+  ID
+  Time
+  Message
+  Author
+}
+entity "collage_attr" as collage_attr {
+  ID
+  Name
+  Description
+}
+entity "collage_has_attr" as collage_has_attr {
+  CollageID
+  CollageAttrID
+}
+entity "collages" as collages {
+  ID
+  Name
+  Description
+  UserID
+  NumTorrents
+  Deleted
+  Locked
+  CategoryID
+  TagList
+  MaxGroups
+  MaxGroupsPerUser
+  Featured
+  Subscribers
+  updated
+}
+entity "collages_artists" as collages_artists {
+  CollageID
+  ArtistID
+  UserID
+  Sort
+  AddedOn
+}
+entity "collages_torrents" as collages_torrents {
+  CollageID
+  GroupID
+  UserID
+  Sort
+  AddedOn
+}
+entity "comments" as comments {
+  ID
+  Page
+  PageID
+  AuthorID
+  AddedTime
+  Body
+  EditedUserID
+  EditedTime
+}
+entity "comments_edits" as comments_edits {
+  Page
+  PostID
+  EditUser
+  EditTime
+  Body
+  comments_edits_id
+}
+entity "contest" as contest {
+  contest_id
+  contest_type_id
+  name
+  banner
+  date_begin
+  date_end
+  display
+  max_tracked
+  description
+}
+entity "contest_has_bonus_pool" as contest_has_bonus_pool {
+  bonus_pool_id
+  contest_id
+  status
+  bonus_contest
+  bonus_user
+  bonus_per_entry
+}
+entity "contest_leaderboard" as contest_leaderboard {
+  contest_id
+  user_id
+  entry_count
+  last_entry_id
+}
+entity "contest_type" as contest_type {
+  contest_type_id
+  name
+}
+entity "cover_art" as cover_art {
+  ID
+  GroupID
+  Image
+  Summary
+  UserID
+  Time
+}
+entity "deleted_torrents_group" as deleted_torrents_group {
+  ID
+  CategoryID
+  Name
+  Year
+  CatalogueNumber
+  RecordLabel
+  ReleaseType
+  TagList
+  Time
+  RevisionID
+  WikiBody
+  WikiImage
+  VanityHouse
+  created
+  updated
+}
+entity "deleted_users_notify_torrents" as deleted_users_notify_torrents {
+  UserID
+  FilterID
+  GroupID
+  TorrentID
+  UnRead
+}
+entity "donations" as donations {
+  UserID
+  Amount
+  Time
+  Currency
+  Source
+  Reason
+  donor_rank
+  AddedBy
+  TotalRank
+  xbt
+  donations_id
+}
+entity "donations_bitcoin" as donations_bitcoin {
+  BitcoinAddress
+  Amount
+  donations_bitcoin_id
+}
+entity "donor_forum_usernames" as donor_forum_usernames {
+  UserID
+  Prefix
+  Suffix
+  UseComma
+}
+entity "donor_rewards" as donor_rewards {
+  UserID
+  IconMouseOverText
+  AvatarMouseOverText
+  CustomIcon
+  SecondAvatar
+  CustomIconLink
+  ProfileInfo1
+  ProfileInfo2
+  ProfileInfo3
+  ProfileInfo4
+  ProfileInfoTitle1
+  ProfileInfoTitle2
+  ProfileInfoTitle3
+  ProfileInfoTitle4
+}
+entity "dupe_groups" as dupe_groups {
+  ID
+  Comments
+}
+entity "edition" as edition {
+  edition_id
+  GroupID
+  UserID
+  Format
+  Encoding
+  RemasterYear
+  RemasterTitle
+  RemasterCatalogueNumber
+  RemasterRecordLabel
+  Scene
+  HasLog
+  HasCue
+  HasLogDB
+  LogScore
+  info_hash
+  FileCount
+  FileList
+  FilePath
+  Size
+  FreeTorrent
+  FreeLeechType
+  time
+  Description
+  LastReseedRequest
+  created
+  updated
+  release_id
+  edition_type
+}
+entity "email_blacklist" as email_blacklist {
+  ID
+  UserID
+  Email
+  Time
+  Comment
+}
+entity "error_log" as error_log {
+  error_log_id
+  duration
+  memory
+  nr_query
+  nr_cache
+  seen
+  created
+  updated
+  digest
+  uri
+  trace
+  request
+  error_list
+  logged_var
+  user_id
+}
+entity "featured_albums" as featured_albums {
+  GroupID
+  ThreadID
+  Title
+  Started
+  Ended
+  Type
+}
+entity "forums" as forums {
+  ID
+  CategoryID
+  Sort
+  Name
+  Description
+  MinClassRead
+  MinClassWrite
+  MinClassCreate
+  NumTopics
+  NumPosts
+  LastPostID
+  LastPostAuthorID
+  LastPostTopicID
+  LastPostTime
+  AutoLock
+  AutoLockWeeks
+}
+entity "forums_categories" as forums_categories {
+  ID
+  Name
+  Sort
+}
+entity "forums_last_read_topics" as forums_last_read_topics {
+  UserID
+  TopicID
+  PostID
+}
+entity "forums_polls" as forums_polls {
+  TopicID
+  Question
+  Answers
+  Featured
+  Closed
+}
+entity "forums_polls_votes" as forums_polls_votes {
+  TopicID
+  UserID
+  Vote
+}
+entity "forums_posts" as forums_posts {
+  ID
+  TopicID
+  AuthorID
+  AddedTime
+  Body
+  EditedUserID
+  EditedTime
+}
+entity "forums_topic_notes" as forums_topic_notes {
+  ID
+  TopicID
+  AuthorID
+  AddedTime
+  Body
+}
+entity "forums_topics" as forums_topics {
+  ID
+  Title
+  AuthorID
+  IsLocked
+  IsSticky
+  ForumID
+  NumPosts
+  LastPostID
+  LastPostTime
+  LastPostAuthorID
+  StickyPostID
+  Ranking
+  CreatedTime
+}
+entity "forums_transitions" as forums_transitions {
+  forums_transitions_id
+  source
+  destination
+  label
+  permission_levels
+  permission_class
+  permissions
+  user_ids
+}
+entity "friends" as friends {
+  UserID
+  FriendID
+  Comment
+}
+entity "group_log" as group_log {
+  ID
+  GroupID
+  TorrentID
+  UserID
+  Info
+  Time
+  Hidden
+  created
+}
+entity "invite_source" as invite_source {
+  invite_source_id
+  name
+}
+entity "invite_source_pending" as invite_source_pending {
+  invite_source_id
+  invite_key
+}
+entity "inviter_has_invite_source" as inviter_has_invite_source {
+  user_id
+  invite_source_id
+}
+entity "invites" as invites {
+  InviterID
+  InviteKey
+  Email
+  Expires
+  Reason
+  Notes
+}
+entity "ip_bans" as ip_bans {
+  ID
+  FromIP
+  ToIP
+  Reason
+  user_id
+  created
+}
+entity "lastfm_users" as lastfm_users {
+  ID
+  Username
+}
+entity "locked_accounts" as locked_accounts {
+  UserID
+  Type
+}
+entity "log" as log {
+  ID
+  Message
+  Time
+  created
+}
+entity "login_attempts" as login_attempts {
+  ID
+  UserID
+  IP
+  LastAttempt
+  Attempts
+  BannedUntil
+  Bans
+  capture
+}
+entity "nav_items" as nav_items {
+  id
+  tag
+  title
+  target
+  tests
+  test_user
+  mandatory
+  initial
+}
+entity "news" as news {
+  ID
+  UserID
+  Title
+  Body
+  Time
+}
+entity "payment_reminders" as payment_reminders {
+  ID
+  Text
+  Expiry
+  Active
+  AnnualRent
+  cc
+}
+entity "periodic_task" as periodic_task {
+  periodic_task_id
+  name
+  classname
+  description
+  period
+  is_enabled
+  is_sane
+  is_debug
+  run_now
+}
+entity "periodic_task_history" as periodic_task_history {
+  periodic_task_history_id
+  periodic_task_id
+  launch_time
+  status
+  num_errors
+  num_items
+  duration_ms
+}
+entity "periodic_task_history_event" as periodic_task_history_event {
+  periodic_task_history_event_id
+  periodic_task_history_id
+  severity
+  event_time
+  event
+  reference
+}
+entity "permission_rate_limit" as permission_rate_limit {
+  permission_id
+  overshoot
+  factor
+}
+entity "permissions" as permissions {
+  ID
+  Level
+  Name
+  Values
+  DisplayStaff
+  PermittedForums
+  Secondary
+  StaffGroup
+  badge
+}
+entity "phinxlog" as phinxlog {
+  version
+  migration_name
+  start_time
+  end_time
+  breakpoint
+}
+entity "pm_conversations" as pm_conversations {
+  ID
+  Subject
+}
+entity "pm_conversations_users" as pm_conversations_users {
+  UserID
+  ConvID
+  InInbox
+  InSentbox
+  SentDate
+  ReceivedDate
+  UnRead
+  Sticky
+  ForwardedTo
+}
+entity "pm_messages" as pm_messages {
+  ID
+  ConvID
+  SentDate
+  SenderID
+  Body
+}
+entity "push_notifications_usage" as push_notifications_usage {
+  PushService
+  TimesUsed
+}
+entity "ratelimit_torrent" as ratelimit_torrent {
+  ratelimit_torrent_id
+  user_id
+  torrent_id
+  logged
+}
+entity "recovery_buffer" as recovery_buffer {
+  user_id
+  prev_id
+  uploaded
+  downloaded
+  bounty
+  final
+  nr_torrents
+  userclass
+}
+entity "referral_accounts" as referral_accounts {
+  ID
+  Site
+  URL
+  User
+  Password
+  Active
+  Cookie
+  Type
+}
+entity "referral_users" as referral_users {
+  ID
+  UserID
+  Username
+  Site
+  Created
+  Joined
+  IP
+  InviteKey
+  Active
+}
+entity "release" as release {
+  ID
+  Name
+  Year
+  catalog_number
+  record_label
+  release_type
+  TagList
+  WikiBody
+  WikiImage
+  created
+  updated
+  showcase
+}
+entity "release_artist" as release_artist {
+  GroupID
+  AliasID
+  UserID
+  Importance
+  artist_role_id
+  created
+}
+entity "release_platform" as release_platform {
+  ID
+  ReleaseID
+  Platform
+  Url
+  created
+  updated
+}
+entity "release_tag" as release_tag {
+  TagID
+  release_id
+  PositiveVotes
+  NegativeVotes
+  UserID
+}
+entity "release_type" as release_type {
+  ID
+  Name
+}
+entity "reports" as reports {
+  ID
+  UserID
+  ThingID
+  Type
+  Comment
+  ResolverID
+  Status
+  ResolvedTime
+  ReportedTime
+  Reason
+  ClaimerID
+  Notes
+}
+entity "reportsv2" as reportsv2 {
+  ID
+  ReporterID
+  TorrentID
+  Type
+  UserComment
+  ResolverID
+  Status
+  ReportedTime
+  LastChangeTime
+  ModComment
+  Track
+  Image
+  ExtraID
+  Link
+  LogMessage
+}
+entity "requests" as requests {
+  ID
+  UserID
+  TimeAdded
+  LastVote
+  CategoryID
+  Title
+  Year
+  Image
+  Description
+  ReleaseType
+  CatalogueNumber
+  BitrateList
+  FormatList
+  MediaList
+  LogCue
+  FillerID
+  TorrentID
+  TimeFilled
+  Visible
+  RecordLabel
+  GroupID
+  OCLC
+  Checksum
+  created
+  updated
+}
+entity "requests_artists" as requests_artists {
+  RequestID
+  AliasID
+  Importance
+  artist_role_id
+  UserID
+  created
+}
+entity "requests_tags" as requests_tags {
+  TagID
+  RequestID
+}
+entity "requests_votes" as requests_votes {
+  requests_votes_id
+  RequestID
+  UserID
+  Bounty
+  created
+}
+entity "site_options" as site_options {
+  ID
+  Name
+  Value
+  Comment
+}
+entity "sphinx_a" as sphinx_a {
+  gid
+  aname
+  sphinx_a_id
+}
+entity "sphinx_delta" as sphinx_delta {
+  ID
+  GroupID
+  GroupName
+  ArtistName
+  TagList
+  Year
+  CatalogueNumber
+  RecordLabel
+  CategoryID
+  Time
+  ReleaseType
+  Size
+  Snatched
+  Seeders
+  Leechers
+  LogScore
+  Scene
+  VanityHouse
+  HasLog
+  HasCue
+  FreeTorrent
+  Media
+  Format
+  Encoding
+  RemasterYear
+  RemasterTitle
+  RemasterRecordLabel
+  RemasterCatalogueNumber
+  FileList
+  Description
+  VoteScore
+  LastChanged
+  created
+}
+entity "sphinx_index_last_pos" as sphinx_index_last_pos {
+  Type
+  ID
+}
+entity "sphinx_requests" as sphinx_requests {
+  ID
+  UserID
+  TimeAdded
+  LastVote
+  CategoryID
+  Title
+  Year
+  ArtistList
+  ReleaseType
+  CatalogueNumber
+  BitrateList
+  FormatList
+  MediaList
+  LogCue
+  FillerID
+  TorrentID
+  TimeFilled
+  Visible
+  Bounty
+  Votes
+  RecordLabel
+}
+entity "sphinx_requests_delta" as sphinx_requests_delta {
+  ID
+  UserID
+  TimeAdded
+  LastVote
+  CategoryID
+  Title
+  TagList
+  Year
+  ArtistList
+  ReleaseType
+  CatalogueNumber
+  BitrateList
+  FormatList
+  MediaList
+  LogCue
+  FillerID
+  TorrentID
+  TimeFilled
+  Visible
+  Bounty
+  Votes
+  RecordLabel
+  created
+}
+entity "sphinx_t" as sphinx_t {
+  id
+  gid
+  uid
+  size
+  snatched
+  seeders
+  leechers
+  time
+  logscore
+  scene
+  haslog
+  hascue
+  freetorrent
+  media
+  format
+  encoding
+  remyear
+  remtitle
+  remrlabel
+  remcnumber
+  filelist
+  remident
+  description
+}
+entity "sphinx_tg" as sphinx_tg {
+  id
+  name
+  tags
+  year
+  rlabel
+  cnumber
+  catid
+  reltype
+  vanityhouse
+}
+entity "staff_blog" as staff_blog {
+  ID
+  UserID
+  Title
+  Body
+  Time
+}
+entity "staff_blog_visits" as staff_blog_visits {
+  UserID
+  Time
+}
+entity "staff_groups" as staff_groups {
+  ID
+  Sort
+  Name
+}
+entity "staff_pm_conversations" as staff_pm_conversations {
+  ID
+  Subject
+  UserID
+  Status
+  Level
+  AssignedToUser
+  Date
+  Unread
+  ResolverID
+}
+entity "staff_pm_messages" as staff_pm_messages {
+  ID
+  UserID
+  SentDate
+  Message
+  ConvID
+}
+entity "staff_pm_responses" as staff_pm_responses {
+  ID
+  Message
+  Name
+}
+entity "stylesheets" as stylesheets {
+  ID
+  Name
+  Description
+  Default
+  theme
+}
+entity "tag_aliases" as tag_aliases {
+  ID
+  BadTag
+  AliasTag
+}
+entity "tags" as tags {
+  ID
+  Name
+  TagType
+  Uses
+  UserID
+}
+entity "tgroup_summary" as tgroup_summary {
+  tgroup_id
+  bookmark_total
+  download_total
+  leech_total
+  seeding_total
+  snatch_total
+}
+entity "thread" as thread {
+  ID
+  ThreadTypeID
+  Created
+}
+entity "thread_note" as thread_note {
+  ID
+  ThreadID
+  Created
+  UserID
+  Body
+  Visibility
+}
+entity "thread_type" as thread_type {
+  ID
+  Name
+}
+entity "top10_history" as top10_history {
+  ID
+  Date
+  Type
+}
+entity "top10_history_torrents" as top10_history_torrents {
+  HistoryID
+  sequence
+  TorrentID
+  top10_history_torrents_id
+}
+entity "torrents_peerlists" as torrents_peerlists {
+  TorrentID
+  GroupID
+  Seeders
+  Leechers
+  Snatches
+}
+entity "torrents_peerlists_compare" as torrents_peerlists_compare {
+  TorrentID
+  GroupID
+  Seeders
+  Leechers
+  Snatches
+}
+entity "torrents_tags_votes" as torrents_tags_votes {
+  release_id
+  TagID
+  UserID
+  Way
+}
+entity "torrents_votes" as torrents_votes {
+  GroupID
+  Ups
+  Total
+  Score
+}
+entity "user_attr" as user_attr {
+  ID
+  Name
+  Description
+}
+entity "user_bonus" as user_bonus {
+  user_id
+  points
+}
+entity "user_flt" as user_flt {
+  user_id
+  tokens
+}
+entity "user_has_attr" as user_has_attr {
+  UserID
+  UserAttrID
+}
+entity "user_has_invite_source" as user_has_invite_source {
+  user_id
+  invite_source_id
+}
+entity "user_has_ordinal" as user_has_ordinal {
+  user_ordinal_id
+  user_id
+  value
+}
+entity "user_last_access" as user_last_access {
+  user_id
+  last_access
+}
+entity "user_last_access_delta" as user_last_access_delta {
+  user_last_access_delta_id
+  user_id
+  last_access
+}
+entity "user_ordinal" as user_ordinal {
+  user_ordinal_id
+  default_value
+  name
+  description
+}
+entity "user_read_blog" as user_read_blog {
+  user_id
+  blog_id
+}
+entity "user_read_forum" as user_read_forum {
+  user_id
+  last_read
+}
+entity "user_read_news" as user_read_news {
+  user_id
+  news_id
+}
+entity "user_seedbox" as user_seedbox {
+  user_seedbox_id
+  user_id
+  name
+  ipaddr
+  useragent
+}
+entity "user_summary" as user_summary {
+  user_id
+  artist_added_total
+  collage_total
+  collage_contrib
+  download_total
+  download_unique
+  fl_token_total
+  forum_post_total
+  forum_thread_total
+  invited_total
+  leech_total
+  perfect_flac_total
+  perfecter_flac_total
+  request_bounty_total
+  request_bounty_size
+  request_created_total
+  request_created_size
+  request_vote_total
+  request_vote_size
+  seeding_total
+  snatch_total
+  snatch_unique
+  unique_group_total
+  upload_total
+  seedtime_hour
+}
+entity "user_torrent_remove" as user_torrent_remove {
+  user_id
+  torrent_id
+  removed
+}
+entity "users_collage_subs" as users_collage_subs {
+  UserID
+  CollageID
+  LastVisit
+}
+entity "users_comments_last_read" as users_comments_last_read {
+  UserID
+  Page
+  PageID
+  PostID
+}
+entity "users_donor_ranks" as users_donor_ranks {
+  UserID
+  donor_rank
+  DonationTime
+  Hidden
+  TotalRank
+  SpecialRank
+  InvitesReceivedRank
+  RankExpirationTime
+}
+entity "users_downloads" as users_downloads {
+  UserID
+  TorrentID
+  Time
+  users_downloads_id
+}
+entity "users_dupes" as users_dupes {
+  GroupID
+  UserID
+}
+entity "users_enable_requests" as users_enable_requests {
+  ID
+  UserID
+  Email
+  IP
+  UserAgent
+  Timestamp
+  HandledTimestamp
+  Token
+  CheckedBy
+  Outcome
+}
+entity "users_freeleeches" as users_freeleeches {
+  UserID
+  TorrentID
+  Time
+  Expired
+  Downloaded
+  Uses
+}
+entity "users_geodistribution" as users_geodistribution {
+  Code
+  Users
+}
+entity "users_history_emails" as users_history_emails {
+  UserID
+  Email
+  IP
+  users_history_emails_id
+  useragent
+  created
+}
+entity "users_history_ips" as users_history_ips {
+  UserID
+  IP
+  StartTime
+  EndTime
+}
+entity "users_history_passkeys" as users_history_passkeys {
+  UserID
+  OldPassKey
+  NewPassKey
+  ChangeTime
+  ChangerIP
+}
+entity "users_history_passwords" as users_history_passwords {
+  UserID
+  ChangeTime
+  ChangerIP
+  useragent
+  users_history_passwords_id
+}
+entity "users_info" as users_info {
+  UserID
+  AdminComment
+  SiteOptions
+  TorrentGrouping
+  RatioWatchEnds
+  RatioWatchDownload
+  RatioWatchTimes
+  BanDate
+  BanReason
+  RestrictedForums
+  PermittedForums
+  NavItems
+}
+entity "users_leech_stats" as users_leech_stats {
+  UserID
+  Uploaded
+  Downloaded
+}
+entity "users_levels" as users_levels {
+  UserID
+  PermissionID
+}
+entity "users_main" as users_main {
+  ID
+  Username
+  Email
+  PassHash
+  IRCKey
+  IP
+  title
+  Enabled
+  Paranoia
+  Visible
+  Invites
+  PermissionID
+  CustomPermissions
+  can_leech
+  torrent_pass
+  RequiredRatio
+  ipcc
+  created
+  updated
+  auth_key
+  avatar
+  collage_total
+  inviter_user_id
+  profile_info
+  profile_title
+  slogan
+  stylesheet_id
+  stylesheet_url
+  nav_list
+}
+entity "users_notifications_settings" as users_notifications_settings {
+  UserID
+  Inbox
+  StaffPM
+  News
+  Blog
+  Torrents
+  Collages
+  Quotes
+  Subscriptions
+}
+entity "users_notify_filters" as users_notify_filters {
+  ID
+  UserID
+  Label
+  Artists
+  RecordLabels
+  Users
+  Tags
+  NotTags
+  Categories
+  Formats
+  Encodings
+  Media
+  FromYear
+  ToYear
+  ExcludeVA
+  NewGroupsOnly
+  ReleaseTypes
+}
+entity "users_notify_quoted" as users_notify_quoted {
+  UserID
+  QuoterID
+  Page
+  PageID
+  PostID
+  UnRead
+  Date
+}
+entity "users_notify_torrents" as users_notify_torrents {
+  UserID
+  FilterID
+  GroupID
+  TorrentID
+  UnRead
+}
+entity "users_push_notifications" as users_push_notifications {
+  UserID
+  PushService
+  PushOptions
+}
+entity "users_sessions" as users_sessions {
+  UserID
+  SessionID
+  KeepLogged
+  Browser
+  OperatingSystem
+  IP
+  LastUpdate
+  Active
+  FullUA
+  BrowserVersion
+  OperatingSystemVersion
+}
+entity "users_stats_daily" as users_stats_daily {
+  UserID
+  Time
+  Uploaded
+  Downloaded
+  BonusPoints
+  Torrents
+  PerfectFLACs
+}
+entity "users_stats_monthly" as users_stats_monthly {
+  UserID
+  Time
+  Uploaded
+  Downloaded
+  BonusPoints
+  Torrents
+  PerfectFLACs
+}
+entity "users_stats_yearly" as users_stats_yearly {
+  UserID
+  Time
+  Uploaded
+  Downloaded
+  BonusPoints
+  Torrents
+  PerfectFLACs
+}
+entity "users_subscriptions" as users_subscriptions {
+  UserID
+  TopicID
+}
+entity "users_subscriptions_comments" as users_subscriptions_comments {
+  UserID
+  Page
+  PageID
+}
+entity "users_torrent_history" as users_torrent_history {
+  UserID
+  NumTorrents
+  Date
+  Time
+  LastTime
+  Finished
+  Weight
+}
+entity "users_votes" as users_votes {
+  UserID
+  GroupID
+  Type
+  Time
+  upvote
+}
+entity "users_warnings_forums" as users_warnings_forums {
+  UserID
+  Comment
+}
+entity "wiki_aliases" as wiki_aliases {
+  Alias
+  UserID
+  ArticleID
+}
+entity "wiki_articles" as wiki_articles {
+  ID
+  Revision
+  Title
+  Body
+  MinClassRead
+  MinClassEdit
+  Date
+  Author
+}
+entity "wiki_artists" as wiki_artists {
+  RevisionID
+  PageID
+  Body
+  UserID
+  summary
+  Time
+  Image
+}
+entity "wiki_revisions" as wiki_revisions {
+  ID
+  Revision
+  Title
+  Body
+  Date
+  Author
+}
+entity "wiki_torrents" as wiki_torrents {
+  RevisionID
+  PageID
+  Body
+  UserID
+  Summary
+  Time
+  Image
+}
+entity "xbt_client_whitelist" as xbt_client_whitelist {
+  id
+  peer_id
+  vstring
+}
+entity "xbt_files_history" as xbt_files_history {
+  uid
+  fid
+  seedtime
+  downloaded
+  uploaded
+}
+entity "xbt_files_users" as xbt_files_users {
+  uid
+  active
+  announced
+  completed
+  downloaded
+  remaining
+  uploaded
+  upspeed
+  downspeed
+  corrupt
+  timespent
+  useragent
+  connectable
+  peer_id
+  fid
+  mtime
+  ip
+}
+entity "xbt_forex" as xbt_forex {
+  btc_forex_id
+  cc
+  rate
+  forex_date
+}
+entity "xbt_snatched" as xbt_snatched {
+  uid
+  tstamp
+  fid
+  IP
+  seedtime
+  xbt_snatched_id
+}
+applicant --> thread
+applicant --> users_main
+applicant --> applicant_role
+applicant_role --> users_main
+applicant_role_has_user --> applicant_role
+applicant_role_has_user --> users_main
+artist_discogs --> artists_group
+artist_discogs --> users_main
+artist_has_attr --> artists_group
+artist_has_attr --> artist_attr
+artist_usage --> artists_group
+artists_alias --> artists_group
+artists_group --> artists_alias
+artists_similar --> artists_similar_scores
+artists_similar_votes --> artists_similar_scores
+bonus_history --> bonus_item
+bonus_history --> users_main
+bonus_pool_contrib --> users_main
+bonus_pool_contrib --> bonus_pool
+bookmarks_collages --> collages
+bookmarks_collages --> users_main
+bookmarks_torrents --> users_main
+bookmarks_torrents --> release
+collage_has_attr --> collages
+collage_has_attr --> collage_attr
+collages --> users_main
+collages_artists --> collages
+collages_artists --> artists_group
+collages_artists --> users_main
+collages_torrents --> collages
+collages_torrents --> users_main
+collages_torrents --> release
+contest --> contest_type
+contest_has_bonus_pool --> bonus_pool
+contest_has_bonus_pool --> contest
+contest_leaderboard --> contest
+edition --> users_main
+edition --> release
+edition --> release
+forums_last_read_topics --> forums_posts
+forums_last_read_topics --> forums_topics
+forums_last_read_topics --> users_main
+forums_polls --> forums_topics
+forums_posts --> forums_topics
+forums_topics --> users_main
+forums_topics --> forums
+forums_topics --> users_main
+forums_topics --> forums_posts
+forums_transitions --> forums
+forums_transitions --> forums
+invite_source_pending --> invite_source
+inviter_has_invite_source --> users_main
+inviter_has_invite_source --> invite_source
+locked_accounts --> users_main
+periodic_task_history --> periodic_task
+periodic_task_history_event --> periodic_task_history
+permission_rate_limit --> permissions
+permissions --> staff_groups
+ratelimit_torrent --> users_main
+ratelimit_torrent --> edition
+release_artist --> artist_role
+release_artist --> artists_alias
+release_artist --> users_main
+release_artist --> release
+requests --> release
+requests_artists --> artist_role
+requests_artists --> users_main
+requests_artists --> artists_alias
+requests_votes --> requests
+requests_votes --> users_main
+staff_blog_visits --> users_main
+tgroup_summary --> release
+thread --> thread_type
+thread_note --> users_main
+thread_note --> thread
+torrents_votes --> release
+user_bonus --> users_main
+user_flt --> users_main
+user_has_attr --> user_attr
+user_has_attr --> users_main
+user_has_invite_source --> users_main
+user_has_invite_source --> invite_source
+user_has_ordinal --> user_ordinal
+user_has_ordinal --> users_main
+user_last_access --> users_main
+user_last_access_delta --> users_main
+user_read_blog --> users_main
+user_read_blog --> blog
+user_read_forum --> users_main
+user_read_news --> users_main
+user_read_news --> news
+user_seedbox --> users_main
+user_summary --> users_main
+users_collage_subs --> collages
+users_collage_subs --> users_main
+users_downloads --> edition
+users_downloads --> users_main
+users_dupes --> dupe_groups
+users_dupes --> users_main
+users_enable_requests --> users_main
+users_enable_requests --> users_main
+users_info --> users_main
+users_leech_stats --> users_main
+users_levels --> users_main
+users_levels --> permissions
+users_notify_filters --> users_main
+users_stats_daily --> users_main
+users_stats_monthly --> users_main
+users_stats_yearly --> users_main
+users_votes --> release
+users_votes --> users_main
+@enduml

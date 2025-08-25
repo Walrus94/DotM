@@ -90,8 +90,8 @@ class Feed extends Base {
     public function bookmark(User $user, string $feedName): string {
         return $this->wrap(
             $this->channel(
-                'Bookmarked torrent notifications',
-                'RSS feed for bookmarked torrents'
+                'Bookmarked edition notifications',
+                'RSS feed for bookmarked editions'
             )
             . $this->retrieve($user, $feedName)
         );
@@ -101,34 +101,34 @@ class Feed extends Base {
         return $this->wrap(
             $this->channel(
                 match ($feedName) {
-                    'torrents_all'        => 'Everything',
-                    'torrents_apps'       => 'Applications',
-                    'torrents_abooks'     => 'Audiobooks',
-                    'torrents_comedy'     => 'Comedy',
-                    'torrents_comics'     => 'Comics',
-                    'torrents_ebooks'     => 'E-Books',
-                    'torrents_evids'      => 'E-Learning Videos',
-                    'torrents_flac'       => 'FLACs',
-                    'torrents_lossless'   => 'Lossless',
-                    'torrents_music'      => 'Music',
-                    'torrents_mp3'        => 'MP3s',
-                    'torrents_vinyl'      => 'Vinyl',
-                    'torrents_lossless24' => '24bit Lossless',
+                    'releases_all'        => 'Everything',
+                    'releases_apps'       => 'Applications',
+                    'releases_abooks'     => 'Audiobooks',
+                    'releases_comedy'     => 'Comedy',
+                    'releases_comics'     => 'Comics',
+                    'releases_ebooks'     => 'E-Books',
+                    'releases_evids'      => 'E-Learning Videos',
+                    'releases_flac'       => 'FLACs',
+                    'releases_lossless'   => 'Lossless',
+                    'releases_music'      => 'Music',
+                    'releases_mp3'        => 'MP3s',
+                    'releases_vinyl'      => 'Vinyl',
+                    'releases_lossless24' => '24bit Lossless',
                 },
                 match ($feedName) {
-                    'torrents_all'        => 'RSS feed for new uploads',
-                    'torrents_apps'       => 'RSS feed for new application uploads',
-                    'torrents_comedy'     => 'RSS feed for new comedy uploads',
-                    'torrents_comics'     => 'RSS feed for new comics uploads',
-                    'torrents_abooks'     => 'RSS feed for new audiobook torrent uploads',
-                    'torrents_ebooks'     => 'RSS feed for new e-books uploads',
-                    'torrents_evids'      => 'RSS feed for new e-learning videos uploads',
-                    'torrents_flac'       => 'RSS feed for new FLAC uploads',
-                    'torrents_lossless'   => 'RSS feed for new lossless uploads',
-                    'torrents_mp3'        => 'RSS feed for new MP3s uploads',
-                    'torrents_music'      => 'RSS feed for new music uploads',
-                    'torrents_vinyl'      => 'RSS feed for new vinyl-sourced uploads',
-                    'torrents_lossless24' => 'RSS feed for new 24bit lossless uploads',
+                    'releases_all'        => 'RSS feed for new release uploads',
+                    'releases_apps'       => 'RSS feed for new application releases',
+                    'releases_comedy'     => 'RSS feed for new comedy releases',
+                    'releases_comics'     => 'RSS feed for new comics releases',
+                    'releases_abooks'     => 'RSS feed for new audiobook release uploads',
+                    'releases_ebooks'     => 'RSS feed for new e-book releases',
+                    'releases_evids'      => 'RSS feed for new e-learning video releases',
+                    'releases_flac'       => 'RSS feed for new FLAC releases',
+                    'releases_lossless'   => 'RSS feed for new lossless releases',
+                    'releases_mp3'        => 'RSS feed for new MP3 releases',
+                    'releases_music'      => 'RSS feed for new music releases',
+                    'releases_vinyl'      => 'RSS feed for new vinyl-sourced releases',
+                    'releases_lossless24' => 'RSS feed for new 24bit lossless releases',
                 }
             ) . $this->retrieve($user, $feedName)
         );
