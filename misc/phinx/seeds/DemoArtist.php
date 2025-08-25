@@ -41,7 +41,6 @@ class DemoArtist extends AbstractSeed {
         // create a single release for the artist
         $this->table('release')->insert([
             'ID'            => 1,
-            'ArtistID'      => 0,
             'Name'          => 'Demo Release',
             'Year'          => 2024,
             'catalog_number'=> '',
@@ -53,13 +52,14 @@ class DemoArtist extends AbstractSeed {
             'showcase'      => 0,
         ])->save();
 
-        // map artist to the release (legacy schema uses GroupID)
+        // map artist to the release
         $this->table('release_artist')->insert([
-            'GroupID'    => 1,
-            'ArtistID'   => 1,
-            'AliasID'    => 1,
-            'UserID'     => 1,
-            'Importance' => 1,
+            'release_id'     => 1,
+            'AliasID'        => 1,
+            'UserID'         => 1,
+            'Importance'     => 1,
+            'artist_role_id' => 1,
+            'created'        => $now,
         ])->save();
 
         // provide a platform link for the release

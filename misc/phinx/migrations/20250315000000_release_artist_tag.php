@@ -27,9 +27,12 @@ class ReleaseArtistTag extends AbstractMigration {
             if ($this->fetchRow("SHOW INDEX FROM release_artist WHERE Key_name = 'GroupID'")) {
                 $this->execute("ALTER TABLE release_artist DROP INDEX GroupID");
             }
+            if ($this->table('release_artist')->hasColumn('ArtistID')) {
+                $this->execute("ALTER TABLE release_artist DROP COLUMN ArtistID");
+            }
             $this->execute("ALTER TABLE release_artist CHANGE GroupID release_id int(10) NOT NULL");
             $this->execute("ALTER TABLE release_artist ADD INDEX release_id (release_id)");
-            $this->execute("ALTER TABLE release_artist ADD PRIMARY KEY (release_id, ArtistID, Importance)");
+            $this->execute("ALTER TABLE release_artist ADD PRIMARY KEY (release_id, Importance, AliasID)");
             if ($canFk) {
                 $this->execute("ALTER TABLE release_artist ADD FOREIGN KEY (release_id) REFERENCES torrents_group(ID)");
             }
@@ -111,7 +114,7 @@ class ReleaseArtistTag extends AbstractMigration {
         }
         $this->execute("ALTER TABLE release_artist CHANGE release_id GroupID int(10) NOT NULL");
         $this->execute("ALTER TABLE release_artist ADD INDEX GroupID (GroupID)");
-        $this->execute("ALTER TABLE release_artist ADD PRIMARY KEY (GroupID, ArtistID, Importance)");
+        $this->execute("ALTER TABLE release_artist ADD PRIMARY KEY (GroupID, Importance, AliasID)");
         $this->execute("RENAME TABLE release_artist TO torrents_artists");
         if ($canFk) {
             $this->execute("ALTER TABLE torrents_artists ADD FOREIGN KEY (GroupID) REFERENCES torrents_group(ID)");
