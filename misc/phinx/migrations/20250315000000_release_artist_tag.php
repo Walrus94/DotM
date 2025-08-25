@@ -23,6 +23,8 @@ class ReleaseArtistTag extends AbstractMigration {
         // torrents_artists -> release_artist (guard against previous partial runs)
         if ($this->hasTable('torrents_artists')) {
             $this->execute("RENAME TABLE torrents_artists TO release_artist");
+        }
+        if ($this->hasTable('release_artist') && $this->table('release_artist')->hasColumn('GroupID')) {
             $this->execute("ALTER TABLE release_artist DROP PRIMARY KEY");
             if ($this->fetchRow("SHOW INDEX FROM release_artist WHERE Key_name = 'GroupID'")) {
                 $this->execute("ALTER TABLE release_artist DROP INDEX GroupID");
