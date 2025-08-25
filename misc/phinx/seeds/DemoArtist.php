@@ -39,21 +39,18 @@ class DemoArtist extends AbstractSeed {
         ])->save();
 
         // create a single release for the artist
-        $this->table('torrents_group')->insert([
-            'ID'             => 1,
-            'ArtistID'       => 0,
-            'CategoryID'     => 1,
-            'Name'           => 'Demo Release',
-            'Year'           => 2024,
-            'CatalogueNumber'=> '',
-            'RecordLabel'    => '',
-            'ReleaseType'    => 1,
-            'TagList'        => 'demo',
-            'Time'           => $now,
-            'RevisionID'     => 1,
-            'WikiBody'       => 'Demo release inserted via seed.',
-            'WikiImage'      => '',
-            'VanityHouse'    => 0,
+        $this->table('release')->insert([
+            'ID'            => 1,
+            'ArtistID'      => 0,
+            'Name'          => 'Demo Release',
+            'Year'          => 2024,
+            'catalog_number'=> '',
+            'record_label'  => '',
+            'release_type'  => 1,
+            'TagList'       => 'demo',
+            'WikiBody'      => 'Demo release inserted via seed.',
+            'WikiImage'     => '',
+            'showcase'      => 0,
         ])->save();
 
         // map artist to the release

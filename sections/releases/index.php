@@ -7,16 +7,16 @@ $results = [];
 if ($search !== '') {
     $db = DB::DB();
     $db->prepared_query(
-        "SELECT tg.ID,
-                tg.Name,
-                tg.Year,
+        "SELECT r.ID,
+                r.Name,
+                r.Year,
                 group_concat(DISTINCT aa.Name ORDER BY aa.Name SEPARATOR ', ') AS ArtistName
-           FROM torrents_group tg
-           LEFT JOIN release_artist ra ON (ra.release_id = tg.ID)
+           FROM release r
+           LEFT JOIN release_artist ra ON (ra.release_id = r.ID)
            LEFT JOIN artists_alias aa ON (aa.AliasID = ra.AliasID)
-          WHERE tg.Name LIKE concat('%', ?, '%')
-          GROUP BY tg.ID, tg.Name, tg.Year
-          ORDER BY tg.Year DESC, tg.Name
+          WHERE r.Name LIKE concat('%', ?, '%')
+          GROUP BY r.ID, r.Name, r.Year
+          ORDER BY r.Year DESC, r.Name
           LIMIT 50",
         $search
     );
