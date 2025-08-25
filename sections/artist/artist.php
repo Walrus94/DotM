@@ -24,6 +24,7 @@ $userMan    = new Gazelle\Manager\User();
 $reportMan  = new Gazelle\Manager\Report($userMan);
 $vote       = new Gazelle\User\Vote($Viewer);
 $imgProxy   = new Gazelle\Util\ImageProxy($Viewer);
+$platformMan= new Gazelle\Manager\ReleasePlatform();
 
 $isSubscribed = (new Gazelle\User\Subscription($Viewer))->isSubscribedComments('artist', $artistId);
 $requestList  = $Viewer->disableRequests() ? [] : (new Gazelle\Manager\Request())->findByArtist($artist);
@@ -83,72 +84,7 @@ echo $Twig->render('artist/similar.twig', [
     'artist' => $artist,
     'viewer' => $Viewer,
 ]);
-
-if ($Viewer->permitted('zip_downloader')) {
-    if ($Viewer->option('Collector')) {
-        [$ZIPList, $ZIPPrefs] = $Viewer->option('Collector');
-        $ZIPList = explode(':', $ZIPList);
-    } else {
-        $ZIPList = ['00', '11'];
-        $ZIPPrefs = 1;
-    }
 ?>
-        <div class="box box_zipdownload">
-            <div class="head colhead_dark"><strong>Collector</strong></div>
-            <div class="pad">
-                <form class="download_form" name="zip" action="artist.php" method="post">
-                    <input type="hidden" name="action" value="download" />
-                    <input type="hidden" name="auth" value="<?= $Viewer->auth() ?>" />
-                    <input type="hidden" name="artistid" value="<?=$artistId?>" />
-                    <ul id="list" class="nobullet">
-<?php foreach ($ZIPList as $ListItem) { ?>
-                        <li id="list<?=$ListItem?>">
-                            <input type="hidden" name="list[]" value="<?=$ListItem?>" />
-                            <span style="float: left;"><?=ZIP_OPTION[$ListItem]['2']?></span>
-                            <span class="remove remove_collector"><a href="#" onclick="remove_selection('<?=$ListItem?>'); return false;" style="float: right;" class="brackets tooltip" title="Remove format from the Collector">X</a></span>
-                            <br style="clear: all;" />
-                        </li>
-<?php } /* foreach */ ?>
-                    </ul>
-                    <select id="formats" style="width: 180px;">
-<?php
-$OpenGroup = false;
-$LastGroupID = -1;
-foreach (ZIP_OPTION as $Option) {
-    [$GroupID, $OptionID, $OptName] = $Option;
-
-    if ($GroupID != $LastGroupID) {
-        $LastGroupID = $GroupID;
-        if ($OpenGroup) {
-?>
-                        </optgroup>
-<?php   } ?>
-                        <optgroup label="<?=ZIP_GROUP[$GroupID]?>">
-<?php
-        $OpenGroup = true;
-    }
-?>
-                            <option id="opt<?=$GroupID . $OptionID?>" value="<?=$GroupID . $OptionID?>"<?php if (in_array($GroupID . $OptionID, $ZIPList)) {
-echo ' disabled="disabled"'; } ?>><?=$OptName?></option>
-<?php } /* foreach */ ?>
-                        </optgroup>
-                    </select>
-                    <button type="button" onclick="add_selection()">+</button>
-                    <select name="preference" style="width: 210px;">
-                        <option value="0"<?php if ($ZIPPrefs == 0) {
-echo ' selected="selected"'; } ?>>Prefer Original</option>
-                        <option value="1"<?php if ($ZIPPrefs == 1) {
-echo ' selected="selected"'; } ?>>Prefer Best Seeded</option>
-                        <option value="2"<?php if ($ZIPPrefs == 2) {
-echo ' selected="selected"'; } ?>>Prefer Bonus Tracks</option>
-                    </select>
-                    <input type="submit" style="width: 210px;" value="Download" />
-                </form>
-            </div>
-        </div>
-<?php
-} /* if ($Viewer->permitted('zip_downloader')) */ ?>
-
     </div>
     <div class="main_column">
 
@@ -220,7 +156,8 @@ if ($sections = $artist->sections()) {
         if (is_null($tgroup)) {
             continue;
         }
-        $isSnatched = $tgroup->isSnatched();
+        $isSnatched   = $tgroup->isSnatched();
+        $platformList = $platformMan->listByRelease($groupId);
 
 ?>
             <tr class="releases_<?= $sectionId ?> group groupid_<?= $groupId ?>_header discog<?= ($sectionClosed ? ' hidden' : '') . ($isSnatched ? ' snatched_group' : '') ?>">
@@ -246,6 +183,7 @@ if ($sections = $artist->sections()) {
                         <br /><?= $vote->links($tgroup) ?>
 <?php   } ?>
                         </span>
+                        <?= $Twig->render('tgroup/platform-list.twig', ['platforms' => $platformList]) ?>
                         <div class="tags"><?= implode(' ', $tgroup->torrentTagList()) ?></div>
                     </div>
                 </td>
