@@ -1,0 +1,172 @@
+feature,function,category,template_ref,sections_ref,app_ref,data_ref,estimate_lines
+admin,-,Reusable,templates/admin,-,-,-,6909
+admin,global notification,Reusable,templates/admin/global-notification.twig,-,-,-,50
+admin,mass pm,Reusable,templates/admin/mass-pm.twig,-,-,-,33
+admin,site option,Reusable,templates/admin/site-option.twig,-,-,-,59
+admin,site info,Reusable,templates/admin/site-info.twig,-,-,-,182
+admin,forum management,Reusable,templates/admin/forum-management.twig,-,-,-,107
+admin,user create,Reusable,templates/admin/user-create.twig,-,-,-,31
+admin,ip search,Reusable,templates/admin/ip-search.twig,-,-,-,157
+admin,privilege edit,Reusable,templates/admin/privilege-edit.twig,-,-,-,72
+admin,registration,Reusable,templates/admin/registration.twig,-,-,-,137
+admin,payment,Reusable,templates/admin/payment.twig,-,-,-,120
+applicant,-,Reusable,templates/applicant,-,app/Applicant.php,applicant,469
+applicant,apply,Reusable,templates/applicant/apply.twig,-,app/Applicant.php,applicant,214
+applicant,admin,Reusable,templates/applicant/admin.twig,-,app/Applicant.php,applicant,185
+applicant,role,Reusable,templates/applicant/role.twig,-,app/Applicant.php,applicant,193
+applicant,view,Reusable,templates/applicant/view.twig,-,app/Applicant.php,applicant,277
+artist,-,Usable,templates/artist,sections/artist,app/Artist.php;app/Artist,artists_group,2780
+artist,edit,Usable,templates/artist/edit.twig,sections/artist/edit.php,app/Artist.php;app/Artist,artists_group,1588
+artist,similar,Usable,templates/artist/similar.twig,-,app/Artist.php;app/Artist,artists_group,1381
+artist,merge,Usable,templates/artist/merge.twig,-,app/Artist.php;app/Artist,artists_group,1362
+better,-,Reusable,templates/better,sections/better,app/Better,-,763
+better,search,Reusable,templates/better/search.twig,-,app/Better,-,504
+better,better,Reusable,templates/better/better.twig,sections/better/better.php,app/Better,-,598
+blog,-,Usable,templates/blog,sections/blog,app/Blog.php,blog,355
+blog,editor,Usable,templates/blog/editor.twig,-,app/Blog.php,blog,192
+bonus,-,Reusable,templates/bonus,sections/bonus,-,-,486
+bonus,store,Reusable,templates/bonus/store.twig,sections/bonus/store.php,-,-,108
+bonus,bonus pool,Reusable,templates/bonus/bonus-pool.twig,-,-,-,31
+bookmark,-,Reusable,templates/bookmark,sections/bookmarks,-,-,608
+bookmark,artist,Reusable,templates/bookmark/artist.twig,-,-,-,55
+chat,-,Redundant,templates/chat,sections/chat,-,-,166
+chat,index,Redundant,templates/chat/index.twig,sections/chat/index.php,-,-,44
+chat,webirc,Redundant,templates/chat/webirc.twig,sections/chat/webirc.php,-,-,106
+collage,-,Redundant,templates/collage,sections/collages,app/Collage.php;app/Collage,collages,3136
+collage,edit,Redundant,templates/collage/edit.twig,sections/collages/edit.php,app/Collage.php;app/Collage,collages,1208
+collage,browse,Redundant,templates/collage/browse.twig,sections/collages/browse.php,app/Collage.php;app/Collage,collages,1313
+collage,new,Redundant,templates/collage/new.twig,sections/collages/new.php,app/Collage.php;app/Collage,collages,1169
+comment,-,Usable,templates/comment,sections/comments,app/Comment,comments,982
+comment,warn,Usable,templates/comment/warn.twig,sections/comments/warn.php,app/Comment,comments,442
+comment,thread,Usable,templates/comment/thread.twig,-,app/Comment,comments,458
+contest,-,Reusable,templates/contest,sections/contest,app/Contest.php;app/Contest,contest,1267
+contest,list,Reusable,templates/contest/list.twig,-,app/Contest.php;app/Contest,contest,828
+contest,admin,Reusable,templates/contest/admin.twig,sections/contest/admin.php,app/Contest.php;app/Contest,contest,940
+contest,leaderboard,Reusable,templates/contest/leaderboard.twig,sections/contest/leaderboard.php,app/Contest.php;app/Contest,contest,894
+debug,-,Redundant,templates/debug,-,app/Debug.php,-,740
+donation,-,Usable,templates/donation,-,-,-,428
+donation,history,Usable,templates/donation/history.twig,-,-,-,55
+donation,index,Usable,templates/donation/index.twig,-,-,-,105
+donation,admin panel,Usable,templates/donation/admin-panel.twig,-,-,-,54
+donation,donation pm,Usable,templates/donation/donation-pm.twig,-,-,-,13
+donation,stats,Usable,templates/donation/stats.twig,-,-,-,20
+donation,reward list,Usable,templates/donation/reward-list.twig,-,-,-,56
+email,-,Reusable,templates/email,-,-,-,205
+email,password change,Reusable,templates/email/password-change.twig,-,-,-,21
+email,invite member,Reusable,templates/email/invite-member.twig,-,-,-,29
+email,registration,Reusable,templates/email/registration.twig,-,-,-,17
+email,password reset,Reusable,templates/email/password-reset.twig,-,-,-,11
+email,recovery,Reusable,templates/email/recovery.twig,-,-,-,31
+email,invite interviewer,Reusable,templates/email/invite-interviewer.twig,-,-,-,23
+email,referral,Reusable,templates/email/referral.twig,-,-,-,22
+email,hacked,Reusable,templates/email/hacked.twig,-,-,-,15
+email,disable warning,Reusable,templates/email/disable-warning.twig,-,-,-,12
+enable,-,Reusable,templates/enable,sections/enable,-,-,201
+enable,list,Reusable,templates/enable/list.twig,-,-,-,154
+enable,processed,Reusable,templates/enable/processed.twig,-,-,-,10
+feed,-,Reusable,templates/feed,-,app/Feed.php,-,218
+feed,channel,Reusable,templates/feed/channel.twig,-,app/Feed.php,-,199
+forum,-,Usable,templates/forum,sections/forums,app/Forum.php,forums,2308
+forum,poll,Usable,templates/forum/poll.twig,-,app/Forum.php,forums,562
+forum,warn,Usable,templates/forum/warn.twig,sections/forums/warn.php,app/Forum.php,forums,523
+forum,new thread,Usable,templates/forum/new-thread.twig,sections/forums/new_thread.php,app/Forum.php,forums,559
+forum,main,Usable,templates/forum/main.twig,sections/forums/main.php,app/Forum.php,forums,513
+inbox,-,Usable,templates/inbox,sections/inbox,-,-,429
+inbox,conversation,Usable,templates/inbox/conversation.twig,sections/inbox/conversation.php,-,-,122
+inbox,compose,Usable,templates/inbox/compose.twig,sections/inbox/compose.php,-,-,41
+index,-,Usable,templates/index,sections/index,-,-,443
+invite,-,Reusable,templates/invite,-,app/Invite.php,-,115
+invite,pool,Reusable,templates/invite/pool.twig,-,app/Invite.php,-,115
+logchecker,-,Redundant,templates/logchecker,sections/logchecker,-,-,327
+login,-,Usable,templates/login,sections/login,app/Login.php,-,663
+notification,-,Usable,templates/notification,-,app/Notification,-,806
+recovery,-,Reusable,templates/recovery,sections/recovery,-,-,779
+register,-,Usable,templates/register,sections/register,-,-,325
+report,-,Redundant,templates/report,sections/reports,app/Report.php;app/Report,reports,1282
+report,index,Redundant,templates/report/index.twig,sections/reports/index.php,app/Report.php;app/Report,reports,479
+report,stats,Redundant,templates/report/stats.twig,sections/reports/stats.php,app/Report.php;app/Report,reports,455
+report,user,Redundant,templates/report/user.twig,-,app/Report.php;app/Report,reports,352
+report,create,Redundant,templates/report/create.twig,-,app/Report.php;app/Report,reports,392
+report_auto,-,Redundant,templates/report_auto,sections/report_auto,app/ReportAuto.php;app/ReportAuto,report_auto,471
+report_auto,index,Redundant,templates/report_auto/index.twig,sections/report_auto/index.php,app/ReportAuto.php;app/ReportAuto,report_auto,346
+reportsv2,-,Redundant,templates/reportsv2,sections/reportsv2,-,-,1957
+reportsv2,search,Redundant,templates/reportsv2/search.twig,sections/reportsv2/search.php,-,-,182
+reportsv2,create,Redundant,templates/reportsv2/create.twig,sections/reportsv2/create.php,-,-,103
+request,-,Redundant,templates/request,sections/requests,app/Request.php;app/Request,requests,3241
+request,list,Redundant,templates/request/list.twig,-,app/Request.php;app/Request,requests,1123
+request,index,Redundant,templates/request/index.twig,sections/requests/index.php,app/Request.php;app/Request,requests,1253
+request,detail,Redundant,templates/request/detail.twig,-,app/Request.php;app/Request,requests,1383
+request,request,Redundant,templates/request/request.twig,sections/requests/request.php,app/Request.php;app/Request,requests,1361
+rules,-,Reusable,templates/rules,sections/rules,-,-,1142
+rules,index,Reusable,templates/rules/index.twig,sections/rules/index.php,-,-,62
+rules,upload,Reusable,templates/rules/upload.twig,-,-,-,25
+rules,ratio,Reusable,templates/rules/ratio.twig,-,-,-,286
+rules,forum,Reusable,templates/rules/forum.twig,-,-,-,102
+rules,chat,Reusable,templates/rules/chat.twig,-,-,-,19
+seedbox,-,Redundant,templates/seedbox,-,-,-,175
+staff,-,Reusable,templates/staff,sections/staff,app/Staff.php,staff_blog_visits,184
+staff,index,Reusable,templates/staff/index.twig,sections/staff/index.php,app/Staff.php,staff_blog_visits,173
+staffblog,-,Reusable,templates/staffblog,sections/staffblog,-,-,115
+staffblog,list,Reusable,templates/staffblog/list.twig,-,-,-,17
+staffblog,edit,Reusable,templates/staffblog/edit.twig,-,-,-,29
+staffpm,-,Reusable,templates/staffpm,sections/staffpm,-,-,850
+staffpm,history,Reusable,templates/staffpm/history.twig,-,-,-,36
+staffpm,user inbox,Reusable,templates/staffpm/user-inbox.twig,sections/staffpm/user_inbox.php,-,-,97
+staffpm,message,Reusable,templates/staffpm/message.twig,-,-,-,119
+staffpm,reply,Reusable,templates/staffpm/reply.twig,-,-,-,24
+staffpm,staff inbox,Reusable,templates/staffpm/staff-inbox.twig,sections/staffpm/staff_inbox.php,-,-,153
+stats,-,Reusable,templates/stats,sections/stats,app/Stats,/* artist stats */;tgroup_summary;user_summary,2620
+stats,torrent,Reusable,templates/stats/torrent.twig,-,app/Stats,/* artist stats */;tgroup_summary;user_summary,2283
+stats,user,Reusable,templates/stats/user.twig,-,app/Stats,/* artist stats */;tgroup_summary;user_summary,2488
+tag,-,Usable,templates/tag,-,app/Tag.php,tags,324
+tag,official,Usable,templates/tag/official.twig,-,app/Tag.php,tags,324
+tgroup,-,Usable,templates/tgroup,-,-,-,315
+tgroup,group log,Usable,templates/tgroup/group-log.twig,-,-,-,33
+tgroup,edit,Usable,templates/tgroup/edit.twig,-,-,-,130
+tgroup,similar,Usable,templates/tgroup/similar.twig,-,-,-,14
+tgroup,stats,Usable,templates/tgroup/stats.twig,-,-,-,55
+tgroup,tag,Usable,templates/tgroup/tag.twig,-,-,-,60
+top10,-,Redundant,templates/top10,sections/top10,app/Top10,-,1222
+top10,history,Redundant,templates/top10/history.twig,sections/top10/history.php,app/Top10,-,347
+top10,user,Redundant,templates/top10/user.twig,-,app/Top10,-,277
+upload,-,Reusable,templates/upload,-,app/Upload.php,-,771
+upload,music,Reusable,templates/upload/music.twig,-,app/Upload.php,-,411
+upload,tag,Reusable,templates/upload/tag.twig,-,app/Upload.php,-,166
+user,-,Usable,templates/user,sections/user,app/User.php;app/User,bonus_history;donor_rewards;friends;permission_rate_limit;pm_conversations_users;user_external_profile;user_seedbox;user_token;user_warning;users_dupes;users_enable_requests;users_levels;users_main;users_notifications_settings;users_notify_quoted;users_notify_torrents;users_sessions;users_subscriptions;users_votes;xbt_snatched,15160
+user,bonus history,Reusable,templates/user/bonus-history.twig,-,app/User.php;app/User,bonus_history;donor_rewards;friends;permission_rate_limit;pm_conversations_users;user_external_profile;user_seedbox;user_token;user_warning;users_dupes;users_enable_requests;users_levels;users_main;users_notifications_settings;users_notify_quoted;users_notify_torrents;users_sessions;users_subscriptions;users_votes;xbt_snatched,9123
+user,setting,Usable,templates/user/setting.twig,-,app/User.php;app/User,bonus_history;donor_rewards;friends;permission_rate_limit;pm_conversations_users;user_external_profile;user_seedbox;user_token;user_warning;users_dupes;users_enable_requests;users_levels;users_main;users_notifications_settings;users_notify_quoted;users_notify_torrents;users_sessions;users_subscriptions;users_votes;xbt_snatched,9092
+user,reset avatar,Usable,templates/user/reset-avatar.twig,-,app/User.php;app/User,bonus_history;donor_rewards;friends;permission_rate_limit;pm_conversations_users;user_external_profile;user_seedbox;user_token;user_warning;users_dupes;users_enable_requests;users_levels;users_main;users_notifications_settings;users_notify_quoted;users_notify_torrents;users_sessions;users_subscriptions;users_votes;xbt_snatched,9031
+user,audit,Reusable,templates/user/audit.twig,sections/user/audit.php,app/User.php;app/User,bonus_history;donor_rewards;friends;permission_rate_limit;pm_conversations_users;user_external_profile;user_seedbox;user_token;user_warning;users_dupes;users_enable_requests;users_levels;users_main;users_notifications_settings;users_notify_quoted;users_notify_torrents;users_sessions;users_subscriptions;users_votes;xbt_snatched,9090
+user,recent,Usable,templates/user/recent.twig,-,app/User.php;app/User,bonus_history;donor_rewards;friends;permission_rate_limit;pm_conversations_users;user_external_profile;user_seedbox;user_token;user_warning;users_dupes;users_enable_requests;users_levels;users_main;users_notifications_settings;users_notify_quoted;users_notify_torrents;users_sessions;users_subscriptions;users_votes;xbt_snatched,9043
+user,edit title,Reusable,templates/user/edit-title.twig,-,app/User.php;app/User,bonus_history;donor_rewards;friends;permission_rate_limit;pm_conversations_users;user_external_profile;user_seedbox;user_token;user_warning;users_dupes;users_enable_requests;users_levels;users_main;users_notifications_settings;users_notify_quoted;users_notify_torrents;users_sessions;users_subscriptions;users_votes;xbt_snatched,9030
+user,recent vote,Reusable,templates/user/recent-vote.twig,-,app/User.php;app/User,bonus_history;donor_rewards;friends;permission_rate_limit;pm_conversations_users;user_external_profile;user_seedbox;user_token;user_warning;users_dupes;users_enable_requests;users_levels;users_main;users_notifications_settings;users_notify_quoted;users_notify_torrents;users_sessions;users_subscriptions;users_votes;xbt_snatched,9071
+user,bonus,Reusable,templates/user/bonus.twig,-,app/User.php;app/User,bonus_history;donor_rewards;friends;permission_rate_limit;pm_conversations_users;user_external_profile;user_seedbox;user_token;user_warning;users_dupes;users_enable_requests;users_levels;users_main;users_notifications_settings;users_notify_quoted;users_notify_torrents;users_sessions;users_subscriptions;users_votes;xbt_snatched,9105
+user,locked,Reusable,templates/user/locked.twig,-,app/User.php;app/User,bonus_history;donor_rewards;friends;permission_rate_limit;pm_conversations_users;user_external_profile;user_seedbox;user_token;user_warning;users_dupes;users_enable_requests;users_levels;users_main;users_notifications_settings;users_notify_quoted;users_notify_torrents;users_sessions;users_subscriptions;users_votes;xbt_snatched,9045
+user,edit warn,Reusable,templates/user/edit-warn.twig,-,app/User.php;app/User,bonus_history;donor_rewards;friends;permission_rate_limit;pm_conversations_users;user_external_profile;user_seedbox;user_token;user_warning;users_dupes;users_enable_requests;users_levels;users_main;users_notifications_settings;users_notify_quoted;users_notify_torrents;users_sessions;users_subscriptions;users_votes;xbt_snatched,9086
+user,password history,Usable,templates/user/password-history.twig,-,app/User.php;app/User,bonus_history;donor_rewards;friends;permission_rate_limit;pm_conversations_users;user_external_profile;user_seedbox;user_token;user_warning;users_dupes;users_enable_requests;users_levels;users_main;users_notifications_settings;users_notify_quoted;users_notify_torrents;users_sessions;users_subscriptions;users_votes;xbt_snatched,9049
+user,edit privileges,Reusable,templates/user/edit-privileges.twig,-,app/User.php;app/User,bonus_history;donor_rewards;friends;permission_rate_limit;pm_conversations_users;user_external_profile;user_seedbox;user_token;user_warning;users_dupes;users_enable_requests;users_levels;users_main;users_notifications_settings;users_notify_quoted;users_notify_torrents;users_sessions;users_subscriptions;users_votes;xbt_snatched,9151
+user,quote notification,Usable,templates/user/quote-notification.twig,-,app/User.php;app/User,bonus_history;donor_rewards;friends;permission_rate_limit;pm_conversations_users;user_external_profile;user_seedbox;user_token;user_warning;users_dupes;users_enable_requests;users_levels;users_main;users_notifications_settings;users_notify_quoted;users_notify_torrents;users_sessions;users_subscriptions;users_votes;xbt_snatched,9066
+user,privilege list,Reusable,templates/user/privilege-list.twig,-,app/User.php;app/User,bonus_history;donor_rewards;friends;permission_rate_limit;pm_conversations_users;user_external_profile;user_seedbox;user_token;user_warning;users_dupes;users_enable_requests;users_levels;users_main;users_notifications_settings;users_notify_quoted;users_notify_torrents;users_sessions;users_subscriptions;users_votes;xbt_snatched,9060
+user,thread history,Usable,templates/user/thread-history.twig,-,app/User.php;app/User,bonus_history;donor_rewards;friends;permission_rate_limit;pm_conversations_users;user_external_profile;user_seedbox;user_token;user_warning;users_dupes;users_enable_requests;users_levels;users_main;users_notifications_settings;users_notify_quoted;users_notify_torrents;users_sessions;users_subscriptions;users_votes;xbt_snatched,9057
+user,edit lock,Reusable,templates/user/edit-lock.twig,-,app/User.php;app/User,bonus_history;donor_rewards;friends;permission_rate_limit;pm_conversations_users;user_external_profile;user_seedbox;user_token;user_warning;users_dupes;users_enable_requests;users_levels;users_main;users_notifications_settings;users_notify_quoted;users_notify_torrents;users_sessions;users_subscriptions;users_votes;xbt_snatched,9049
+user,friend,Usable,templates/user/friend.twig,-,app/User.php;app/User,bonus_history;donor_rewards;friends;permission_rate_limit;pm_conversations_users;user_external_profile;user_seedbox;user_token;user_warning;users_dupes;users_enable_requests;users_levels;users_main;users_notifications_settings;users_notify_quoted;users_notify_torrents;users_sessions;users_subscriptions;users_votes;xbt_snatched,9071
+user,lastfm,Reusable,templates/user/lastfm.twig,sections/user/lastfm.php,app/User.php;app/User,bonus_history;donor_rewards;friends;permission_rate_limit;pm_conversations_users;user_external_profile;user_seedbox;user_token;user_warning;users_dupes;users_enable_requests;users_levels;users_main;users_notifications_settings;users_notify_quoted;users_notify_torrents;users_sessions;users_subscriptions;users_votes;xbt_snatched,9065
+user,ip,Reusable,templates/user/ip.twig,-,app/User.php;app/User,bonus_history;donor_rewards;friends;permission_rate_limit;pm_conversations_users;user_external_profile;user_seedbox;user_token;user_warning;users_dupes;users_enable_requests;users_levels;users_main;users_notifications_settings;users_notify_quoted;users_notify_torrents;users_sessions;users_subscriptions;users_votes;xbt_snatched,9028
+user,edit password,Usable,templates/user/edit-password.twig,-,app/User.php;app/User,bonus_history;donor_rewards;friends;permission_rate_limit;pm_conversations_users;user_external_profile;user_seedbox;user_token;user_warning;users_dupes;users_enable_requests;users_levels;users_main;users_notifications_settings;users_notify_quoted;users_notify_torrents;users_sessions;users_subscriptions;users_votes;xbt_snatched,9043
+user,email history,Usable,templates/user/email-history.twig,-,app/User.php;app/User,bonus_history;donor_rewards;friends;permission_rate_limit;pm_conversations_users;user_external_profile;user_seedbox;user_token;user_warning;users_dupes;users_enable_requests;users_levels;users_main;users_notifications_settings;users_notify_quoted;users_notify_torrents;users_sessions;users_subscriptions;users_votes;xbt_snatched,9096
+user,edit username,Usable,templates/user/edit-username.twig,-,app/User.php;app/User,bonus_history;donor_rewards;friends;permission_rate_limit;pm_conversations_users;user_external_profile;user_seedbox;user_token;user_warning;users_dupes;users_enable_requests;users_levels;users_main;users_notifications_settings;users_notify_quoted;users_notify_torrents;users_sessions;users_subscriptions;users_votes;xbt_snatched,9030
+user,vote history,Reusable,templates/user/vote-history.twig,sections/user/vote_history.php,app/User.php;app/User,bonus_history;donor_rewards;friends;permission_rate_limit;pm_conversations_users;user_external_profile;user_seedbox;user_token;user_warning;users_dupes;users_enable_requests;users_levels;users_main;users_notifications_settings;users_notify_quoted;users_notify_torrents;users_sessions;users_subscriptions;users_votes;xbt_snatched,9076
+user,subscription history,Usable,templates/user/subscription-history.twig,-,app/User.php;app/User,bonus_history;donor_rewards;friends;permission_rate_limit;pm_conversations_users;user_external_profile;user_seedbox;user_token;user_warning;users_dupes;users_enable_requests;users_levels;users_main;users_notifications_settings;users_notify_quoted;users_notify_torrents;users_sessions;users_subscriptions;users_votes;xbt_snatched,9110
+user,post history,Usable,templates/user/post-history.twig,-,app/User.php;app/User,bonus_history;donor_rewards;friends;permission_rate_limit;pm_conversations_users;user_external_profile;user_seedbox;user_token;user_warning;users_dupes;users_enable_requests;users_levels;users_main;users_notifications_settings;users_notify_quoted;users_notify_torrents;users_sessions;users_subscriptions;users_votes;xbt_snatched,9127
+user,session,Usable,templates/user/session.twig,-,app/User.php;app/User,bonus_history;donor_rewards;friends;permission_rate_limit;pm_conversations_users;user_external_profile;user_seedbox;user_token;user_warning;users_dupes;users_enable_requests;users_levels;users_main;users_notifications_settings;users_notify_quoted;users_notify_torrents;users_sessions;users_subscriptions;users_votes;xbt_snatched,9072
+user,edit remark,Reusable,templates/user/edit-remark.twig,-,app/User.php;app/User,bonus_history;donor_rewards;friends;permission_rate_limit;pm_conversations_users;user_external_profile;user_seedbox;user_token;user_warning;users_dupes;users_enable_requests;users_levels;users_main;users_notifications_settings;users_notify_quoted;users_notify_torrents;users_sessions;users_subscriptions;users_votes;xbt_snatched,9030
+user,pm privilege,Reusable,templates/user/pm-privilege.twig,-,app/User.php;app/User,bonus_history;donor_rewards;friends;permission_rate_limit;pm_conversations_users;user_external_profile;user_seedbox;user_token;user_warning;users_dupes;users_enable_requests;users_levels;users_main;users_notifications_settings;users_notify_quoted;users_notify_torrents;users_sessions;users_subscriptions;users_votes;xbt_snatched,9032
+vote,-,Reusable,templates/vote,-,-,-,49
+wiki,-,Usable,templates/wiki,sections/wiki,app/Wiki.php,wiki_articles,960
+wiki,revision list,Usable,templates/wiki/revision-list.twig,-,app/Wiki.php,wiki_articles,277
+wiki,browse,Usable,templates/wiki/browse.twig,-,app/Wiki.php,wiki_articles,279
+wiki,search,Usable,templates/wiki/search.twig,sections/wiki/search.php,app/Wiki.php,wiki_articles,335
+wiki,article,Usable,templates/wiki/article.twig,sections/wiki/article.php,app/Wiki.php,wiki_articles,356
+wiki,compare,Usable,templates/wiki/compare.twig,sections/wiki/compare.php,app/Wiki.php,wiki_articles,322
+wiki,create,Usable,templates/wiki/create.twig,sections/wiki/create.php,app/Wiki.php,wiki_articles,279
+-,-,-,-,-,-,TOTAL:,346001/217969
