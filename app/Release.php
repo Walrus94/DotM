@@ -14,6 +14,14 @@ class Release extends BaseObject {
         return $this;
     }
 
+    public function link(): string {
+        return sprintf('<a href="%s">%s</a>', $this->url(), display_str($this->name()));
+    }
+
+    public function location(): string {
+        return 'releases.php?releaseid=' . $this->id;
+    }
+
     public function info(): array {
         if (!isset($this->info)) {
             $this->info = self::$db->rowAssoc(
