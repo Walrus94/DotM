@@ -2,8 +2,6 @@
 
 namespace Gazelle\Notification;
 
-use Gazelle\Util\Irc;
-use Gazelle\Util\IrcText;
 
 // NB: if you receive failures running this locally, the most likely cause is the
 //     presence of users_notify_filters rows that match the uploads created here.
@@ -27,7 +25,6 @@ class Upload extends \Gazelle\Base {
         // RSS notification must be handled after user notifications
         // to ensure their personal RSS feeds are updated.
         $this->sendRssNotification();
-        $this->sendIrcNotification();
         $this->sendPushNotification();
         return $total;
     }
@@ -293,73 +290,6 @@ class Upload extends \Gazelle\Base {
             }
         }
         return $n;
-    }
-
-    public function sendIrcNotification(): void {
-        Irc::sendMessage(IRC_CHAN_ANNOUNCE, $this->ircNotification());
-    }
-
-    public function ircNotification(): string {
-        $torrent  = $this->torrent;
-        $tgroup   = $torrent->group();
-        $metadata = [$torrent->media(), $torrent->format(), $torrent->encoding()];
-        if ($torrent->media() == "CD") {
-            if ($torrent->hasCue()) {
-                $metadata[] = "Cue";
-            }
-            if ($torrent->hasLog()) {
-                array_push($metadata, "Log", $torrent->logScore());
-            }
-        }
-        return match ($tgroup->categoryName()) {
-            'Music' => Irc::render(
-                IrcText::Bold,
-                'TORRENT:',
-                IrcText::Bold,
-                ' ',
-                IrcText::DodgerBlue,
-                $torrent->name(),
-                IrcText::ColorOff,
-                ' – ',
-                IrcText::DarkOrange,
-                '[',
-                $torrent->isRemasteredUnknown() || !$torrent->isRemastered() ? $tgroup->year() : $torrent->remasterYear(),
-                "] [{$tgroup->releaseTypeName()}] ",
-                implode('/', $metadata),
-                IrcText::ColorOff,
-                ' – ',
-                IrcText::SurfieGreen,
-                implode(',', $tgroup->tagNameList()),
-                IrcText::ColorOff,
-                ' – ',
-                IrcText::FreeSpeechRed,
-                SITE_URL . '/' . $tgroup->location(),
-                IrcText::ColorOff,
-                ' – ',
-                IrcText::FreeSpeechRed,
-                SITE_URL . '/' . preg_replace('/#.*$/', '', $torrent->location()) . '&action=download',
-            ),
-            default => Irc::render(
-                IrcText::Bold,
-                'TORRENT:',
-                IrcText::Bold,
-                ' ',
-                IrcText::DodgerBlue,
-                $torrent->name(),
-                IrcText::ColorOff,
-                ' – ',
-                IrcText::SurfieGreen,
-                implode(',', $tgroup->tagNameList()),
-                IrcText::ColorOff,
-                ' – ',
-                IrcText::FreeSpeechRed,
-                SITE_URL . '/' . $tgroup->location(),
-                IrcText::ColorOff,
-                ' – ',
-                IrcText::FreeSpeechRed,
-                SITE_URL . '/' . preg_replace('/#.*$/', '', $torrent->location()) . '&action=download',
-            ),
-        };
     }
 
     public function sendPushNotification(): void {

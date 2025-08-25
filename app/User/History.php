@@ -94,8 +94,6 @@ class History extends \Gazelle\BaseUser {
     public function registerNewEmail(
         string $newEmail,
         bool $notify,
-        \Gazelle\Manager\IPv4 $ipv4,
-        \Gazelle\Util\Irc $irc,
         \Gazelle\Util\Mail $mailer
     ): int {
         $ipaddr = $this->requestContext()->remoteAddr();
@@ -108,16 +106,6 @@ class History extends \Gazelle\BaseUser {
         );
         $affected = self::$db->affected_rows();
         if ($notify) {
-            $irc::sendMessage(
-                $this->user->username(),
-                "Security alert: Your email address was changed via $ipaddr with $useragent. Not you? Contact staff ASAP."
-            );
-            if ($ipv4->setFilterIpaddr($ipaddr)->userTotal($this->user) == 0) {
-                $irc::sendMessage(
-                    IRC_CHAN_STAFF,
-                    "Email address for {$this->user->username()} was changed from {$this->user->email()} to $newEmail from unusual address $ipaddr with UA=$useragent."
-                );
-            }
             $mailer->send($this->user->email(), 'Email address changed information for ' . SITE_NAME,
                 self::$twig->render('email/email-address-change.twig', [
                     'ipaddr'     => $ipaddr,

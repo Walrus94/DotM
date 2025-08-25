@@ -2,7 +2,7 @@
 
 namespace Gazelle;
 
-use Gazelle\Util\{Irc, Time};
+use Gazelle\Util\Time;
 
 class Debug {
     protected const MAX_TIME = 20000;
@@ -138,11 +138,8 @@ class Debug {
         if (empty($report)) {
             $report = $message;
         }
-        $case = $this->saveCase($report);
-        Irc::sendMessage(IRC_CHAN_STATUS, "{$message} $module "
-            . SITE_URL . "/tools.php?action=analysis&case=$case "
-            . SITE_URL . "/{$uri}"
-        );
+        // previously used to trigger IRC status messages
+        $this->saveCase($module !== '' ? "[$module] $report" : $report);
     }
 
     public function saveError(\Exception $e): int {

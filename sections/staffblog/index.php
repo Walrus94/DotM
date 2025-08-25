@@ -2,7 +2,6 @@
 /** @phpstan-var \Gazelle\User $Viewer */
 /** @phpstan-var \Twig\Environment $Twig */
 
-use Gazelle\Util\Irc;
 
 if (!$Viewer->permitted('users_mod')) {
     error(403);
@@ -37,7 +36,7 @@ if ($Viewer->permitted('admin_manage_blog')) {
                 }
                 if ($_REQUEST['action'] == 'takenewblog') {
                     $blog = $blogMan->create($Viewer, $title, $body);
-                    Irc::sendMessage(IRC_CHAN_STAFF, "New staff blog: {$blog->title()} – {$blog->publicLocation()}");
+                    // IRC notifications removed
                 } else {
                     $blog->setField('Title', $title)
                         ->setField('Body', $body)

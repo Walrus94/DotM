@@ -21,7 +21,7 @@ class PasswordCheck {
         }
         if (PASSWORD_CHECK_URL) {
             $c = new \Gazelle\Util\Curl();
-            $c->setUseProxy(false)->setPostData(sha1($password, true))->fetch(PASSWORD_CHECK_URL);
+            $c->setUseProxy(false)->setPostData(hash('sha1', $password, true))->fetch(PASSWORD_CHECK_URL);
             if ($c->responseCode() === 205) {
                 return false;
             }

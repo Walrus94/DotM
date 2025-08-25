@@ -212,9 +212,4 @@ if ($Viewer->option('AutoSubscribe')) {
     (new Gazelle\User\Subscription($Viewer))->subscribeComments('requests', $request->id());
 }
 
-Gazelle\Util\Irc::sendMessage(
-    IRC_CHAN_REQUEST,
-    "{$request->text()} – {$request->publicLocation()} – " . implode(' ', $request->tagNameList())
-);
-
 header("Location: {$request->location()}");

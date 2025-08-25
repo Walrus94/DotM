@@ -41,6 +41,5 @@ if ($thread && isset($_POST['subscribe'])) {
 $notification = new Gazelle\Manager\Notification();
 $notification->push($notification->pushableTokens(Gazelle\Enum\NotificationType::BLOG), "New blog article", $blog->title(), $blog->publicLocation());
 
-Gazelle\Util\Irc::sendMessage(IRC_CHAN, "New blog article: " . $blog->title());
 
 header('Location: blog.php');

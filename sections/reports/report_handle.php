@@ -1,7 +1,6 @@
 <?php
 /** @phpstan-var \Gazelle\User $Viewer */
 
-use Gazelle\Util\Irc;
 
 authorize();
 
@@ -46,10 +45,5 @@ if (is_null($location)) {
 }
 
 $report = (new Gazelle\Manager\Report(new Gazelle\Manager\User()))->create($Viewer, $subjectId, $subjectType, $reason);
-if (in_array($report->subjectType(), ['user', 'comment'])) {
-    Irc::sendMessage(
-        IRC_CHAN_MOD,
-        "{$Viewer->username()} reported a $subjectType, see {$report->location()}"
-    );
-}
+// IRC notifications removed
 header("Location: $location");

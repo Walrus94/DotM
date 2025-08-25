@@ -197,7 +197,6 @@ class Torrent {
                 $tgMan->requestContext()->module(),
                 'Bad arguments in Search\Torrent constructor',
                 $ErrMsg,
-                86_400,
             );
             error('-1');
         }

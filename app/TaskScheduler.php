@@ -2,7 +2,6 @@
 
 namespace Gazelle;
 
-use Gazelle\Util\Irc;
 
 class TaskScheduler extends Base {
     final public const CACHE_TASKS = 'scheduled_tasks';
@@ -308,7 +307,6 @@ class TaskScheduler extends Base {
         );
 
         if ($pendingMigrations) {
-            Irc::sendMessage(IRC_CHAN_DEV, 'Pending migrations found, scheduler cannot continue');
             echo "Pending migrations found, aborting\n";
             return;
         }
@@ -378,7 +376,6 @@ class TaskScheduler extends Base {
 
         $taskRunner = $this->createRunner($id, $task['name'], $task['classname'], $task['is_debug'] || $debug);
         if ($taskRunner === null) {
-            Irc::sendMessage(IRC_CHAN_DEV, "Failed to construct task {$task['name']}");
             return -1;
         }
 

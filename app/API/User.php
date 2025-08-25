@@ -30,7 +30,6 @@ class User extends AbstractAPI {
                 um.ID,
                 um.Username,
                 um.Enabled,
-                um.IRCKey,
                 uls.Uploaded,
                 uls.Downloaded,
                 um.PermissionID AS Class,

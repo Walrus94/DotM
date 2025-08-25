@@ -4,7 +4,6 @@
 
 authorize();
 
-$irc     = new Gazelle\Util\Irc();
 $userMan = new Gazelle\Manager\User();
 if (!isset($_REQUEST['id'])) {
     $ownProfile = true;
@@ -19,7 +18,6 @@ if (!isset($_REQUEST['id'])) {
     }
     $ownProfile = ($user->id() === $Viewer->id());
     if (!$ownProfile && !$Viewer->permitted('users_edit_profiles')) {
-        $irc::sendMessage(IRC_CHAN_MOD, "User {$Viewer->label()} tried to edit {$user->publicLocation()}");
         error(403);
     }
 }
@@ -32,7 +30,6 @@ $validator->setFields([
     ['collagecovers', true, "number", "You forgot to select your collage option."],
     ['avatar', false, "regex", "You did not enter a valid avatar URL.", ['regex' => IMAGE_REGEXP]],
     ['email', true, "email", "You did not enter a valid email address."],
-    ['irckey', false, "string", "You did not enter a valid IRC key. An IRC key must be between 6 and 32 characters long.", ['range' => [6, 32]]],
     ['new_pass_1', false, "regex",
         "You did not enter a valid password. A strong password is 8 characters or longer, contains at least 1 lowercase and uppercase letter, and contains at least a number or symbol.",
         ['regex' => \Gazelle\Util\PasswordCheck::REGEXP]
@@ -112,7 +109,6 @@ if (!isset($_POST['p_donor_heart'])) {
     $Paranoia[] = 'hide_donor_heart';
 }
 
-$user->setField('IRCKey', $_POST['irckey']);
 $user->setField('Paranoia', serialize($Paranoia));
 $user->setField('profile_info', substr($_POST['info'], 0, 20480));
 $user->setField('profile_title', trim($_POST['profile_title']));
@@ -254,7 +250,7 @@ foreach (
 
 $history = new \Gazelle\User\History($user);
 if ($NewEmail) {
-    $history->registerNewEmail($NewEmail, $ownProfile, new \Gazelle\Manager\IPv4(), $irc, new \Gazelle\Util\Mail());
+    $history->registerNewEmail($NewEmail, $ownProfile, new \Gazelle\Util\Mail());
 }
 
 if (isset($_POST['resetpasskey'])) {
