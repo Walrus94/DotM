@@ -29,6 +29,15 @@ class Bonus extends \Gazelle\BaseUser {
         return $this;
     }
 
+    /**
+     * Return true if the legacy torrent-related tables exist in the schema.
+     * The bonus system queries these tables; when absent, we must avoid the
+     * queries to prevent runtime errors.
+     */
+    private function legacyTablesPresent(): bool {
+        return self::$db->entityExists('torrents', 'ID');
+    }
+
     public function pointsSpent(): int {
         return (int)self::$db->scalar("
             SELECT sum(Price) FROM bonus_history WHERE UserID = ?
@@ -508,6 +517,9 @@ class Bonus extends \Gazelle\BaseUser {
     }
 
     public function hourlyRate(): float {
+        if (!$this->legacyTablesPresent()) {
+            return 0.0;
+        }
         try {
             return (float)self::$db->scalar(
                 "SELECT sum(bonus_accrual(t.Size, xfh.seedtime, tls.Seeders))
