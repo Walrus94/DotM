@@ -12,3 +12,4 @@ app/User/History.php
 app/User/Notification.php
 app/User/Privilege.php
 app/User/Vote.php
+
