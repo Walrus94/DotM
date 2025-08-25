@@ -94,13 +94,7 @@ if (!empty($_SERVER['HTTP_AUTHORIZATION']) && $module === 'ajax') {
     }
     $session->refresh($SessionID, $context->remoteAddr(), $context->ua());
     unset($browser, $session, $userId, $cookieData);
-} elseif ($module === 'torrents' && ($_REQUEST['action'] ?? '') == 'download' && isset($_REQUEST['torrent_pass'])) {
-    $Viewer = $userMan->findByAnnounceKey($_REQUEST['torrent_pass']);
-    if (is_null($Viewer) || $Viewer->isDisabled() || $Viewer->isLocked()) {
-        header('HTTP/1.1 403 Forbidden');
-        exit;
-    }
-} elseif (!in_array($module, ['chat', 'enable', 'index', 'login', 'recovery', 'register', 'torrents'])) {
+} elseif (!in_array($module, ['chat', 'enable', 'index', 'login', 'recovery', 'register', 'releases'])) {
     if (
         // Ocelot is allowed
         !($module === 'tools' && ($_GET['action'] ?? '') === 'ocelot' && ($_GET['key'] ?? '') === TRACKER_SECRET)

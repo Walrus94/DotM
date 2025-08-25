@@ -32,7 +32,7 @@ if (!empty($_POST['action'])) {
     if (!empty($_GET['id'])) {
         include_once 'artist.php';
     } elseif (empty($_GET['artistname'])) {
-        header('Location: torrents.php');
+        header('Location: releases.php');
     } else {
         $db = Gazelle\DB::DB();
         $NameSearch = str_replace('\\', '\\\\', trim($_GET['artistname']));
@@ -45,9 +45,9 @@ if (!empty($_POST['action'])) {
         [$FirstID, $Name] = $db->next_record(MYSQLI_NUM, false);
         if (is_null($FirstID)) {
             if ($Viewer->permitted('site_advanced_search') && $Viewer->option('SearchType')) {
-                header('Location: torrents.php?action=advanced&artistname=' . urlencode($_GET['artistname']));
+                header('Location: releases.php?action=advanced&artistname=' . urlencode($_GET['artistname']));
             } else {
-                header('Location: torrents.php?searchstr=' . urlencode($_GET['artistname']));
+                header('Location: releases.php?searchstr=' . urlencode($_GET['artistname']));
             }
             exit;
         }
