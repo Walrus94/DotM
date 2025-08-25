@@ -100,7 +100,7 @@ if (!empty($_SERVER['HTTP_AUTHORIZATION']) && $module === 'ajax') {
         header('HTTP/1.1 403 Forbidden');
         exit;
     }
-} elseif (!in_array($module, ['chat', 'enable', 'index', 'login', 'recovery', 'register'])) {
+} elseif (!in_array($module, ['chat', 'enable', 'index', 'login', 'recovery', 'register', 'torrents'])) {
     if (
         // Ocelot is allowed
         !($module === 'tools' && ($_GET['action'] ?? '') === 'ocelot' && ($_GET['key'] ?? '') === TRACKER_SECRET)
