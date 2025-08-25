@@ -108,7 +108,7 @@ entity "collages" as Collage {
   updated : datetime
 }
 
-entity "collages_torrents" as CollageRelease {
+entity "collages_releases" as CollageRelease {
   *CollageID : int
   *release_id : int
   Sort : int
