@@ -11,7 +11,7 @@ if ($search !== '') {
                 r.Name,
                 r.Year,
                 group_concat(DISTINCT aa.Name ORDER BY aa.Name SEPARATOR ', ') AS ArtistName
-           FROM release r
+           FROM `release` r
            LEFT JOIN release_artist ra ON (ra.release_id = r.ID)
            LEFT JOIN artists_alias aa ON (aa.AliasID = ra.AliasID)
           WHERE r.Name LIKE concat('%', ?, '%')
