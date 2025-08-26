@@ -28,6 +28,7 @@ $LimitedPages = [
     'subscriptions'   => [5, 10],
     'tcomments'       => [5, 10],
     'torrentgroup'    => [15, 60],
+    'releasegroup'    => [15, 60],
     'user'            => [4, 60],
     'user_recents'    => [5, 10],
     'userhistory'     => [5, 10],
@@ -109,6 +110,9 @@ switch ($Action) {
         break;
     case 'torrentgroup':
         include_once 'torrentgroup.php';
+        break;
+    case 'releasegroup':
+        include_once 'releasegroup.php';
         break;
     case 'torrentgroupalbumart':        // so the album art script can function without breaking the ratelimit
         include_once 'torrentgroupalbumart.php';
