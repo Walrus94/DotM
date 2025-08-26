@@ -27,7 +27,6 @@ $LimitedPages = [
     'similar_artists' => [10, 60],
     'subscriptions'   => [5, 10],
     'tcomments'       => [5, 10],
-    'top10'           => [2, 60],
     'torrentgroup'    => [15, 60],
     'user'            => [4, 60],
     'user_recents'    => [5, 10],
@@ -128,9 +127,6 @@ switch ($Action) {
         break;
     case 'post_edit':
         include_once 'post_edit.php';
-        break;
-    case 'top10':
-        include_once 'top10/index.php';
         break;
     case 'browse':
         include_once 'browse.php';

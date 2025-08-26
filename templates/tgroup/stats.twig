@@ -1,6 +1,6 @@
 {% from 'macro/rank.twig' import css_rank %}
 {% if tgroup.categoryName == 'Music' %}
-{%  for key, r in vote.ranking(tgroup, viewer.permitted('site_advanced_top10')) %}
+{%  for key, r in vote.ranking(tgroup) %}
 {%      if loop.first %}
 <div class="box" id="votes_ranks">
     <div class="head"><strong>{{ constant('SITE_NAME') }} Favorites</strong></div>

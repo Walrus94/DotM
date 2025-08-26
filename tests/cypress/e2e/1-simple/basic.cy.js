@@ -23,7 +23,6 @@ describe('page loads as admin', () => {
         "/stats.php",
         "/tools.php",
         "/tools.php?action=analysis_list",
-        "/top10.php",
         "/torrents.php",
         "/torrents.php?action=advanced&artistname=doesnotexist",
         "/user.php",

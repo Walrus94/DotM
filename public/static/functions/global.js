@@ -577,7 +577,7 @@ document.addEventListener('DOMContentLoaded', () => {
             serviceUrl: ARTIST_AUTOCOMPLETE_URL
         });
     }
-    if (url.path == 'torrents' || url.path == 'upload' || url.path == 'requests' || url.path == 'top10' || (url.path == 'requests' && url.query['action'] == 'new')) {
+    if (url.path == 'torrents' || url.path == 'upload' || url.path == 'requests' || (url.path == 'requests' && url.query['action'] == 'new')) {
         $("#tags" + SELECTOR).autocomplete({
             deferRequestBy: 300,
             delimiter: ',',

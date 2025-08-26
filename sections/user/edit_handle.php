@@ -189,7 +189,7 @@ $option['ShowExtraCovers']     = (int)!empty($_POST['show_extra_covers']);
 $option['AutoComplete']        = $_POST['autocomplete'];
 
 // user options
-foreach (['DefaultSearch', 'DisableFreeTorrentTop10'] as $opt) {
+foreach (['DefaultSearch'] as $opt) {
     if ($user->option($opt)) {
         $option[$opt] = $user->option($opt);
     }

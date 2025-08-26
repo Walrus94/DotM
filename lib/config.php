@@ -113,13 +113,6 @@ defined('BITCOIN_DONATION_XYZPUB') or define('BITCOIN_DONATION_XYZPUB', '');
 // The password is sent in the request body of a POST request as a 20 byte binary sha1 hash.
 defined('PASSWORD_CHECK_URL') or define('PASSWORD_CHECK_URL', '');
 
-// Top 10 history date. Previous days and weeks of Top 10 torrents are
-// recorded in a task. There is not point going back prior to the start
-// of recorded history.
-defined('TOP_TEN_HISTORY_BEGIN') or define('TOP_TEN_HISTORY_BEGIN', '2023-06-23');
-
-// The heading used for the Top 10 pages.
-defined('TOP_TEN_HEADING') or define('TOP_TEN_HEADING', 'Top 10');
 
 // ------------------------------------------------------------------------
 // Secrets
@@ -144,9 +137,6 @@ defined('AVATAR_SALT') or define('AVATAR_SALT', 'changeme');
 // invalidate cache keys that will be regenerated on next call.
 defined('FOLDER_CLASH_SALT') or define('FOLDER_CLASH_SALT', 'changeme');
 
-// Salt for custom Top 10 lists. Changing this after site launch will
-// invalidate cache keys that will be regenerated on next call.
-defined('TOP10_SALT') or define('TOP10_SALT', 'changeme');
 
 // Salt for authorizing page handlers. Changing this after site launch
 // will invalidate cache keys and break any ongoing edits. Retrying
@@ -604,7 +594,7 @@ defined('HOMEPAGE_TAG_IGNORE') or define('HOMEPAGE_TAG_IGNORE', [0]);
 defined('IGNORE_PAGE_MAX_MEMORY') or define('IGNORE_PAGE_MAX_MEMORY', ['artist', 'bookmark']);
 
 // Do not report these pages for being slow
-defined('IGNORE_PAGE_MAX_TIME') or define('IGNORE_PAGE_MAX_TIME', ['top10']);
+defined('IGNORE_PAGE_MAX_TIME') or define('IGNORE_PAGE_MAX_TIME', []);
 
 // How many days to wait until a never active torrent can be requested for reseed
 defined('RESEED_NEVER_ACTIVE_TORRENT') or define('RESEED_NEVER_ACTIVE_TORRENT', 3);

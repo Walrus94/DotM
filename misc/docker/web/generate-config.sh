@@ -11,5 +11,4 @@ echo "Generating configuration parameters..."
 (
     perl -ple 's/""/q{"} . qx(head \/dev\/urandom|tr -dc 0-9A-Za-z|head -c 16) . q{"}/e' "${SOURCE}"
     date +"define('SITE_LAUNCH_YEAR', %Y);"
-    date +"define('TOP_TEN_HISTORY_BEGIN', '%Y-%m-%d');"
 ) > "${TARGET}"

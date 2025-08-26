@@ -137,8 +137,6 @@ class Privilege extends \Gazelle\BaseManager {
             'site_submit_requests' => 'Create requests',
             'site_vote' => 'Vote on requests',
             'site_advanced_search' => 'Advanced search',
-            'site_top10' => 'View Top 10',
-            'site_advanced_top10' => 'View advanced Top 10',
             'site_album_votes' => 'Vote for favorite releases',
             'site_torrents_notify' => 'Access upload notifications',
             'site_collages_create' => 'Create collages',
