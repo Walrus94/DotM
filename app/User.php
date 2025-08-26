@@ -134,7 +134,6 @@ class User extends BaseObject {
                 um.auth_key,
                 um.avatar,
                 um.can_leech,
-                um.collage_total,
                 um.created,
                 um.inviter_user_id,
                 um.IP,
