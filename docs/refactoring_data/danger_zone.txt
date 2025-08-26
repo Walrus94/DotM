@@ -1,7 +1,5 @@
 app/Artist
 app/Artist.php
-app/Collage
-app/Collage.php
 app/Contest
 app/Contest.php
 app/Request
@@ -11,5 +9,3 @@ app/User/Bonus.php
 app/User/History.php
 app/User/Notification.php
 app/User/Privilege.php
-app/User/Vote.php
-
