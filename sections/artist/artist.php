@@ -17,7 +17,7 @@ $artistId = $artist->id();
 
 $bookmark   = new Gazelle\User\Bookmark($Viewer);
 $tgMan      = (new Gazelle\Manager\TGroup())->setViewer($Viewer);
-$torMan     = (new Gazelle\Manager\Torrent())->setViewer($Viewer);
+$linkMan    = new Gazelle\Manager\ReleaseLink();
 $stats      = new Gazelle\Stats\Artist($artistId);
 $userMan    = new Gazelle\Manager\User();
 $vote       = new Gazelle\User\Vote($Viewer);
@@ -185,7 +185,6 @@ if ($sections = $artist->sections()) {
 <?php
     $urlStem = (new Gazelle\User\Stylesheet($Viewer))->imagePath();
     $groupsClosed = (bool)$Viewer->option('TorrentGrouping');
-    $snatcher = $Viewer->snatch();
 
     foreach ($sections as $sectionId => $groupList) {
         $sectionClosed = (bool)($sortHide[$sectionId] ?? 0);
@@ -242,16 +241,13 @@ if ($sections = $artist->sections()) {
                 </td>
             </tr>
 <?php
-        echo $Twig->render('torrent/detail-torrentgroup.twig', [
-            'colspan_add'     => 1,
-            'hide'            => $groupsClosed || $sectionClosed,
-            'is_snatched_grp' => $isSnatched,
-            'snatcher'        => $snatcher,
-            'section_id'      => $sectionId,
-            'tgroup'          => $tgroup,
-            'torrent_list'    => object_generator($torMan, $tgroup->torrentIdList()),
-            'tor_man'         => $torMan,
-            'viewer'          => $Viewer,
+        echo $Twig->render('release/detail-releasegroup.twig', [
+            'colspan_add'  => 1,
+            'hide'         => $groupsClosed || $sectionClosed,
+            'section_id'   => $sectionId,
+            'tgroup'       => $tgroup,
+            'link_list'    => object_generator($linkMan, $linkMan->linkIdList($tgroup->id())),
+            'viewer'       => $Viewer,
         ]);
         unset($tgroup);
     } /* group */

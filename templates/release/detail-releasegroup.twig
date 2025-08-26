@@ -1,0 +1,9 @@
+{% for link in link_list %}
+<tr class="releases_{{ section_id }} group_torrent{{ hide ? ' hidden' : '' }}">
+    <td colspan="{{ viewer.ordinal.value('file-count-display') ? 7 + colspan_add : 6 + colspan_add }}" class="td_info">
+        <a href="{{ link.url }}">{{ link.platform }}</a>
+        {% if link.format %}<span class="format"> ({{ link.format }})</span>{% endif %}
+        {% if link.bitrate %}<span class="bitrate"> ({{ link.bitrate }})</span>{% endif %}
+    </td>
+</tr>
+{% endfor %}
