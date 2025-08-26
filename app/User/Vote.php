@@ -18,11 +18,6 @@ class Vote extends \Gazelle\BaseUser {
     protected const VOTED_USER    = 'user_voted_%d';
     protected const VOTED_GROUP   = 'group_voted_%d';
 
-    protected int   $limit;
-    protected array $topConfig = [];
-    protected array $topJoin   = [];
-    protected array $topWhere  = [];
-    protected array $topArgs   = [];
     protected array $voteSummary;
 
     public function flush(): static {
@@ -68,36 +63,6 @@ class Vote extends \Gazelle\BaseUser {
         return $info;
     }
 
-    public function setTopLimit(int $limit): static {
-        $this->topConfig['limit'] = $limit;
-        return $this;
-    }
-
-    public function setTopTagList(array $tagList, bool $all): static {
-        $this->topConfig['tagList'] = $tagList;
-        $this->topConfig['tagAll']  = $all;
-        return $this;
-    }
-
-    public function setTopYearInterval(int $lower, int $higher): static {
-        if ($lower > 0) {
-            if ($higher > 0) {
-                $this->topJoin['torrents_group'] = 'INNER JOIN torrents_group tg ON (tg.ID = v.GroupID)';
-                $this->topWhere[] = 'tg.Year BETWEEN ? AND ?';
-                $this->topArgs[] = min($lower, $higher);
-                $this->topArgs[] = max($lower, $higher);
-            } else {
-                $this->topJoin['torrents_group'] = 'INNER JOIN torrents_group tg ON (tg.ID = v.GroupID)';
-                $this->topWhere[] = 'tg.Year >= ?';
-                $this->topArgs[] = $lower;
-            }
-        } elseif ($higher > 0) {
-            $this->topJoin['torrents_group'] = 'INNER JOIN torrents_group tg ON (tg.ID = v.GroupID)';
-            $this->topWhere[] = 'tg.Year <= ?';
-            $this->topArgs[] = $higher;
-        }
-         return $this;
-    }
 
     /**
      * Calculate a leaderboard with ties, based on scores.
@@ -119,7 +84,7 @@ class Vote extends \Gazelle\BaseUser {
         return $ranks;
     }
 
-    public function ranking(\Gazelle\TGroup $tgroup, bool $viewAdvancedTop10): array {
+    public function ranking(\Gazelle\TGroup $tgroup): array {
         if ($tgroup->categoryName() != 'Music') {
             return [];
         }
@@ -128,7 +93,7 @@ class Vote extends \Gazelle\BaseUser {
         if ($rank) {
             $ranking['overall'] = [
                 'rank'  => $rank,
-                'title' => '<a href="top10.php?type=votes">overall</a>',
+                'title' => 'overall',
             ];
         }
         $year      = $tgroup->year();
@@ -138,18 +103,14 @@ class Vote extends \Gazelle\BaseUser {
         if ($rank) {
             $ranking['decade'] = [
                 'rank'  => $rank,
-                'title' => $viewAdvancedTop10
-                    ? "for the <a href=\"top10.php?advanced=1&amp;type=votes&amp;year1=$decade&amp;year2=$decadeEnd\">{$decade}s</a>"
-                    : "for the {$decade}s",
+                'title' => "for the {$decade}s",
             ];
         }
         $rank = $this->rankYear($tgroup);
         if ($rank) {
             $ranking['year'] = [
                 'rank'  => $rank,
-                'title' => $viewAdvancedTop10
-                    ? "for <a href=\"top10.php?advanced=1&amp;type=votes&amp;year1=$year\">$year</a>"
-                    : "for $year",
+                'title' => "for $year",
             ];
         }
         return $ranking;
@@ -223,70 +184,6 @@ class Vote extends \Gazelle\BaseUser {
             self::$cache->cache_value($key, $ranks, 259200); // 3 days
         }
         return $ranks[$tgroup->id()] ?? false;
-    }
-
-    public function topVotes(): array {
-        $key = "top10_votes_{$this->topConfig['limit']}"
-            . ($this->topWhere
-                ? signature(
-                    implode('|', array_merge($this->topWhere, $this->topArgs, [(int)isset($this->topConfig['tagAll'])])),
-                    TOP10_SALT
-                )
-                : ''
-            );
-        $topVotes = self::$cache->get_value($key);
-        if ($topVotes === false) {
-            if (isset($this->topConfig['tagList'])) {
-                if ($this->topConfig['tagAll']) {
-                    foreach ($this->topConfig['tagList'] as $tag) {
-                        $this->topWhere[] = "EXISTS (
-                            SELECT 1
-                            FROM torrents_tags tt
-                            INNER JOIN tags t ON (t.ID = tt.TagID)
-                            WHERE tt.GroupID = tg.ID
-                                AND t.Name = ?
-                        )";
-                    }
-                } else {
-                    $this->topWhere[] = "EXISTS (
-                        SELECT 1
-                        FROM torrents_tags tt
-                        INNER JOIN tags t ON (t.ID = tt.TagID)
-                        WHERE tt.GroupID = tg.ID
-                            AND t.Name IN (" . placeholders($this->topConfig['tagList']) . ")
-                    )";
-                }
-                $this->topArgs = array_merge($this->topArgs, $this->topConfig['tagList']);
-                $this->topJoin['torrents_group'] = 'INNER JOIN torrents_group tg ON (tg.ID = v.GroupID)';
-            }
-            $this->topWhere[] = 'Score > 0';
-            $this->topArgs[] = $this->topConfig['limit'] ?? 25;
-
-            self::$db->prepared_query("
-                SELECT v.GroupID, v.Ups, v.Total, v.Score
-                FROM torrents_votes AS v
-                " . implode("\n", array_values($this->topJoin)) . "
-                WHERE
-                " . implode(' AND ', $this->topWhere) . "
-                ORDER BY Score DESC
-                LIMIT ?
-                ", ...$this->topArgs
-            );
-            $results = self::$db->to_array('GroupID', MYSQLI_ASSOC, false);
-            $ranks = $this->voteRanks(self::$db->to_pair('GroupID', 'Score', false));
-
-            $topVotes = [];
-            foreach ($results as $tgroupId => $votes) {
-                $topVotes[$tgroupId] = [
-                    'Ups'      => $votes['Ups'],
-                    'Total'    => $votes['Total'],
-                    'Score'    => $votes['Score'],
-                    'sequence' => $ranks[$tgroupId],
-                ];
-            }
-            self::$cache->cache_value($key, $topVotes, 3600);
-        }
-        return $topVotes;
     }
 
     public function links(\Gazelle\TGroup $tgroup): string {

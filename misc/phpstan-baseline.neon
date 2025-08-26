@@ -220,15 +220,6 @@ parameters:
 			count: 1
 			path: ../classes/sphinxqlresult.class.php
 
-		-
-			message: "#^Function payload\\(\\) has parameter \\$details with no value type specified in iterable type array\\.$#"
-			count: 1
-			path: ../sections/ajax/top10/torrents.php
-
-		-
-			message: "#^Function payload\\(\\) return type has no value type specified in iterable type array\\.$#"
-			count: 1
-			path: ../sections/ajax/top10/torrents.php
 
 		-
 			message: "#^Call to an undefined method object\\:\\:run\\(\\)\\.$#"
