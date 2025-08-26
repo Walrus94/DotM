@@ -569,7 +569,6 @@ defined('RANKING_WEIGHT') or define('RANKING_WEIGHT', [
     'posts'      => [ 3, 'ForumPosts'],
     'bounty'     => [ 4, 'BountySpent'],
     'artists'    => [ 1, 'ArtistsAdded'],
-    'bonus'      => [ 6, 'BonusPoints'],
 ]);
 
 // Successive login failures generate increasing delays.
@@ -977,7 +976,6 @@ defined('PARANOIA_OVERRIDE') or define('PARANOIA_OVERRIDE', [
     'ratio'            => 'users_mod',
     'requiredratio'    => 'users_mod',
     'hide_donor_heart' => 'users_mod',
-    'bonuspoints'      => 'admin_bp_history',
     'torrentcomments'  => 'site_moderate_forums',
     'invitedcount'     => 'users_view_invites',
     'snatched'         => 'users_view_torrents_snatchlist',

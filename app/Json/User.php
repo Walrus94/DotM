@@ -45,7 +45,6 @@ class User extends \Gazelle\Json {
                 'requests'   => (int)$requestsFilled,
                 'uploaded'   => (int)$uploaded,
                 'uploads'    => (int)$uploads,
-                'bonus'      => (new \Gazelle\User\Bonus($user))->pointsSpent(),
             ]
         );
 
@@ -80,7 +79,6 @@ class User extends \Gazelle\Json {
                 'bounty'     => $this->valueOrNull($rank->rank('bounty'),     'requestsvoted_bounty'),
                 'artists'    => $this->valueOrNull($rank->rank('artists'),    'artistsadded'),
                 'posts'      => $rank->rank('posts'),
-                'bonus'      => $rank->rank('bonus'),
                 'overall'    => $user->propertyVisibleMulti($viewer, ['uploaded', 'downloaded', 'uploads+', 'requestsfilled_count', 'requestsvoted_bounty', 'artistsadded'])
                     ? $rank->score() * $user->rankFactor() : null,
             ],

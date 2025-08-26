@@ -61,12 +61,11 @@ if (isset($_POST['p_collagecontribs'])) {
 }
 
 if (isset($_POST['p_c_snatched']) && isset($_POST['p_c_seeding']) && isset($_POST['p_downloaded'])) {
-    $_POST['p_requiredratio'] = 'on';
 }
 
 // if showing exactly 2 of stats, show all 3 of stats
 $StatsShown = 0;
-$Stats = ['downloaded', 'uploaded', 'ratio'];
+$Stats = ['downloaded', 'uploaded'];
 foreach ($Stats as $S) {
     if (isset($_POST["p_$S"])) {
         $StatsShown++;
@@ -80,7 +79,7 @@ if ($StatsShown == 2) {
 }
 
 $Paranoia = [];
-$Checkboxes = ['downloaded', 'uploaded', 'ratio', 'bonuspoints', 'lastseen', 'requiredratio', 'invitedcount', 'artistsadded', 'notifications'];
+$Checkboxes = ['downloaded', 'uploaded', 'lastseen', 'invitedcount', 'artistsadded', 'notifications'];
 foreach ($Checkboxes as $C) {
     if (!isset($_POST["p_$C"])) {
         $Paranoia[] = $C;

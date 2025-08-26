@@ -193,7 +193,6 @@ class UserCreator extends Base {
 
         // Create the remaining rows in auxilliary tables
         self::$db->prepared_query("
-            INSERT INTO user_bonus (user_id) VALUES (?)
             ", $this->id
         );
         self::$db->prepared_query("

@@ -21,8 +21,6 @@ $userId      = $user->id();
 $username    = $user->username();
 $Class       = $user->primaryClass();
 $donor       = new Gazelle\User\Donor($user);
-$userBonus   = new Gazelle\User\Bonus($user);
-$viewerBonus = new Gazelle\User\Bonus($Viewer);
 $history     = new Gazelle\User\History($user);
 $limiter     = new Gazelle\User\UserclassRateLimit($user);
 $donorMan    = new Gazelle\Manager\Donation();
@@ -30,25 +28,6 @@ $ipv4        = new Gazelle\Manager\IPv4();
 $resetToken  = $Viewer->permitted('users_mod')
     ? (new Gazelle\Manager\UserToken())->findByUser($user, UserTokenType::password)
     : false;
-
-if (!empty($_POST)) {
-    authorize();
-    foreach (['action', 'flsubmit', 'fltype'] as $arg) {
-        if (!isset($_POST[$arg])) {
-            error(403);
-        }
-    }
-    if ($_POST['action'] !== 'fltoken' || $_POST['flsubmit'] !== 'Send') {
-        error(403);
-    }
-    if (!preg_match('/^fl-(other-[1-4])$/', $_POST['fltype'], $match)) {
-        error(403);
-    }
-    $FL_OTHER_tokens = $viewerBonus->purchaseTokenOther($user, $match[1], $_POST['message'] ?? '');
-    if (!$FL_OTHER_tokens) {
-        error('Purchase of tokens not concluded. Either you lacked funds or they have chosen to decline FL tokens.');
-    }
-}
 
 if ($userId == $Viewer->id()) {
     $Preview = (bool)($_GET['preview'] ?? false);
@@ -82,13 +61,7 @@ View::show_header($username, [
     'css' => 'tiles'
 ]);
 echo $Twig->render('user/header.twig', [
-    'bonus'      => $userBonus,
-    'donor'      => $donor,
-    'freeleech'  => [
-        'item'   => $OwnProfile ? [] : $viewerBonus->otherList(),
-        'other'  => $FL_OTHER_tokens ?? null,
-        'latest' => $viewerBonus->otherLatest($user),
-    ],
+    'donor'        => $donor,
     'friend'       => new Gazelle\User\Friend($Viewer),
     'preview_user' => $previewer,
     'user'         => $user,
@@ -128,7 +101,6 @@ $rank = new Gazelle\UserRank(
         'posts'      => $stats->forumPostTotal(),
         'bounty'     => $stats->requestVoteSize(),
         'artists'    => check_paranoia_here('artistsadded') ? $stats->artistAddedTotal() : 0,
-        'bonus'      => $userBonus->pointsSpent(),
     ],
 );
 
@@ -156,10 +128,6 @@ foreach ($statList as $item) {
                 <li class="tooltip<?=($Override === 2 ? ' paranoia_override' : '')?>" title="<?= $item[3]($rank->raw($item[0])) ?> <?= $item[4] ?>"><?= $item[2] ?>: <?= $rank->rank($item[0]) ?></li>
 <?php
     }
-}
-if ($OwnProfile || $Viewer->permitted('admin_bp_history')) { ?>
-                <li class="tooltip<?= !$OwnProfile && $Viewer->permitted('admin_bp_history') ? ' paranoia_override' : '' ?>" title="<?=number_format($rank->raw('bonus')) ?> spent">Bonus points spent: <?= $rank->rank('bonus') ?></li>
-<?php
 }
     if ($user->propertyVisibleMulti($previewer, ['artistsadded', 'downloaded', 'requestsfilled_count', 'requestsvoted_bounty', 'uploaded', 'uploads+', ])) {
 ?>

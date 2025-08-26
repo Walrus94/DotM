@@ -32,13 +32,6 @@ class Economic extends \Gazelle\Base {
                 ", UserStatus::enabled->value
             );
 
-            [$info['bonus_total'], $info['bonus_stranded_total']] = self::$db->row("
-                SELECT sum(ub.points),
-                    sum(if(um.Enabled = ?, 0, ub.points))
-                FROM user_bonus ub
-                INNER JOIN users_main um ON (um.ID = ub.user_id)
-                ", UserStatus::enabled->value
-            );
 
             $info['bounty_total'] = (int)self::$db->scalar("
                 SELECT SUM(Bounty) FROM requests_votes
@@ -98,14 +91,6 @@ class Economic extends \Gazelle\Base {
         }
         $this->info = $info;
         return $this->info;
-    }
-
-    public function bonusTotal(): int {
-        return $this->info()['bonus_total'];
-    }
-
-    public function bonusStrandedTotal(): int {
-        return $this->info()['bonus_stranded_total'];
     }
 
     public function bountyAvailable(): int {
