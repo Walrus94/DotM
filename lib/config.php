@@ -580,10 +580,7 @@ defined('RANKING_WEIGHT') or define('RANKING_WEIGHT', [
     'posts'      => [ 3, 'ForumPosts'],
     'bounty'     => [ 4, 'BountySpent'],
     'artists'    => [ 1, 'ArtistsAdded'],
-    'collage'    => [ 5, 'CollageContribution'],
-    'votes'      => [ 5, 'ReleaseVotes'],
     'bonus'      => [ 6, 'BonusPoints'],
-    'comment-t'  => [18, 'CommentTorrent'],
 ]);
 
 // Successive login failures generate increasing delays.

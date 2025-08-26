@@ -2,8 +2,6 @@
 
 namespace Gazelle\Json;
 
-use Gazelle\User\Vote;
-
 class User extends \Gazelle\Json {
     public function __construct(
         protected \Gazelle\User $user,
@@ -18,14 +16,12 @@ class User extends \Gazelle\Json {
         $user   = $this->user;
         $viewer = $this->viewer;
 
-        $stats           = $user->stats();
-        $forumPosts      = $stats->forumPostTotal();
-        $releaseVotes    = (new Vote($user))->userTotal(Vote::UPVOTE | Vote::DOWNVOTE);
-        $uploaded        = $this->valueOrNull($user->uploadedSize(),            'uploaded');
-        $downloaded      = $this->valueOrNull($user->downloadedSize(),          'downloaded');
-        $uploads         = $this->valueOrNull($stats->uploadTotal(),            'uploads+');
-        $artistsAdded    = $this->valueOrNull($stats->artistAddedTotal(),       'artistsadded');
-        $torrentComments = $this->valueOrNull($stats->commentTotal('torrents'), 'torrentcomments++');
+        $stats        = $user->stats();
+        $forumPosts   = $stats->forumPostTotal();
+        $uploaded     = $this->valueOrNull($user->uploadedSize(),      'uploaded');
+        $downloaded   = $this->valueOrNull($user->downloadedSize(),    'downloaded');
+        $uploads      = $this->valueOrNull($stats->uploadTotal(),      'uploads+');
+        $artistsAdded = $this->valueOrNull($stats->artistAddedTotal(), 'artistsadded');
 
         if (!$user->propertyVisibleMulti($viewer, ['requestsfilled_count', 'requestsfilled_bounty'])) {
             $requestsFilled = null;
@@ -43,11 +39,9 @@ class User extends \Gazelle\Json {
             new \Gazelle\UserRank\Configuration(RANKING_WEIGHT),
             [
                 'posts'      => $forumPosts,
-                'votes'      => $releaseVotes,
                 'artists'    => (int)$artistsAdded,
                 'downloaded' => (int)$downloaded,
                 'bounty'     => (int)$totalSpent,
-                'comment-t'  => (int)$torrentComments,
                 'requests'   => (int)$requestsFilled,
                 'uploaded'   => (int)$uploaded,
                 'uploads'    => (int)$uploads,
@@ -86,7 +80,6 @@ class User extends \Gazelle\Json {
                 'bounty'     => $this->valueOrNull($rank->rank('bounty'),     'requestsvoted_bounty'),
                 'artists'    => $this->valueOrNull($rank->rank('artists'),    'artistsadded'),
                 'posts'      => $rank->rank('posts'),
-                'votes'      => $rank->rank('votes'),
                 'bonus'      => $rank->rank('bonus'),
                 'overall'    => $user->propertyVisibleMulti($viewer, ['uploaded', 'downloaded', 'uploads+', 'requestsfilled_count', 'requestsvoted_bounty', 'artistsadded'])
                     ? $rank->score() * $user->rankFactor() : null,
@@ -102,21 +95,14 @@ class User extends \Gazelle\Json {
             ],
             'community' => [
                 'posts'           => $forumPosts,
-                'torrentComments' => $torrentComments,
                 'requestsFilled'  => $requestsFilled,
                 'bountyEarned'    => $totalBounty,
                 'requestsVoted'   => $requestsVoted,
                 'bountySpent'     => $totalSpent,
-                'releaseVotes'    => $releaseVotes,
                 'uploaded'        => $uploads,
                 'artistsAdded'    => $artistsAdded,
                 'artistComments'  => $this->valueOrNull($stats->commentTotal('artists'),  'torrentcomments++'),
                 'requestComments' => $this->valueOrNull($stats->commentTotal('requests'), 'torrentcomments++'),
-                'perfectFlacs'    => $this->valueOrNull($stats->perfectFlacTotal(),       'perfectflacs+'),
-                'groups'          => $this->valueOrNull($stats->uniqueGroupTotal(),       'uniquegroups+'),
-                'seeding'         => $this->valueOrNull($stats->seedingTotal(),           'seeding+'),
-                'leeching'        => $this->valueOrNull($stats->leechTotal(),             'leeching+'),
-                'snatched'        => $this->valueOrNull($stats->snatchTotal(),            'snatched+'),
                 'invited'         => $this->valueOrNull($stats->invitedTotal(),           'invitedcount'),
             ]
         ];
