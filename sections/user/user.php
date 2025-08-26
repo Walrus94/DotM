@@ -21,7 +21,6 @@ $userId      = $user->id();
 $username    = $user->username();
 $Class       = $user->primaryClass();
 $donor       = new Gazelle\User\Donor($user);
-$viewerBonus = new Gazelle\User\Bonus($Viewer);
 $history     = new Gazelle\User\History($user);
 $limiter     = new Gazelle\User\UserclassRateLimit($user);
 $donorMan    = new Gazelle\Manager\Donation();
@@ -29,25 +28,6 @@ $ipv4        = new Gazelle\Manager\IPv4();
 $resetToken  = $Viewer->permitted('users_mod')
     ? (new Gazelle\Manager\UserToken())->findByUser($user, UserTokenType::password)
     : false;
-
-if (!empty($_POST)) {
-    authorize();
-    foreach (['action', 'flsubmit', 'fltype'] as $arg) {
-        if (!isset($_POST[$arg])) {
-            error(403);
-        }
-    }
-    if ($_POST['action'] !== 'fltoken' || $_POST['flsubmit'] !== 'Send') {
-        error(403);
-    }
-    if (!preg_match('/^fl-(other-[1-4])$/', $_POST['fltype'], $match)) {
-        error(403);
-    }
-    $FL_OTHER_tokens = $viewerBonus->purchaseTokenOther($user, $match[1], $_POST['message'] ?? '');
-    if (!$FL_OTHER_tokens) {
-        error('Purchase of tokens not concluded. Either you lacked funds or they have chosen to decline FL tokens.');
-    }
-}
 
 if ($userId == $Viewer->id()) {
     $Preview = (bool)($_GET['preview'] ?? false);
@@ -81,12 +61,7 @@ View::show_header($username, [
     'css' => 'tiles'
 ]);
 echo $Twig->render('user/header.twig', [
-    'donor'      => $donor,
-    'freeleech'  => [
-        'item'   => $OwnProfile ? [] : $viewerBonus->otherList(),
-        'other'  => $FL_OTHER_tokens ?? null,
-        'latest' => $viewerBonus->otherLatest($user),
-    ],
+    'donor'        => $donor,
     'friend'       => new Gazelle\User\Friend($Viewer),
     'preview_user' => $previewer,
     'user'         => $user,

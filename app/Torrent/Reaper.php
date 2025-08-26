@@ -476,7 +476,6 @@ class Reaper extends \Gazelle\Base {
                 $win[] = [
                     $torrentId,
                     $userId,
-                    $this->notifyWinner($torrent, new \Gazelle\User\Bonus($user)),
                 ];
             }
             $prevTorrentId = $torrentId;

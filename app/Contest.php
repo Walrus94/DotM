@@ -302,48 +302,7 @@ class Contest extends BaseObject {
     }
 
     public function doPayout(): int {
-        $enabledUserBonus = $this->bonusPerUserValue();
-        $contestBonus     = $this->bonusPerContestValue();
-        $perEntryBonus    = $this->bonusPerEntryValue();
-
-        $report = fopen(TMPDIR . "/payout-contest-" . $this->id . ".txt", 'a');
-        if ($report === false) {
-            return 0;
-        }
-        fprintf($report, "# user=%d contest=%d entry=%d\n", $enabledUserBonus, $contestBonus, $perEntryBonus);
-
-        $participants = $this->type()->userPayout($enabledUserBonus, $contestBonus, $perEntryBonus);
-        foreach ($participants as $p) {
-            $user = new User($p['ID']);
-            $totalGain = $enabledUserBonus;
-            if ($p['total_entries']) {
-                $totalGain += $contestBonus + ($perEntryBonus * $p['total_entries']);
-            }
-            $log = date('Y-m-d H:i:s') . " {$user->label()} n={$p['total_entries']} t={$totalGain}";
-            if ($user->hasAttr('no-fl-gifts') || $user->hasAttr('disable-bonus-points')) {
-                fwrite($report, "$log DECLINED\n");
-                continue;
-            }
-            fwrite($report, "$log DISTRIBUTED\n");
-            if (DEBUG_CONTEST_PAYOUT) {
-                continue;
-            }
-            $user->inbox()->createSystem(
-                "You have received " . number_format($totalGain, 2) . " bonus points!",
-                self::$twig->render('contest/payout-uploader.bbcode.twig', [
-                    'contest'         => $this,
-                    'contest_bonus'   => $contestBonus,
-                    'enabled_bonus'   => $enabledUserBonus,
-                    'per_entry_bonus' => $perEntryBonus,
-                    'total_entries'   => $p['total_entries'],
-                    'username'        => $user->username(),
-                ])
-            );
-            (new User\Bonus($user))->addPoints($totalGain);
-            $user->addStaffNote(number_format($totalGain) . " BP added for {$p['total_entries']} entries in {$this->name()}")
-                ->modify();
-        }
-        fclose($report);
-        return count($participants);
+        // Bonus point payouts have been removed
+        return 0;
     }
 }
