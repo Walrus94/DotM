@@ -6,17 +6,18 @@ use Phinx\Migration\AbstractMigration;
 final class DropReportsRequests extends AbstractMigration {
     public function up(): void {
         $tables = [
-            'reports',
+            // drop child tables before parents to satisfy foreign key constraints
             'reportsv2',
-            'requests',
+            'reports',
+            'requests_votes',
             'requests_artists',
             'requests_tags',
-            'requests_votes',
             'bookmarks_requests',
             'sphinx_requests',
             'sphinx_requests_delta',
             'users_enable_requests',
             'users_points_requests',
+            'requests',
         ];
         foreach ($tables as $table) {
             if ($this->hasTable($table)) {
