@@ -276,19 +276,5 @@ class User extends \Gazelle\BaseObject {
         return $charts;
     }
 
-    /**
-     * How many unresolved torrent reports are there for this user?
-     *
-     * @return int number of unresolved reports
-     */
-    public function unresolvedReportsTotal(): int {
-        return (int)self::$db->scalar("
-            SELECT count(*)
-            FROM reportsv2 AS r
-            INNER JOIN torrents AS t ON (t.ID = r.TorrentID)
-            WHERE r.Status != 'Resolved'
-                AND t.UserID = ?
-            ", $this->id
-        );
-    }
+    // Report statistics removed
 }

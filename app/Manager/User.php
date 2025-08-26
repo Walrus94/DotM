@@ -643,14 +643,7 @@ class User extends \Gazelle\BaseManager {
         if ($pmUploader) {
             $user->inbox()->createSystem(
                 "Uploaded torrent deleted: $name",
-                self::$twig->render('reportsv2/message.bbcode.twig', [
-                    'action'         => 'uploaded',
-                    'log'            => $log,
-                    'name'           => $name,
-                    'path'           => $path,
-                    'torrent_id'     => $torrentId,
-                    'replacement_id' => $replacementId,
-                ]),
+                "The torrent [url]{$path}[/url] has been deleted.\n\n{$log}"
             );
         }
         $seen = [$user->id()];
@@ -671,14 +664,7 @@ class User extends \Gazelle\BaseManager {
             if ($user) {
                 $user->inbox()->createSystem(
                     "Seeded torrent deleted: $name",
-                    self::$twig->render('reportsv2/message.bbcode.twig', [
-                        'action'         => 'were seeding',
-                        'log'            => $log,
-                        'name'           => $name,
-                        'path'           => $path,
-                        'torrent_id'     => $torrentId,
-                        'replacement_id' => $replacementId,
-                    ]),
+                    "A torrent you were seeding, [url]{$path}[/url], has been deleted.\n\n{$log}"
                 );
             }
         }
@@ -700,14 +686,7 @@ class User extends \Gazelle\BaseManager {
             if ($user) {
                 $user->inbox()->createSystem(
                     "Snatched torrent deleted: $name",
-                    self::$twig->render('reportsv2/message.bbcode.twig', [
-                        'action'         => 'have snatched',
-                        'log'            => $log,
-                        'name'           => $name,
-                        'path'           => $path,
-                        'torrent_id'     => $torrentId,
-                        'replacement_id' => $replacementId,
-                    ]),
+                    "A torrent you have snatched, [url]{$path}[/url], has been deleted.\n\n{$log}"
                 );
             }
         }
@@ -729,14 +708,7 @@ class User extends \Gazelle\BaseManager {
             if ($user) {
                 $user->inbox()->createSystem(
                     "Downloaded torrent deleted: $name",
-                    self::$twig->render('reportsv2/message.bbcode.twig', [
-                        'action'         => 'have downloaded',
-                        'log'            => $log,
-                        'name'           => $name,
-                        'path'           => $path,
-                        'torrent_id'     => $torrentId,
-                        'replacement_id' => $replacementId,
-                    ]),
+                    "A torrent you have downloaded, [url]{$path}[/url], has been deleted.\n\n{$log}"
                 );
             }
         }

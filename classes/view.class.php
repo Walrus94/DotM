@@ -43,20 +43,12 @@ class View {
 
         $payMan = new Gazelle\Manager\Payment();
         if ($Viewer->permitted('users_mod')) {
-            $raTypeMan = new Gazelle\Manager\ReportAutoType();
             $activity->setStaff(new Gazelle\Staff($Viewer))
-                ->setReport(new Gazelle\Stats\Report())
                 ->setPayment($payMan)
                 ->setApplicant(new Gazelle\Manager\Applicant())
                 ->setDb(new Gazelle\DB())
                 ->setScheduler(new Gazelle\TaskScheduler())
-                ->setSSLHost(new Gazelle\Manager\SSLHost())
-                ->setAutoReport(
-                    new Gazelle\Search\ReportAuto(
-                        new Gazelle\Manager\ReportAuto($raTypeMan),
-                        $raTypeMan
-                    )
-                );
+                ->setSSLHost(new Gazelle\Manager\SSLHost());
 
             $threshold = (new \Gazelle\Manager\SiteOption())
                 ->findValueByName('download-warning-threshold');

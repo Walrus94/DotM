@@ -564,43 +564,6 @@ abstract class TorrentAbstract extends BaseObject {
         ]);
     }
 
-    /**
-     * Get the reports associated with this torrent
-     *
-     * @return array of ids of \Gazelle\Torrent\Report
-     */
-    public function reportIdList(User $viewer): array {
-        if ($this->isDeleted()) {
-            return [];
-        }
-        $key = sprintf(self::CACHE_REPORTLIST, $this->id());
-        $list = self::$cache->get_value($key);
-        if ($list === false) {
-            $qid = self::$db->get_query_id();
-            self::$db->prepared_query("
-                SELECT r.ID      AS id,
-                    r.ReporterID AS reporter_id,
-                    trc.is_invisible
-                FROM reportsv2 r
-                INNER JOIN torrent_report_configuration trc ON (trc.type = r.Type)
-                WHERE r.Status != 'Resolved'
-                    AND r.TorrentID = ?
-                ", $this->id
-            );
-            $list = self::$db->to_array(false, MYSQLI_ASSOC, false);
-            self::$db->set_query_id($qid);
-            self::$cache->cache_value($key, $list, 7200);
-        }
-        if (!$viewer->isStaff()) {
-            $list = array_filter($list, fn($r) => $r['is_invisible'] == 0 || $r['reporter_id'] == $viewer->id());
-        }
-        return array_column($list, 'id');
-    }
-
-    public function reportTotal(User $viewer): int {
-        return count($this->reportIdList($viewer));
-    }
-
     public function ripLogIdList(): array {
         return $this->info()['ripLogIds'];
     }
@@ -791,9 +754,6 @@ abstract class TorrentAbstract extends BaseObject {
             if ($this->hasFlag($flag)) {
                 $extra[] = $this->labelElement("tl_{$flag->labelClass()} tl_{$flag->value}", $flag->label());
             }
-        }
-        if ($viewer && $this->reportTotal($viewer)) {
-            $extra[] = $this->labelElement('tl_reported', 'Reported');
         }
         return $extra;
     }

@@ -52,7 +52,6 @@
 <h4 class="hidden">Site Menu</h4>
 <ul>
 <li id="nav_index"{{    _self.active(document == 'index')    }}><a href="index.php">Home</a> </li>
-<li id="nav_requests"{{ _self.active(document == 'requests') }}><a href="requests.php">Requests</a> </li>
 <li id="nav_forums"{{   _self.active(document == 'forums')   }}><a href="forums.php">Forums</a> </li>
 <li id="nav_top10"{{    _self.active(document == 'top10')    }}><a href="top10.php">Top 10</a> </li>
 <li id="nav_rules"{{    _self.active(document == 'rules')    }}><a href="rules.php">Rules</a> </li>
@@ -69,12 +68,6 @@
         <input id="artistsearch"
             {%- if viewer.hasAutocomplete('search') %} data-gazelle-autocomplete="true" {% endif -%}
             value="Artists" placeholder="Artists" type="text" name="artistname" size="17" spellcheck="false" accesskey="a" />
-    </form>
-</li>
-<li id="searchbar_requests">
-    <span class="hidden">Requests: </span>
-    <form class="search_form" name="requests" action="requests.php" method="get">
-        <input id="requestssearch" value="Requests" placeholder="Requests" type="text" name="search" size="17" spellcheck="false" accesskey="r" />
     </form>
 </li>
 <li id="searchbar_forums">

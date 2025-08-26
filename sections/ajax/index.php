@@ -23,9 +23,6 @@ $LimitedPages = [
     'notifications'   => [2, 60],
     'post_edit'       => [2, 10],
     'raw_bbcode'      => [5, 10],
-    'request'         => [4, 60],
-    'request_fill'    => [5, 10],
-    'requests'        => [5, 60],
     'riplog'          => [5, 10],
     'similar_artists' => [10, 60],
     'subscriptions'   => [5, 10],
@@ -45,13 +42,11 @@ $RequireTokenPages = [
     'upload',
     'add_log',
     'add_tag',
-    'request_fill',
 ];
 
 // RED uses the non '_' endpoint, maintaining compat with them here
 $Aliases = [
     'addtag' => 'add_tag',
-    'requestfill' => 'request_fill',
 ];
 
 $Action = $_GET['action'] ?? $_POST['action'] ?? '';
@@ -143,9 +138,6 @@ switch ($Action) {
     case 'usersearch':
         include_once 'usersearch.php';
         break;
-    case 'requests':
-        include_once 'requests.php';
-        break;
     case 'artist':
         include_once 'artist.php';
         break;
@@ -166,9 +158,6 @@ switch ($Action) {
         break;
     case 'announcements':
         include_once 'announcements.php';
-        break;
-    case 'request':
-        include_once 'request.php';
         break;
     case 'loadavg':
         include_once 'loadavg.php';
@@ -245,9 +234,6 @@ switch ($Action) {
         break;
     case 'download':
         include_once __DIR__ . '/../torrents/download.php';
-        break;
-    case 'request_fill':
-        json_print('success', include_once __DIR__ . '/../requests/fill_handle.php');
         break;
     case 'add_log':
         include_once __DIR__ . '/add_log.php';

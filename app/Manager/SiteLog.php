@@ -145,14 +145,6 @@ class SiteLog extends \Gazelle\Base {
                     }
                     $i++;
                     break;
-                case 'request':
-                    $id = $parts[$i + 1];
-                    if ((int)$id) {
-                        $message .= ' ' . $parts[$i++] . " <a href=\"requests.php?action=view&amp;id=$id\">$id</a>";
-                    } else {
-                        $message .= ' ' . $parts[$i];
-                    }
-                    break;
                 case 'torrent':
                     $id = $parts[$i + 1];
                     if ((int)$id) {

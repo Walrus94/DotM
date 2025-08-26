@@ -47,47 +47,6 @@ Seeding: {{ stats.seedingTotal|number_format }}
 
 
 
-{% if visible['requestsvoted_count'] or visible['requestsvoted_bounty'] %}
-        <li>
-    {% if visible['requestsvoted_count'] %}
-            <span{{ _self.class_override(visible['requestsvoted_count']) }}>Requests created: {{ stats.requestCreatedTotal|number_format }}
-        {% if visible['requestsvoted_bounty'] %} for {{ stats.requestCreatedSize|octet_size }}{% endif %}
-    {% else %} 
-            <span{{ _self.class_override(visible['requestsvoted_bounty']) }}>Requests created: {{ stats.requestCreatedSize|octet_size }}
-    {% endif %}
-            </span>
-    {% if stats.requestCreatedTotal and visible['requestsvoted_list'] %}
-            <a href="requests.php?type=created&amp;userid={{ user.id }}" class="brackets{{ _self.override(visible['requestsvoted_list']) }}">View</a>
-    {% endif %}
-        </li>
-        <li>
-    {% if visible['requestsvoted_count'] %}
-            <span{{ _self.class_override(visible['requestsvoted_count']) }}>Requests voted: {{ stats.requestVoteTotal|number_format }}
-        {% if visible['requestsvoted_bounty'] %} for {{ stats.requestVoteSize|octet_size }}{% endif %}
-    {% else %} 
-            <span{{ _self.class_override(visible['requestsvoted_bounty']) }}>Requests voted: {{ stats.requestVoteSize|octet_size }}
-    {% endif %}
-            </span>
-    {% if stats.requestVoteTotal and visible['requestsvoted_list'] %}
-            <a href="requests.php?type=voted&amp;userid={{ user.id }}" class="brackets{{ _self.override(visible['requestsvoted_list']) }}">View</a>
-    {% endif %}
-        </li>
-{% endif %}
-
-{% if visible['requestsfilled_count'] or visible['requestsfilled_bounty'] %}
-        <li>
-    {% if visible['requestsfilled_count'] %}
-            <span{{ _self.class_override(visible['requestsfilled_count']) }}>Requests filled: {{ stats.requestBountyTotal|number_format }}
-        {% if visible['requestsfilled_bounty'] %} for {{ stats.requestBountySize|octet_size }}{% endif %}
-    {% else %} 
-            <span{{ _self.class_override(visible['requestsfilled_bounty']) }}>Requests filled: {{ stats.requestBountySize|octet_size }}
-    {% endif %}
-            </span>
-    {% if stats.requestBountyTotal and visible['requestsfilled_list'] %}
-            <a href="requests.php?type=filled&amp;userid={{ user.id }}" class="brackets{{ _self.override(visible['requestsfilled_list']) }}">View</a>
-    {% endif %}
-        </li>
-{% endif %}
 
 {% if visible['uploads+'] %}
         <li id="comm_upload"{{ _self.class_override(visible['uploads+']) }}>Uploaded: {{ upload_total|number_format }}

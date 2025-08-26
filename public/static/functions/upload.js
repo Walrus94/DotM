@@ -986,14 +986,9 @@ function uploadFormInit() {
                 submit_btn.disabled = false;
             } else {  // success
                 const resp = response['response'];
-                let url;
-                if (resp['fillRequest']) {
-                    url = 'requests.php?id=' + resp['fillRequest']['requestId'];
-                } else {
-                    const gid = resp['groupId'];
-                    const tid = resp['torrentId'];
-                    url = `torrents.php?id=${gid}&torrentid=${tid}#torrent${tid}`;
-                }
+                const gid = resp['groupId'];
+                const tid = resp['torrentId'];
+                const url = `torrents.php?id=${gid}&torrentid=${tid}#torrent${tid}`;
                 if (resp['warnings']?.length) {  // show warning popup
                     const callback = () => {
                         window.location.href = url;

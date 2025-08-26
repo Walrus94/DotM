@@ -26,7 +26,6 @@ if (empty($_GET['userid'])) {
 
 $bookmark  = new Gazelle\User\Bookmark($user);
 $snatcher  = $Viewer->snatch();
-$reportMan = new Gazelle\Manager\Report($userMan);
 $tgMan     = (new Gazelle\Manager\TGroup())->setViewer($Viewer);
 $torMan    = (new Gazelle\Manager\Torrent())->setViewer($Viewer);
 $collMan   = (new Gazelle\Manager\Collage())->setImageProxy(new Gazelle\Util\ImageProxy($Viewer));
@@ -61,7 +60,6 @@ if ($ownProfile) {
             <a href="bookmarks.php?type=torrents" class="brackets">Torrents</a>
             <a href="bookmarks.php?type=artists" class="brackets">Artists</a>
             <a href="bookmarks.php?type=collages" class="brackets">Collages</a>
-            <a href="bookmarks.php?type=requests" class="brackets">Requests</a>
 <?php
 if (count($bookmarkList) > 0) { ?>
             <br /><br />
@@ -245,7 +243,6 @@ foreach ($bookmarkList as $bm) {
             'colspan_add'     => 2,
             'hide'            => $groupsClosed,
             'is_snatched_grp' => $isSnatched,
-            'report_man'      => $reportMan,
             'snatcher'        => $snatcher,
             'tgroup'          => $tgroup,
             'torrent_list'    => object_generator($torMan, $torrentIdList),

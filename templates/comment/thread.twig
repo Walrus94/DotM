@@ -26,11 +26,9 @@
                     </span>
                 </div>
                 <div id="bar{{ post.ID }}" style="float: right;">
-                    <a href="reports.php?action=report&amp;type=comment&amp;id={{
-                        post.ID }}" class="brackets">Report</a>
 {%  if viewer.permitted('site_admin_forums') %}
 {%      if viewer.permitted('site_forum_post_delete') %}
-                    - <a href="#" data-id="{{ post.ID }}" class="brackets delete-post">Delete</a>
+                    <a href="#" data-id="{{ post.ID }}" class="brackets delete-post">Delete</a>
 {%      endif %}
 {%      if (viewer.permitted('users_warn'))
             or (post.AuthorID == viewer.Id)

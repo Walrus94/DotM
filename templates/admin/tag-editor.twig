@@ -128,7 +128,7 @@ broken legacy tags, you may need to check "Do not sanitize".</p>
             {% if r.artistId %}
 <li><a href="artist.php?id={{ r.artistId }}">{{ r.artistName }}</a> -
             {% endif %}
-<a href="requests.php?action=view&amp;id={{ r.requestId }}">{{ r.requestName }}</a></li>
+{{ r.requestName }}</li>
         {% endfor %}
 </ul></td>
     {% endif %}
