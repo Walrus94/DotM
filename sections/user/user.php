@@ -296,7 +296,6 @@ if ($Viewer->permitted('users_give_donor')) {
     ]);
 }
 
-if (!$Viewer->disableRequests() && $user->propertyVisible($previewer, 'requestsvoted_list')) {
 if ($Viewer->permitted('users_mod') || $Viewer->isStaffPMReader()) {
     echo $Twig->render('admin/staffpm-list.twig', [
         'list' => (new Gazelle\Staff($Viewer))->userStaffPmList($user),
