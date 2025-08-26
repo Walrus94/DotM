@@ -1416,71 +1416,24 @@ class User extends BaseObject {
     public function warningExpiry(): ?string {
         return $this->info()['warning_expiry'];
     }
-
-    /**
-     * How many personal collages is this user allowed to create?
-     *
-     * @return int number of collages (including collages granted from donations)
-     */
     public function allowedPersonalCollages(): int {
-        return $this->paidPersonalCollages() + (new User\Donor($this))->collageTotal();
+        return 0;
     }
 
-    /**
-     * How many collages has this user bought?
-     *
-     * @return int number of collages
-     */
     public function paidPersonalCollages(): int {
-        return $this->info()['collage_total'];
+        return 0;
     }
 
-    /**
-     * How many personal collages has this user created?
-     *
-     * @return int number of active collages
-     */
     public function activePersonalCollages(): int {
-        return (int)self::$db->scalar("
-            SELECT count(*)
-            FROM collages
-            WHERE CategoryID = 0
-                AND Deleted = '0'
-                AND UserID = ?
-            ", $this->id
-        );
+        return 0;
     }
 
-    /**
-     * Is this user allowed to create a new personal collage?
-     *
-     * @return bool Yes we can
-     */
     public function canCreatePersonalCollage(): bool {
-        return $this->allowedPersonalCollages() > $this->activePersonalCollages();
+        return false;
     }
 
     public function collageUnreadCount(): int {
-        $new = self::$cache->get_value(sprintf(Collage::SUBS_NEW_KEY, $this->id));
-        if ($new === false) {
-            $new = self::$db->scalar("
-                 SELECT count(*)
-                 FROM (
-                    SELECT s.LastVisit
-                    FROM users_collage_subs s
-                    INNER JOIN collages c ON (c.ID = s.CollageID)
-                    LEFT JOIN collages_torrents ct ON (ct.CollageID = s.CollageID)
-                    LEFT JOIN collages_artists ca ON (ca.CollageID = s.CollageID)
-                    WHERE c.Deleted = '0'
-                        AND s.UserID = ?
-                    GROUP BY s.CollageID
-                    HAVING max(coalesce(ct.AddedOn, ca.AddedOn)) > s.LastVisit
-                ) unread
-                ", $this->id
-            );
-            self::$cache->cache_value(sprintf(Collage::SUBS_NEW_KEY, $this->id), $new, 0);
-        }
-        return $new;
+        return 0;
     }
 
     public function clients(): array {
@@ -1556,9 +1509,7 @@ class User extends BaseObject {
     }
 
     public function collagesCreated(): int {
-        return (int)$this->getSingleValue('user_collage_create', "
-            SELECT count(*) FROM collages WHERE Deleted = '0' AND UserID = ?
-        ");
+        return 0;
     }
 
     public function tagSnatchCounts(int $limit = 8): array {
