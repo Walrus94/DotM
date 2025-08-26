@@ -34,7 +34,6 @@ class User extends AbstractAPI {
                 uls.Downloaded,
                 um.PermissionID AS Class,
                 um.Paranoia,
-                coalesce(ub.points, 0) as BonusPoints,
                 p.Name as ClassName,
                 p.Level,
                 GROUP_CONCAT(ul.PermissionID SEPARATOR ',') AS SecondaryClasses
@@ -42,7 +41,6 @@ class User extends AbstractAPI {
             INNER JOIN users_leech_stats AS uls ON (uls.UserID = um.ID)
             INNER JOIN permissions AS p ON (p.ID = um.PermissionID)
             LEFT JOIN users_levels AS ul ON (ul.UserID = um.ID)
-            LEFT JOIN user_bonus AS ub ON (ub.user_id = um.ID)
             WHERE $cond
             ", $arg
         );
@@ -56,13 +54,11 @@ class User extends AbstractAPI {
         }
         $user['Paranoia'] = unserialize_array($user['Paranoia']);
 
-        $user['Ratio'] = ratio($user['Uploaded'], $user['Downloaded']);
         $user['DisplayStats'] = [
             'Downloaded' => byte_format($user['Downloaded']),
-            'Uploaded' => byte_format($user['Uploaded']),
-            'Ratio' => $user['Ratio']
+            'Uploaded' => byte_format($user['Uploaded'])
         ];
-        foreach (['Downloaded', 'Uploaded', 'Ratio'] as $key) {
+        foreach (['Downloaded', 'Uploaded'] as $key) {
             if (in_array(strtolower($key), $user['Paranoia'])) {
                 $user['DisplayStats'][$key] = "Hidden";
             }

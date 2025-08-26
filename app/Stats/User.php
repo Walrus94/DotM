@@ -83,7 +83,6 @@ class User extends \Gazelle\BaseObject {
                     forum_post_total,
                     forum_thread_total,
                     invited_total,
-                    leech_total,
                     perfect_flac_total,
                     perfecter_flac_total,
                     request_bounty_total,
@@ -92,10 +91,6 @@ class User extends \Gazelle\BaseObject {
                     request_created_size,
                     request_vote_total,
                     request_vote_size,
-                    seeding_total,
-                    seedtime_hour,
-                    snatch_total,
-                    snatch_unique,
                     unique_group_total,
                     upload_total
                 FROM user_summary
@@ -109,7 +104,6 @@ class User extends \Gazelle\BaseObject {
                 'forum_post_total'      => 0,
                 'forum_thread_total'    => 0,
                 'invited_total'         => 0,
-                'leech_total'           => 0,
                 'perfect_flac_total'    => 0,
                 'perfecter_flac_total'  => 0,
                 'request_bounty_total'  => 0,
@@ -118,10 +112,6 @@ class User extends \Gazelle\BaseObject {
                 'request_created_size'  => 0,
                 'request_vote_total'    => 0,
                 'request_vote_size'     => 0,
-                'seeding_total'         => 0,
-                'seedtime_hour'         => 0,
-                'snatch_total'          => 0,
-                'snatch_unique'         => 0,
                 'unique_group_total'    => 0,
                 'upload_total'          => 0,
             ];
@@ -178,9 +168,6 @@ class User extends \Gazelle\BaseObject {
         return $this->info()['invited_total'];
     }
 
-    public function leechTotal(): int {
-        return $this->info()['leech_total'];
-    }
 
     public function perfectFlacTotal(): int {
         return $this->info()['perfect_flac_total'];
@@ -214,21 +201,6 @@ class User extends \Gazelle\BaseObject {
         return $this->info()['request_vote_total'];
     }
 
-    public function seedingTotal(): int {
-        return $this->info()['seeding_total'];
-    }
-
-    public function seedtimeHour(): int {
-        return $this->info()['seedtime_hour'];
-    }
-
-    public function snatchTotal(): int {
-        return $this->info()['snatch_total'];
-    }
-
-    public function snatchUnique(): int {
-        return $this->info()['snatch_unique'];
-    }
 
     public function uniqueGroupTotal(): int {
         return $this->info()['unique_group_total'];
@@ -249,13 +221,12 @@ class User extends \Gazelle\BaseObject {
             ];
             foreach ($charts as &$chart) {
                 self::$db->prepared_query("
-                    SELECT unix_timestamp(Time) * 1000 AS epoch,
-                        Uploaded              AS data_up,
-                        Downloaded            AS data_down,
-                        Uploaded - Downloaded AS buffer,
-                        BonusPoints           AS bp,
-                        Torrents              AS uploads,
-                        PerfectFLACs          AS perfect
+                      SELECT unix_timestamp(Time) * 1000 AS epoch,
+                          Uploaded              AS data_up,
+                          Downloaded            AS data_down,
+                          Uploaded - Downloaded AS buffer,
+                          Torrents              AS uploads,
+                          PerfectFLACs          AS perfect
                     FROM users_stats_{$chart['name']}
                     WHERE UserID = ?
                     ORDER BY Time DESC
@@ -264,7 +235,7 @@ class User extends \Gazelle\BaseObject {
                 );
                 $stats = array_reverse(self::$db->to_array(false, MYSQLI_ASSOC, false));
                 $timeline = array_column($stats, 'epoch');
-                foreach (['data_up', 'data_down', 'buffer', 'bp', 'uploads', 'perfect'] as $dimension) {
+                foreach (['data_up', 'data_down', 'buffer', 'uploads', 'perfect'] as $dimension) {
                     $series = array_column($stats, $dimension);
                     $chart[$dimension] = array_map(fn($n) => [$timeline[$n], $series[$n]], range(0, count($series) - 1));
                 }

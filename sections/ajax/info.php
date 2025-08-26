@@ -33,8 +33,6 @@ json_print("success", [
         'downloaded'         => $Viewer->downloadedSize(),
         'ratio'              => (float)$Ratio,
         'requiredratio'      => $Viewer->requiredRatio(),
-        'bonusPoints'        => $Viewer->bonusPointsTotal(),
-        'bonusPointsPerHour' => round((new \Gazelle\User\Bonus($Viewer))->hourlyRate(), 2),
         'class'              => $Viewer->userclassName(),
     ]
 ]);

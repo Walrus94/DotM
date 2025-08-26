@@ -6,7 +6,6 @@ describe('page loads as admin', () => {
         "/artist.php",
         "/better.php",
         "/blog.php",
-        "/bonus.php",
         "/bookmarks.php",
         "/comments.php",
         "/contest.php",

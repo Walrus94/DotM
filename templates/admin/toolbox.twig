@@ -42,7 +42,6 @@
 ]) }}
 
 {{ _self.category('Rewards', [
-    ['Manage bonus points',         'tools.php?action=bonus_points',       viewer.permitted('admin_bp_history')],
     ['Manage freeleech tokens',     'tools.php?action=tokens',             viewer.permitted('admin_freeleech')],
 
 ]) }}
@@ -124,7 +123,6 @@
 ]) }}
 
 {{ _self.category('Site Information', [
-    ['Bonus points stats',   'tools.php?action=bonus_stats',    viewer.permitted('admin_bp_history')],
     ['Economic stats',       'tools.php?action=economic_stats', viewer.permitted('site_view_flow')],
     ['Torrent stats',        'tools.php?action=torrent_stats',  viewer.permitted('site_view_flow')],
     ['Ratio watch',          'tools.php?action=ratio_watch',    viewer.permitted('site_view_flow')],

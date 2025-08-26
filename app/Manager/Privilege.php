@@ -227,7 +227,6 @@ class Privilege extends \Gazelle\BaseManager {
             'admin_manage_payments' => 'Edit payments',
             'admin_manage_navigation' => 'Manage navigation links',
             'admin_view_referrals' => 'View referred users',
-            'admin_bp_history' => 'View bonus points spent by other users',
             'admin_fl_history' => 'View freeleech tokens spent by other users',
             'admin_reports' => 'Access reports system',
             'admin_advanced_user_search' => 'Advanced user search',

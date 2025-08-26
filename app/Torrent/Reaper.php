@@ -505,32 +505,8 @@ class Reaper extends \Gazelle\Base {
     }
 
     /**
-     * Send a PM to the snatchers to thank them for reseeding an upload.
-     * Clear out all the other claims.
+     * Bonus award notifications removed
      */
-    public function notifyWinner(\Gazelle\Torrent $torrent, \Gazelle\User\Bonus  $bonus): float {
-        self::$db->prepared_query("
-            UPDATE torrent_unseeded_claim SET
-                claim_date = now()
-            WHERE claim_date   IS NULL
-                AND torrent_id = ?
-                AND user_id    = ?
-            ", $torrent->id(), $bonus->user()->id()
-        );
-
-        $points = REAPER_RESEED_REWARD_FACTOR * $bonus->torrentValue($torrent);
-        $bonus->addPoints($points);
-        $bonus->user()->addStaffNote("Awarded {$points} BP for reseeding [pl]{$torrent->id()}[/pl]")->modify();
-        $bonus->user()->inbox()->createSystem(
-            "Thank you for reseeding {$torrent->group()->name()}!",
-            self::$twig->render('notification/reseed.bbcode.twig', [
-                'points'  => $points,
-                'torrent' => $torrent,
-                'user'    => $bonus->user(),
-            ])
-        );
-        return $points;
-    }
 
     public function claimStats(): array {
         return array_map('intval', self::$db->rowAssoc("

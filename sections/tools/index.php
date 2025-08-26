@@ -8,9 +8,6 @@ switch ($_REQUEST['action'] ?? '') {
         include_once 'managers/asn_search.php';
         break;
 
-    case 'bonus_points':
-        include_once 'managers/bonus_points.php';
-        break;
 
     case 'categories':
         include_once 'managers/categories_list.php';
@@ -252,9 +249,6 @@ switch ($_REQUEST['action'] ?? '') {
         include_once 'data/user_info.php';
         break;
 
-    case 'bonus_stats':
-        include_once 'data/bonus_stats.php';
-        break;
 
     case 'economic_stats':
         include_once 'data/economic_stats.php';

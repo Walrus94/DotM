@@ -45,7 +45,6 @@ $unlimitedDownload = isset($_POST['unlimitedDownload']);
 $invites           = (int)$_POST['Invites'];
 $slogan            = trim($_POST['slogan']);
 $changePassword    = !empty($_POST['ChangePassword']);
-$uploaded          = $downloaded = $bonusPoints = null;
 
 if (isset($_POST['Uploaded']) && isset($_POST['Downloaded'])) {
     $uploaded = ($_POST['Uploaded'] === '' ? 0 : $_POST['Uploaded']);
@@ -59,17 +58,12 @@ if (isset($_POST['Uploaded']) && isset($_POST['Downloaded'])) {
     if (!is_number($uploaded) || !is_number($downloaded)) {
         error('Invalid upload/download amounts');
     }
-}
-if (isset($_POST['BonusPoints'])) {
-    $bonusPoints = (float)$_POST['BonusPoints'];
-}
 $flTokens = (int)($_POST['FLTokens'] ?? 0);
 
 $userReason           = trim($_POST['UserReason']);
 $disableAvatar        = isset($_POST['DisableAvatar']);
 $disableInvites       = isset($_POST['DisableInvites']);
 $disablePosting       = isset($_POST['DisablePosting']);
-$disablePoints        = isset($_POST['DisablePoints']);
 $disableForums        = isset($_POST['DisableForums']);
 $disableTagging       = isset($_POST['DisableTagging']);
 $disableUpload        = isset($_POST['DisableUpload']);
@@ -181,16 +175,6 @@ $editRatio = $Viewer->permitted('users_edit_ratio') || ($Viewer->permitted('user
 if ($flTokens != $user->tokenCount() && ($editRatio || $Viewer->permitted('admin_manage_user_fls'))) {
     $editSummary[] = "freeleech tokens changed from {$user->tokenCount()} to $flTokens";
 }
-
-$newBonusPoints = false;
-if (
-    !in_array($bonusPoints, [$user->bonusPointsTotal(), (float)($_POST['OldBonusPoints'])])
-    && ($Viewer->permitted('users_edit_ratio') || ($Viewer->permitted('users_edit_own_ratio') && $ownProfile))
-) {
-    $newBonusPoints = $bonusPoints;
-    $editSummary[] = "bonus points changed from {$user->bonusPointsTotal()} to {$bonusPoints}";
-}
-
 if ($unlimitedDownload !== $user->hasUnlimitedDownload() && $Viewer->permitted('admin_rate_limit_manage')) {
     if ($user->toggleUnlimitedDownload($unlimitedDownload)) {
         $editSummary[] = "unlimited download " . strtolower(enabledStatus($unlimitedDownload ? '1' : '0'));
@@ -404,10 +388,6 @@ if ($Viewer->permitted('users_disable_any')) {
         $editSummary[] = 'avatar privileges ' . revoked($disableAvatar);
         $user->toggleAttr('disable-avatar', $disableAvatar);
     }
-    if ($disablePoints !== $user->disableBonusPoints()) {
-        $privChange[] = 'Your bonus points acquisition has been ' . revoked($disablePoints);
-        $editSummary[] = 'points privileges ' . revoked($disablePoints);
-        $user->toggleAttr('disable-bonus-points', $disablePoints);
     }
     if ($disableTagging !== $user->disableTagging()) {
         $privChange[] = 'Your tagging privileges have been ' . revoked($disableTagging);
@@ -598,10 +578,6 @@ if ($addedClasses) {
 if ($changePassword && $Viewer->permitted('users_edit_password')) {
     $user->updatePassword($_POST['ChangePassword'], false);
     (new \Gazelle\User\Session($user))->dropAll();
-}
-
-if ($newBonusPoints !== false) {
-    (new Gazelle\User\Bonus($user))->setPoints($newBonusPoints);
 }
 
 if ($flTokens != $user->tokenCount()) {

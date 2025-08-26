@@ -163,14 +163,12 @@ class User extends BaseObject {
                 p.Name  AS className,
                 if(p.Level >= (SELECT Level FROM permissions WHERE ID = ?), 1, 0) as isStaff,
                 uf.tokens AS FLTokens,
-                coalesce(ub.points, 0) AS BonusPoints,
                 la.Type as locked_account
             FROM users_main              AS um
             INNER JOIN users_leech_stats AS uls ON (uls.UserID = um.ID)
             INNER JOIN users_info        AS ui ON (ui.UserID = um.ID)
             INNER JOIN user_flt          AS uf ON (uf.user_id = um.ID)
             LEFT JOIN permissions        AS p ON (p.ID = um.PermissionID)
-            LEFT JOIN user_bonus         AS ub ON (ub.user_id = um.ID)
             LEFT JOIN locked_accounts    AS la ON (la.UserID = um.ID)
             WHERE um.ID = ?
             ", FORUM_MOD, $this->id
@@ -358,10 +356,6 @@ class User extends BaseObject {
         return $this->info()['BanDate'];
     }
 
-    public function bonusPointsTotal(): int {
-        return (int)$this->info()['BonusPoints'];
-    }
-
     /**
      * Is a user allowed to download a torrent file?
      */
@@ -379,10 +373,6 @@ class User extends BaseObject {
 
     public function disableAvatar(): bool {
         return $this->hasAttr('disable-avatar');
-    }
-
-    public function disableBonusPoints(): bool {
-        return $this->hasAttr('disable-bonus-points');
     }
 
     public function disableForums(): bool {

@@ -629,11 +629,10 @@ class Users extends \Gazelle\Base {
             );
         }
         self::$db->prepared_query("
-            INSERT INTO $tableName (UserID, Uploaded, Downloaded, BonusPoints, Torrents, PerfectFLACs)
-            SELECT um.ID, uls.Uploaded, uls.Downloaded, coalesce(ub.points, 0), COUNT(t.ID) AS Torrents, COALESCE(p.Perfects, 0) AS PerfectFLACs
+            INSERT INTO $tableName (UserID, Uploaded, Downloaded, Torrents, PerfectFLACs)
+            SELECT um.ID, uls.Uploaded, uls.Downloaded, COUNT(t.ID) AS Torrents, COALESCE(p.Perfects, 0) AS PerfectFLACs
             FROM users_main um
             INNER JOIN users_leech_stats uls ON (uls.UserID = um.ID)
-            LEFT JOIN user_bonus ub ON (ub.user_id = um.ID)
             LEFT JOIN torrents t ON (t.UserID = um.ID)
             LEFT JOIN
             (

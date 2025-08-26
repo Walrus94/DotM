@@ -21,7 +21,6 @@ $userId      = $user->id();
 $username    = $user->username();
 $Class       = $user->primaryClass();
 $donor       = new Gazelle\User\Donor($user);
-$userBonus   = new Gazelle\User\Bonus($user);
 $viewerBonus = new Gazelle\User\Bonus($Viewer);
 $history     = new Gazelle\User\History($user);
 $limiter     = new Gazelle\User\UserclassRateLimit($user);
@@ -82,7 +81,6 @@ View::show_header($username, [
     'css' => 'tiles'
 ]);
 echo $Twig->render('user/header.twig', [
-    'bonus'      => $userBonus,
     'donor'      => $donor,
     'freeleech'  => [
         'item'   => $OwnProfile ? [] : $viewerBonus->otherList(),
@@ -128,7 +126,6 @@ $rank = new Gazelle\UserRank(
         'posts'      => $stats->forumPostTotal(),
         'bounty'     => $stats->requestVoteSize(),
         'artists'    => check_paranoia_here('artistsadded') ? $stats->artistAddedTotal() : 0,
-        'bonus'      => $userBonus->pointsSpent(),
     ],
 );
 
@@ -156,10 +153,6 @@ foreach ($statList as $item) {
                 <li class="tooltip<?=($Override === 2 ? ' paranoia_override' : '')?>" title="<?= $item[3]($rank->raw($item[0])) ?> <?= $item[4] ?>"><?= $item[2] ?>: <?= $rank->rank($item[0]) ?></li>
 <?php
     }
-}
-if ($OwnProfile || $Viewer->permitted('admin_bp_history')) { ?>
-                <li class="tooltip<?= !$OwnProfile && $Viewer->permitted('admin_bp_history') ? ' paranoia_override' : '' ?>" title="<?=number_format($rank->raw('bonus')) ?> spent">Bonus points spent: <?= $rank->rank('bonus') ?></li>
-<?php
 }
     if ($user->propertyVisibleMulti($previewer, ['artistsadded', 'downloaded', 'requestsfilled_count', 'requestsvoted_bounty', 'uploaded', 'uploads+', ])) {
 ?>
