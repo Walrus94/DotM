@@ -13,7 +13,7 @@ if (is_null($artist)) {
 }
 
 $tgMan = new Gazelle\Manager\TGroup();
-$tgroupList = array_map(fn ($id) => $tgMan->findById($id), $artist->tgroupIdUsage());
+$tgroupList = array_map(fn ($id) => $tgMan->findById($id), $artist->releaseIdUsage());
 
 $reqMan = new Gazelle\Manager\Request();
 $requestList = array_map(fn ($id) => $reqMan->findById($id), $artist->requestIdUsage());

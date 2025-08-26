@@ -499,12 +499,12 @@ class Artist extends BaseObject implements CollageEntry {
         return self::$db->collect(0, false);
     }
 
-    public function tgroupIdUsage(): array {
+    public function releaseIdUsage(): array {
         self::$db->prepared_query("
-            SELECT DISTINCT tg.ID
-            FROM torrents_group AS tg
-            INNER JOIN torrents_artists AS ta ON (ta.GroupID = tg.ID)
-            INNER JOIN artists_alias       aa ON (ta.AliasID = aa.AliasID)
+            SELECT DISTINCT r.ID
+            FROM release AS r
+            INNER JOIN release_artist AS ra ON (ra.GroupID = r.ID)
+            INNER JOIN artists_alias      aa ON (ra.AliasID = aa.AliasID)
             WHERE aa.ArtistID = ?
             ", $this->id
         );
@@ -512,7 +512,7 @@ class Artist extends BaseObject implements CollageEntry {
     }
 
     public function usageTotal(): int {
-        return count($this->requestIdUsage()) + count($this->tgroupIdUsage());
+        return count($this->requestIdUsage()) + count($this->releaseIdUsage());
     }
 
     /**
