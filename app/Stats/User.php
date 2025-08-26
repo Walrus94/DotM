@@ -39,7 +39,7 @@ class User extends \Gazelle\BaseObject {
     /**
      * Get the total number of comments made by page type
      *
-     * @param string $page name [artist, collages requests torrents]
+     * @param string $page name [artist, requests, torrents]
      * @return int number of comments, 0 if page is invalid
      */
     public function commentTotal(string $page): int {
@@ -72,13 +72,11 @@ class User extends \Gazelle\BaseObject {
         $key = sprintf(self::CACHE_GENERAL, $this->id);
         $info = self::$cache->get_value($key);
         if ($info === false) {
-            // If a user has done nothing so far (no collages, no downloads...)
+            // If a user has done nothing so far (no downloads, no uploads...)
             // they will have no row in user_summary as yet, hence the need
             // to fallback on an array with values of 0
-            $info = self::$db->rowAssoc("
-                SELECT artist_added_total,
-                    collage_total,
-                    collage_contrib,
+            $info = self::$db->rowAssoc(
+                "SELECT artist_added_total,
                     download_total,
                     download_unique,
                     fl_token_total,
@@ -103,10 +101,8 @@ class User extends \Gazelle\BaseObject {
                 FROM user_summary
                 WHERE user_id = ?
                 ", $this->id
-            ) ?? [
+                ) ?? [
                 'artist_added_total'    => 0,
-                'collage_total'         => 0,
-                'collage_contrib'       => 0,
                 'download_total'        => 0,
                 'download_unique'       => 0,
                 'fl_token_total'        => 0,
@@ -157,13 +153,6 @@ class User extends \Gazelle\BaseObject {
         return $this->info()['artist_added_total'];
     }
 
-    public function collageTotal(): int {
-        return $this->info()['collage_total'];
-    }
-
-    public function collageContrib(): int {
-        return $this->info()['collage_contrib'];
-    }
 
     public function downloadTotal(): int {
         return $this->info()['download_total'];

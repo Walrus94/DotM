@@ -2,7 +2,6 @@
 
 $object = match ($_REQUEST['action'] ?? '') {
     'artist'  => (new Gazelle\Manager\Artist())->findRandom(),
-    'collage' => (new Gazelle\Manager\Collage())->findRandom(),
     default   => (new Gazelle\Manager\TGroup())->findRandom(),
 };
 if (is_null($object)) {

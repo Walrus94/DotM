@@ -44,8 +44,8 @@ class Subscription extends \Gazelle\BaseUser {
 
     /**
      * (Un)subscribe from comments.
-     * @param string $page 'artist', 'collages', 'requests' or 'torrents'
-     * @param int $pageID ArtistID, CollageID, RequestID or GroupID
+     * @param string $page 'artist', 'requests' or 'torrents'
+     * @param int $pageID ArtistID, RequestID or GroupID
      */
     public function subscribeComments(string $page, int $pageID): bool {
         $qid = self::$db->get_query_id();
@@ -140,36 +140,34 @@ class Subscription extends \Gazelle\BaseUser {
     }
 
     /**
-     * How many subscribed entities (artists, collages, requests, torrents)
+     * How many subscribed entities (artists, requests, torrents)
      * have new comments on them?
      */
     public function unreadCommentTotal(): int {
-        return (int)self::$db->scalar("
-            SELECT count(*)
+        return (int)self::$db->scalar(
+            "SELECT count(*)
             FROM users_subscriptions_comments AS s
             LEFT JOIN users_comments_last_read AS lr ON (lr.UserID = s.UserID AND lr.Page = s.Page AND lr.PageID = s.PageID)
             LEFT JOIN comments AS c ON (c.ID = (SELECT MAX(ID) FROM comments WHERE Page = s.Page AND PageID = s.PageID))
-            LEFT JOIN collages AS co ON (s.Page = 'collages' AND co.ID = s.PageID)
-            WHERE (s.Page != 'collages' OR co.Deleted = '0')
+            WHERE s.Page IN ('artist', 'requests', 'torrents')
                 AND coalesce(lr.PostID, 0) < c.ID
-                AND s.UserID = ?
-            ", $this->user->id()
+                AND s.UserID = ?",
+            $this->user->id()
         );
     }
 
     /**
-     * How many total subscribed entities (artists, collages, requests, torrents)
+     * How many total subscribed entities (artists, requests, torrents)
      */
     public function commentTotal(): int {
-        return (int)self::$db->scalar("
-            SELECT count(*)
+        return (int)self::$db->scalar(
+            "SELECT count(*)
             FROM users_subscriptions_comments AS s
             LEFT JOIN users_comments_last_read AS lr ON (lr.UserID = s.UserID AND lr.Page = s.Page AND lr.PageID = s.PageID)
             LEFT JOIN comments AS c ON (c.ID = (SELECT MAX(ID) FROM comments WHERE Page = s.Page AND PageID = s.PageID))
-            LEFT JOIN collages AS co ON (s.Page = 'collages' AND co.ID = s.PageID)
-            WHERE (s.Page != 'collages' OR co.Deleted = '0')
-                AND s.UserID = ?
-            ", $this->user->id()
+            WHERE s.Page IN ('artist', 'requests', 'torrents')
+                AND s.UserID = ?",
+            $this->user->id()
         );
     }
 
@@ -179,7 +177,7 @@ class Subscription extends \Gazelle\BaseUser {
 
     /**
      * Same as has_subscribed, but for comment subscriptions.
-     * @param string $page 'artist', 'collages', 'requests' or 'torrents'
+     * @param string $page 'artist', 'requests' or 'torrents'
      */
     public function isSubscribedComments(string $page, int $pageId): bool {
         return !empty(array_filter($this->commentSubscriptions(),
@@ -253,7 +251,7 @@ class Subscription extends \Gazelle\BaseUser {
                 lr.PostID,
                 null AS ForumID,
                 null AS ForumName,
-                IF(s.Page = 'artist', aa.Name, co.Name) AS Name,
+                IF(s.Page = 'artist', aa.Name, NULL) AS Name,
                 c.ID AS LastPost,
                 c.AddedTime AS LastPostTime,
                 c_lr.Body AS LastReadBody,
@@ -266,13 +264,11 @@ class Subscription extends \Gazelle\BaseUser {
             LEFT JOIN users_comments_last_read AS lr ON (lr.UserID = ? AND lr.Page = s.Page AND lr.PageID = s.PageID)
             LEFT JOIN artists_group AS a ON (s.Page = 'artist' AND a.ArtistID = s.PageID)
             LEFT JOIN artists_alias aa ON (a.PrimaryAlias = aa.AliasID)
-            LEFT JOIN collages AS co ON (s.Page = 'collages' AND co.ID = s.PageID)
             LEFT JOIN comments AS c ON
                 (c.ID = (SELECT max(ID) FROM comments WHERE Page = s.Page AND PageID = s.PageID))
             LEFT JOIN comments AS c_lr ON (c_lr.ID = lr.PostID)
             LEFT JOIN users_main AS um ON (um.ID = c_lr.AuthorID)
-            WHERE s.Page IN ('artist', 'collages', 'requests', 'torrents')
-                AND (s.Page != 'collages' OR co.Deleted = '0')
+            WHERE s.Page IN ('artist', 'requests', 'torrents')
                 " . ($showUnread ? ' AND c.ID > coalesce(lr.PostID, 0)' : '') . "
                 AND s.UserID = ?
             GROUP BY s.PageID

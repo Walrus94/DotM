@@ -19,7 +19,6 @@ class Text {
         'b'          => 0,
         'box'        => 0,
         'code'       => 1,
-        'collage'    => 1,
         'color'      => 1,
         'colour'     => 1,
         'forum'      => 0,
@@ -346,7 +345,7 @@ class Text {
             && isset($info['path'])
             && in_array(
                 $info['path'],
-                ['/artist.php', '/collages.php', '/requests.php', '/torrents.php']
+                ['/artist.php', '/requests.php', '/torrents.php']
             )
         ) {
             return self::bbcodeCommentUrl((int)$args['postid']);
@@ -356,8 +355,6 @@ class Text {
             case '/artist.php':
                 return (new \Gazelle\Manager\Artist())->findById((int)($args['id'] ?? 0))?->link();
 
-            case '/collages.php':
-                return self::bbcodeCollageUrl((int)($args['id'] ?? $args['collageid']));
 
             case '/forums.php':
                 return match ($args['action'] ?? '') {
@@ -637,7 +634,6 @@ class Text {
                     $Block = preg_replace('/\[inlinesize\=7\](.*?)\[\/inlinesize\]/i', '==$1==', $Block);
                     $Array[$ArrayPos] = ['Type' => $TagName, 'Val' => $Block];
                     break;
-                case 'collage':
                 case 'forum':
                 case 'thread':
                     if ((int)$Block or preg_match('/\s*\d+:\d+/', $Block)) {
@@ -882,9 +878,6 @@ class Text {
                         }
                         $Str .= '<a href="rules.php?p=upload#' . urlencode(html_unescape($Rule)) . '">' . preg_replace('/[aA-zZ]/', '', $Block['Val']) . '</a>';
                         break;
-                    case 'collage':
-                        $Str .= self::bbcodeCollageUrl((int)$Block['Val']);
-                        break;
                     case 'forum':
                         $Str .= self::bbcodeForumUrl((int)$Block['Val']);
                         break;
@@ -996,7 +989,7 @@ class Text {
                         if (!empty($Block['Attr'])) {
                             $Exploded = explode('|', self::to_html($Block['Attr'], $Rules, $cache, $bucket));
                             if (isset($Exploded[1]) && (is_numeric($Exploded[1]) || (in_array($Exploded[1][0], ['a', 't', 'c', 'r']) && is_numeric(substr($Exploded[1], 1))))) {
-                                // the part after | is either a number or starts with a, t, c or r, followed by a number (forum post, artist comment, torrent comment, collage comment or request comment, respectively)
+                    // the part after | is either a number or starts with a, t or r, followed by a number (forum post, artist comment, torrent comment or request comment, respectively)
                                 $PostID = trim($Exploded[1]);
                                 $Str .= '<a href="#" onclick="QuoteJump(event, \'' . $PostID . '\'); return false;"><strong class="quoteheader">' . $Exploded[0] . '</strong> wrote: </a>';
                             } else {
@@ -1238,10 +1231,6 @@ class Text {
         return strtr($Str, self::$ProcessedSmileys);
     }
 
-    protected static function bbcodeCollageUrl(int $id): string {
-        $collage = (new \Gazelle\Manager\Collage())->findById($id);
-        return $collage?->link() ?? "[collage]{$id}[/collage]";
-    }
 
     protected static function bbcodeForumUrl(int $id): string {
         $forum = (new \Gazelle\Manager\Forum())->findById($id);
@@ -1259,7 +1248,7 @@ class Text {
         if (is_null($post)) {
             return null;
         }
-        // FIXME: this should give context about where the comment was posted (artist/collage/request/tgroup name)
+        // FIXME: this should give context about where the comment was posted (artist/request/tgroup name)
         return sprintf('<a href="%s">%s Comment #%s</a>',
                        $post->url(), ucfirst($post->page()), $postId);
     }

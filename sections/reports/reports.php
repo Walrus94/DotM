@@ -12,7 +12,7 @@ require_once 'array.php';
 
 $search    = new Gazelle\Search\Report();
 $paginator = new Gazelle\Util\Paginator(REPORTS_PER_PAGE, (int)($_REQUEST['page'] ?? 1));
-$typeList  = ['collage', 'comment', 'post', 'request', 'thread', 'user'];
+$typeList  = ['comment', 'post', 'request', 'thread', 'user'];
 
 if (!$Viewer->permitted('admin_reports')) {
     $search->restrictForumMod();
@@ -32,7 +32,7 @@ if (isset($_REQUEST['id'])) {
             array_filter(
                 array_keys($_REQUEST),
                 fn(string $checkbox): bool
-                    => (bool)preg_match('/^type-(?:collage|comment|post|request|thread|user)+$/', $checkbox)
+                    => (bool)preg_match('/^type-(?:comment|post|request|thread|user)+$/', $checkbox)
             )
         )
     );
@@ -62,7 +62,6 @@ $paginator->setTotal($search->total());
 echo $Twig->render('report/index.twig', [
     'list' => (new Gazelle\Manager\Report(new Gazelle\Manager\User()))->decorate(
         $search->page($paginator->limit(), $paginator->offset()),
-        new Gazelle\Manager\Collage(),
         new Gazelle\Manager\Comment(),
         new Gazelle\Manager\ForumThread(),
         new Gazelle\Manager\ForumPost(),

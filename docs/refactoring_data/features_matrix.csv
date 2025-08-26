@@ -6,17 +6,17 @@ artist,merge,Usable,templates/artist/merge.twig,-,app/Artist.php;app/Artist,arti
 artist,similar,Usable,templates/artist/similar.twig,-,app/Artist.php;app/Artist,artists_group,1381
 better,better pages,Reusable,templates/better;templates/better/search.twig;templates/better/better.twig,sections/better;sections/better/better.php,app/Better,-,1865
 blog,blog pages,Usable,templates/blog;templates/blog/editor.twig,sections/blog,app/Blog.php,blog,547
-bonus,bonus pages,Reusable,templates/bonus;templates/bonus/store.twig;templates/bonus/bonus-pool.twig,sections/bonus;sections/bonus/store.php,app/User/Bonus.php;app/Manager/Bonus.php,bonus_history;bonus_item;bonus_pool;bonus_pool_contrib,1422
-bookmark,bookmark pages,Reusable,templates/bookmark;templates/bookmark/artist.twig,sections/bookmarks,app/User/Bookmark.php;app/Manager/Bookmark.php,bookmarks_artists;bookmarks_collages;bookmarks_requests;bookmarks_torrents,999
+bonus,bonus pages,Reusable,templates/bonus;templates/bonus/store.twig;templates/bonus/bonus-pool.twig,sections/bonus;sections/bonus/store.php,app/User/Bonus.php;app/Manager/Bonus.php,bonus_history;bonus_item;bonus_pool;bonus_pool_contrib,1268
+bookmark,bookmark pages,Reusable,templates/bookmark;templates/bookmark/artist.twig,sections/bookmarks,app/User/Bookmark.php;app/Manager/Bookmark.php,bookmarks_artists;bookmarks_requests;bookmarks_torrents,936
 chat,chat pages,Removed,-,-,-,-,0
-collage,browse,Redundant,templates/collage/browse.twig,sections/collages/browse.php,app/Collage.php;app/Collage,collages,1313
-collage,edit,Redundant,templates/collage/edit.twig,sections/collages/edit.php,app/Collage.php;app/Collage,collages,1208
-collage,new,Redundant,templates/collage/new.twig,sections/collages/new.php,app/Collage.php;app/Collage,collages,1169
+collage,browse,Removed,-,-,-,-,0
+collage,edit,Removed,-,-,-,-,0
+collage,new,Removed,-,-,-,-,0
 comment,comment tools,Usable,templates/comment/warn.twig;templates/comment/thread.twig,sections/comments/warn.php,app/Comment,comments,900
 contest,admin,Reusable,templates/contest/admin.twig,sections/contest/admin.php,app/Contest.php;app/Contest,contest,940
 contest,leaderboard,Reusable,templates/contest/leaderboard.twig,sections/contest/leaderboard.php,app/Contest.php;app/Contest,contest,894
 contest,list,Reusable,templates/contest/list.twig,-,app/Contest.php;app/Contest,contest,828
-donation,donation pages,Usable,templates/donation;templates/donation/history.twig;templates/donation/index.twig;templates/donation/admin-panel.twig;templates/donation/donation-pm.twig;templates/donation/stats.twig;templates/donation/reward-list.twig,-,app/User/Donor.php;app/Manager/Donation.php;app/Manager/Payment.php,donations;payment_reminders,1739
+donation,donation pages,Usable,templates/donation;templates/donation/history.twig;templates/donation/index.twig;templates/donation/admin-panel.twig;templates/donation/donation-pm.twig;templates/donation/stats.twig;templates/donation/reward-list.twig,-,app/User/Donor.php;app/Manager/Donation.php;app/Manager/Payment.php,donations;payment_reminders,1433
 email,email templates,Reusable,templates/email;templates/email/password-change.twig;templates/email/invite-member.twig;templates/email/registration.twig;templates/email/password-reset.twig;templates/email/recovery.twig;templates/email/invite-interviewer.twig;templates/email/referral.twig;templates/email/hacked.twig;templates/email/disable-warning.twig,-,-,-,386
 enable,enable pages,Reusable,templates/enable;templates/enable/list.twig;templates/enable/processed.twig,sections/enable,app/User/AutoEnable.php;app/Manager/AutoEnable.php,users_enable_requests,794
 feed,feed pages,Reusable,templates/feed;templates/feed/channel.twig,-,app/Feed.php,-,417
@@ -34,17 +34,17 @@ rules,rules pages,Reusable,templates/rules/index.twig;templates/rules/upload.twi
 staff,staff pages,Reusable,templates/staff;templates/staff/index.twig,sections/staff;sections/staff/index.php,app/Staff.php,staff_blog_visits,357
 staffblog,staffblog pages,Reusable,templates/staffblog;templates/staffblog/list.twig;templates/staffblog/edit.twig,sections/staffblog,app/StaffBlog.php;app/Manager/StaffBlog.php;app/User/Notification/StaffBlog.php,staff_blog;staff_blog_visits,355
 staffpm,staffpm inbox,Reusable,templates/staffpm/history.twig;templates/staffpm/user-inbox.twig;templates/staffpm/message.twig;templates/staffpm/reply.twig;templates/staffpm/staff-inbox.twig,sections/staffpm/user_inbox.php;sections/staffpm/staff_inbox.php,app/StaffPM.php;app/Manager/StaffPM.php;app/User/Notification/StaffPM.php,staff_pm_conversations;staff_pm_messages;staff_pm_responses,997
-stats,torrent,Reusable,templates/stats/torrent.twig,sections/stats/torrents.php,app/Stats,/* artist stats */;tgroup_summary;user_summary,2298
-stats,user,Reusable,templates/stats/user.twig,sections/stats/users.php,app/Stats,/* artist stats */;tgroup_summary;user_summary,2512
+stats,torrent,Reusable,templates/stats/torrent.twig,sections/stats/torrents.php,app/Stats,/* artist stats */;tgroup_summary;user_summary,2228
+stats,user,Reusable,templates/stats/user.twig,sections/stats/users.php,app/Stats,/* artist stats */;tgroup_summary;user_summary,2442
 tag,tag pages,Usable,templates/tag;templates/tag/official.twig,-,app/Tag.php,tags,648
-tgroup,group pages,Usable,templates/tgroup;templates/tgroup/group-log.twig;templates/tgroup/edit.twig;templates/tgroup/similar.twig;templates/tgroup/stats.twig;templates/tgroup/tag.twig,-,-,-,607
+tgroup,group pages,Usable,templates/tgroup;templates/tgroup/group-log.twig;templates/tgroup/edit.twig;templates/tgroup/similar.twig;templates/tgroup/stats.twig;templates/tgroup/tag.twig,-,-,-,306
 top10,top10 pages,Redundant,templates/top10/history.twig;templates/top10/user.twig,sections/top10/history.php,app/Top10,-,624
 upload,upload pages,Reusable,templates/upload;templates/upload/music.twig;templates/upload/tag.twig,-,app/Upload.php,-,1348
 wiki,wiki pages,Usable,templates/wiki/revision-list.twig;templates/wiki/browse.twig;templates/wiki/search.twig;templates/wiki/article.twig;templates/wiki/compare.twig;templates/wiki/create.twig,sections/wiki/search.php;sections/wiki/article.php;sections/wiki/compare.php;sections/wiki/create.php,app/Wiki.php,wiki_articles,1848
-user,core,Reusable,-,-,app/User.php,users_main;users_levels;users_notifications_settings;users_notify_quoted;users_notify_torrents;users_sessions;users_subscriptions;users_votes,2018
+user,core,Reusable,-,-,app/User.php,users_main;users_levels;users_notifications_settings;users_notify_quoted;users_notify_torrents;users_sessions;users_subscriptions;users_votes,1954
 user,audit,Reusable,templates/user/audit.twig,sections/user/audit.php,app/User/AuditTrail.php,user_audit_trail,190
-user,bonus,Reusable,templates/user/bonus.twig,-,app/User/Bonus.php,bonus_history,669
-user,bonus history,Reusable,templates/user/bonus-history.twig,-,app/User/Bonus.php;app/User/History.php,bonus_history,1012
+user,bonus,Reusable,templates/user/bonus.twig,-,app/User/Bonus.php,bonus_history,659
+user,bonus history,Reusable,templates/user/bonus-history.twig,-,app/User/Bonus.php;app/User/History.php,bonus_history,990
 user,edit lock,Reusable,templates/user/edit-lock.twig,-,app/User/Privilege.php,users_main,327
 user,edit password,Usable,templates/user/edit-password.twig,-,app/User/Token.php,users_main,97
 user,edit privileges,Reusable,templates/user/edit-privileges.twig,-,app/User/Privilege.php,users_levels,429
@@ -61,13 +61,13 @@ user,password history,Usable,templates/user/password-history.twig,-,app/User/His
 user,pm privilege,Reusable,templates/user/pm-privilege.twig,-,app/User/Privilege.php,pm_conversations_users,310
 user,post history,Usable,templates/user/post-history.twig,-,app/User/History.php,users_history,426
 user,privilege list,Reusable,templates/user/privilege-list.twig,-,app/User/Privilege.php,users_levels,338
-user,quote notification,Usable,templates/user/quote-notification.twig,-,app/User/Notification.php,users_notify_quoted,300
-user,recent,Usable,templates/user/recent.twig,-,app/User/History.php,users_history,342
-user,recent vote,Reusable,templates/user/recent-vote.twig,-,app/User/Vote.php,users_votes,594
+user,quote notification,Usable,templates/user/quote-notification.twig,-,app/User/Notification.php,users_notify_quoted,297
+user,recent,Removed,-,-,-,-,0
+user,recent vote,Removed,-,-,-,-,0
 user,reset avatar,Usable,templates/user/reset-avatar.twig,-,app/User/SyntheticAvatar.php,user_external_profile,33
 user,session,Usable,templates/user/session.twig,sections/user/sessions.php,app/User/Session.php,users_sessions,232
-user,setting,Usable,templates/user/setting.twig,-,app/User/Notification.php,users_notifications_settings,326
-user,subscription history,Usable,templates/user/subscription-history.twig,-,app/User/Subscription.php,users_subscriptions,394
+user,setting,Usable,templates/user/setting.twig,-,app/User/Notification.php,users_notifications_settings,323
+user,subscription history,Usable,templates/user/subscription-history.twig,-,app/User/Subscription.php,users_subscriptions,390
 user,thread history,Usable,templates/user/thread-history.twig,-,app/User/History.php,users_history,356
 user,vote history,Reusable,templates/user/vote-history.twig,sections/user/vote_history.php,app/User/Vote.php,users_votes,599
--,-,-,-,-,-,TOTAL:,57390/218492
+-,-,-,-,-,-,TOTAL:,51694/214394

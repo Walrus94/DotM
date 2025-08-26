@@ -30,9 +30,6 @@ function getSkippedPage() {
             if (url.query['action'] == "quote_notifications") {
                 skip = "Quotes";
             }
-            if (url.query['action'] == "subscribed_collages") {
-                skip = "Collages";
-            }
             break;
         case "user":
             if (url.query['action'] == "notify") {

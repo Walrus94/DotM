@@ -46,14 +46,6 @@ switch ($type) {
         $report = new Gazelle\Report\Request($reportId, $request);
         break;
 
-    case 'collage':
-        $collage = (new Gazelle\Manager\Collage())->findById($id);
-        if (is_null($collage)) {
-            error(404);
-        }
-        $report = new Gazelle\Report\Collage($reportId, $collage);
-        break;
-
     case 'thread':
         $thread = (new Gazelle\Manager\ForumThread())->findById($id);
         if (is_null($thread)) {

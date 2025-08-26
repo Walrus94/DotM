@@ -29,11 +29,10 @@ class Quote extends AbstractNotification {
     public function create(\Gazelle\Manager\User $userMan, string $body, int $postId, string $page, int $pageId): int {
         /*
          * Explanation of the parameters PageID and Page: Page contains where
-         * this quote comes from and can be forums, artist, collages, requests
+         * this quote comes from and can be forums, artist, requests
          * or torrents. The PageID contains the additional value that is
          * necessary for the users_notify_quoted table. The PageIDs for the
-         * different Page are: forums: TopicID artist: ArtistID collages:
-         * CollageID requests: RequestID torrents: GroupID
+         * different Page are: forums: TopicID artist: ArtistID requests: RequestID torrents: GroupID
          */
         if (!preg_match_all('/(?:\[quote=|@)' . str_replace('/', '', USERNAME_REGEXP) . '/i', $body, $match)) {
             return 0;

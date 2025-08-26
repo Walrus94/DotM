@@ -25,7 +25,7 @@ function refresh_paranoia() {
     });
 
     [
-        'collagecontribs', 'collages', 'leeching', 'torrentcomments',
+        'leeching', 'torrentcomments',
         'perfectflacs', 'seeding', 'snatched', 'uniquegroups', 'uploads',
     ].forEach((val) => {
         document.querySelector('input[name=p_l_' + val + ']').disabled
@@ -64,10 +64,7 @@ function refresh_paranoia() {
         document.querySelector('input[type=checkbox][name=p_artistsadded]').disabled = false;
     }
 
-    if (!document.querySelector('input[name=p_l_collagecontribs]').checked) {
-        document.querySelector('input[name=p_l_collages]').checked = false;
-    }
-    uncheck_if_disabled(document.querySelector('input[name=p_l_collages]'));
+    
 }
 
 function paranoia_configure(setting) {
@@ -81,13 +78,10 @@ function paranoia_configure(setting) {
 
 function paranoia_stats() {
     paranoia_configure(PARANOIA_STATS);
-    document.querySelector('input[name=p_l_collages]').checked = false;
 }
 
 function paranoia_all() {
     paranoia_configure(false);
-    document.querySelector('input[name=p_c_collages]').checked = false;
-    document.querySelector('input[name=p_l_collages]').checked = false;
 }
 
 function paranoia_none() {

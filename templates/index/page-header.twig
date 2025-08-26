@@ -5,7 +5,7 @@
 {%-  if t %} active{% endif -%}
 {% endmacro -%}
 </head>
-<body data-id="{{ viewer.id }}" data-auth="{{ viewer.auth }}" id="{% if document == 'collages' %}collage{% else %}{{ document }}{% endif %}">
+<body data-id="{{ viewer.id }}" data-auth="{{ viewer.auth }}" id="{{ document }}">
 <form id="extra-hidden">
 <input id="extracb1" class="hidden" type="checkbox">
 <input id="extracb2" class="hidden" type="checkbox">
@@ -52,7 +52,6 @@
 <h4 class="hidden">Site Menu</h4>
 <ul>
 <li id="nav_index"{{    _self.active(document == 'index')    }}><a href="index.php">Home</a> </li>
-<li id="nav_collages"{{ _self.active(document == 'collages') }}><a href="collages.php">Collages</a> </li>
 <li id="nav_requests"{{ _self.active(document == 'requests') }}><a href="requests.php">Requests</a> </li>
 <li id="nav_forums"{{   _self.active(document == 'forums')   }}><a href="forums.php">Forums</a> </li>
 <li id="nav_top10"{{    _self.active(document == 'top10')    }}><a href="top10.php">Top 10</a> </li>
@@ -70,14 +69,6 @@
         <input id="artistsearch"
             {%- if viewer.hasAutocomplete('search') %} data-gazelle-autocomplete="true" {% endif -%}
             value="Artists" placeholder="Artists" type="text" name="artistname" size="17" spellcheck="false" accesskey="a" />
-    </form>
-</li>
-<li id="searchbar_collages">
-    <span class="hidden">Collage: </span>
-    <form class="search_form" name="collages" action="collages.php" method="get">
-        <input id="collagesearch"
-            {%- if viewer.hasAutocomplete('search') %} data-gazelle-autocomplete="true" {% endif -%}
-            value="Collages" placeholder="Collages" type="text" name="search" size="17" spellcheck="false" accesskey="c" />
     </form>
 </li>
 <li id="searchbar_requests">

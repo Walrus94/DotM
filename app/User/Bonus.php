@@ -89,9 +89,6 @@ class Bonus extends \Gazelle\BaseUser {
 
     public function effectivePrice(string $label): int {
         $item = $this->items()[$label];
-        if (preg_match('/^collage-\d$/', $label)) {
-            return (int)($item['Price'] * 2 ** $this->user->paidPersonalCollages());
-        }
         return $this->user->privilege()->effectiveClassLevel() >= $item['FreeClass'] ? 0 : (int)$item['Price'];
     }
 
@@ -269,35 +266,6 @@ class Bonus extends \Gazelle\BaseUser {
         }
 
         $this->user->modify();
-        $this->addPurchaseHistory($item['ID'], $price);
-        $this->flush();
-        return true;
-    }
-
-    public function purchaseCollage(string $label): bool {
-        $item  = $this->items()[$label];
-        $price = $this->effectivePrice($label);
-        self::$db->prepared_query('
-            UPDATE user_bonus ub
-            INNER JOIN users_main um ON (um.ID = ub.user_id) SET
-                ub.points = ub.points - ?,
-                um.collage_total = um.collage_total + 1
-            WHERE ub.points >= ?
-                AND ub.user_id = ?
-            ', $price, $price, $this->id()
-        );
-        $rows = self::$db->affected_rows();
-        if (($price > 0 && $rows !== 2) || ($price === 0 && $rows !== 1)) {
-            return false;
-        }
-        $this->user->ordinal()
-            ->set(
-                'personal-collage',
-                (int)self::$db->scalar("
-                    SELECT collage_total FROM  users_main WHERE ID = ?
-                    ", $this->id()
-                )
-            );
         $this->addPurchaseHistory($item['ID'], $price);
         $this->flush();
         return true;

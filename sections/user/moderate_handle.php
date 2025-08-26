@@ -63,7 +63,6 @@ if (isset($_POST['Uploaded']) && isset($_POST['Downloaded'])) {
 if (isset($_POST['BonusPoints'])) {
     $bonusPoints = (float)$_POST['BonusPoints'];
 }
-$Collages = (int)($_POST['Collages'] ?? 0);
 $flTokens = (int)($_POST['FLTokens'] ?? 0);
 
 $userReason           = trim($_POST['UserReason']);
@@ -198,14 +197,6 @@ if ($unlimitedDownload !== $user->hasUnlimitedDownload() && $Viewer->permitted('
     }
 }
 
-if (
-    $Collages != $user->paidPersonalCollages() && $Collages != (int)$_POST['OldCollages']
-    && ($Viewer->permitted('users_edit_ratio') || ($Viewer->permitted('users_edit_own_ratio') && $ownProfile))
-) {
-    $user->setField('collage_total', $Collages);
-    $user->ordinal()->set('personal-collage', $Collages);
-    $EditSummary[] = "personal collages changed from {$user->paidPersonalCollages()} to {$Collages}";
-}
 
 if ($invites != $user->unusedInviteTotal() && $Viewer->permitted('users_edit_invites')) {
     $user->setField('Invites', $invites);

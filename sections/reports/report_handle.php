@@ -31,7 +31,6 @@ if ($subjectType !== 'request_update') {
 }
 
 $location = match ($subjectType) {
-    'collage'        => "collages.php?id=$subjectId",
     'comment'        => "comments.php?action=jump&postid=$subjectId",
     'post'           => (new Gazelle\Manager\ForumPost())->findById($subjectId)?->location(), // could be null
     'request',

@@ -38,11 +38,6 @@ Seeding: {{ stats.seedingTotal|number_format }}
             <a href="comments.php?id={{ user.id }}&amp;action=artist" class="brackets{{ _self.override(visible['torrentcomments']) }}">View</a>
     {% endif %}
         </li>
-        <li id="comm_collcomm"{{ _self.class_override(visible['torrentcomments']) }}>Collage comments: {{ stats.commentTotal('collages')|number_format }}
-    {% if stats.commentTotal('collages') and visible['torrentcomments'] %}
-            <a href="comments.php?id={{ user.id }}&amp;action=collages" class="brackets{{ _self.override(visible['torrentcomments']) }}">View</a>
-    {% endif %}
-        </li>
         <li id="comm_reqcomm"{{ _self.class_override(visible['torrentcomments']) }}>Request comments: {{ stats.commentTotal('requests')|number_format }}
     {% if stats.commentTotal('requests') and visible['torrentcomments'] %}
             <a href="comments.php?id={{ user.id }}&amp;action=requests" class="brackets{{ _self.override(visible['torrentcomments']) }}">View</a>
@@ -50,21 +45,7 @@ Seeding: {{ stats.seedingTotal|number_format }}
         </li>
 {% endif %}
 
-{% if visible['collages+'] %}
-        <li id="comm_collstart"{{ _self.class_override(visible['collages+']) }}>Collages started: {{ stats.collageTotal|number_format }}
-    {% if stats.collageTotal and visible['collages'] %}
-            <a href="collages.php?userid={{ user.id }}" class="brackets{{ _self.override(visible['collages']) }}">View</a>
-    {% endif %}
-        </li>
-{% endif %}
 
-{% if visible['collagecontribs+'] %}
-        <li id="comm_collcontrib"{{ _self.class_override(visible['collagecontribs+']) }}>Collages contributed to: {{ stats.collageContrib|number_format }}
-    {% if stats.collageContrib and visible['collagecontribs'] %}
-            <a href="collages.php?userid={{ user.id }}&amp;contrib=1" class="brackets{{ _self.override(visible['collagecontribs']) }}">View</a>
-    {% endif %}
-        </li>
-{% endif %}
 
 {% if visible['requestsvoted_count'] or visible['requestsvoted_bounty'] %}
         <li>

@@ -9,7 +9,6 @@
 declare(strict_types=1);
 
 use Gazelle\Enum\UserTokenType;
-use Gazelle\User\Vote;
 
 $userMan = new Gazelle\Manager\User();
 $user = $userMan->findById((int)$_GET['id']);
@@ -28,7 +27,6 @@ $history     = new Gazelle\User\History($user);
 $limiter     = new Gazelle\User\UserclassRateLimit($user);
 $donorMan    = new Gazelle\Manager\Donation();
 $ipv4        = new Gazelle\Manager\IPv4();
-$tgMan       = (new Gazelle\Manager\TGroup())->setViewer($Viewer);
 $resetToken  = $Viewer->permitted('users_mod')
     ? (new Gazelle\Manager\UserToken())->findByUser($user, UserTokenType::password)
     : false;
@@ -118,7 +116,6 @@ if ($lastfmInfo) {
     ]);
 }
 
-$vote             = new Vote($user);
 $stats            = $user->stats();
 $Uploads          = check_paranoia_here('uploads+') ? $stats->uploadTotal() : 0;
 $rank = new Gazelle\UserRank(
@@ -131,10 +128,7 @@ $rank = new Gazelle\UserRank(
         'posts'      => $stats->forumPostTotal(),
         'bounty'     => $stats->requestVoteSize(),
         'artists'    => check_paranoia_here('artistsadded') ? $stats->artistAddedTotal() : 0,
-        'collage'    => check_paranoia_here('collagecontribs+') ? $stats->collageTotal() : 0,
-        'votes'      => $vote->userTotal(Vote::UPVOTE | Vote::DOWNVOTE),
         'bonus'      => $userBonus->pointsSpent(),
-        'comment-t'  => check_paranoia_here('torrentcomments++') ? $stats->commentTotal('torrents') : 0,
     ],
 );
 
@@ -149,10 +143,7 @@ $statList = [
     ['requests', 'requestsfilled_count', 'Requests filled', $numberFormatter, 'filled'],
     ['bounty', 'requestsvoted_bounty', 'Request votes', $byteFormatter, 'spent'],
     ['posts', null, 'Forum posts made', $numberFormatter, 'posts'],
-    ['comment-t', 'torrentcomments++', 'Torrent comments', $numberFormatter, 'posted'],
-    ['collage', 'collagecontribs+', 'Collage contributions', $numberFormatter, 'contributions'],
     ['artists', 'artistsadded', 'Artists added', $numberFormatter, 'added'],
-    ['votes', null, 'Release votes cast', $numberFormatter, 'votes'],
 ]
 ?>
         <div class="box box_info box_userinfo_percentile">
@@ -170,7 +161,7 @@ if ($OwnProfile || $Viewer->permitted('admin_bp_history')) { ?>
                 <li class="tooltip<?= !$OwnProfile && $Viewer->permitted('admin_bp_history') ? ' paranoia_override' : '' ?>" title="<?=number_format($rank->raw('bonus')) ?> spent">Bonus points spent: <?= $rank->rank('bonus') ?></li>
 <?php
 }
-if ($user->propertyVisibleMulti($previewer, ['artistsadded', 'collagecontribs+', 'downloaded', 'requestsfilled_count', 'requestsvoted_bounty', 'torrentcomments++', 'uploaded', 'uploads+', ])) {
+    if ($user->propertyVisibleMulti($previewer, ['artistsadded', 'downloaded', 'requestsfilled_count', 'requestsvoted_bounty', 'uploaded', 'uploads+', ])) {
 ?>
                 <li<?= $user->classLevel() >= 900 ? ' title="Infinite"' : '' ?>><strong>Overall rank: <?= is_null($rank->score())
                     ? 'Server busy'
@@ -213,42 +204,20 @@ if ($user->propertyVisibleMulti($previewer, ['artistsadded', 'collagecontribs+',
 
 <?php
 
-if (check_paranoia_here('snatched')) {
-    echo $Twig->render('user/tag-snatch.twig', [
-        'user' => $user,
-    ]);
-}
-
 echo $Twig->render('user/sidebar-stats.twig', [
     'prl'            => $limiter,
     'upload_total'   => $Uploads,
     'user'           => $user,
     'viewer'         => $Viewer,
     'visible'        => [
-        'collages+'             => check_paranoia_here('collages+'),
-        'collages'              => check_paranoia_here('collages'),
-        'collagescontrib+'      => check_paranoia_here('collagecontribs+'),
-        'collagecontribs'       => check_paranoia_here('collagecontribs'),
         'downloaded'            => $OwnProfile || $Viewer->permitted('site_view_torrent_snatchlist'),
         'invitedcount'          => check_paranoia_here('invitedcount'),
-        'leeching+'             => check_paranoia_here('leeching+'),
-        'leeching'              => check_paranoia_here('leeching'),
-        'perfectflacs+'         => check_paranoia_here('perfectflacs+'),
-        'perfectflacs'          => check_paranoia_here('perfectflacs'),
-        'seeding+'              => check_paranoia_here('seeding+'),
-        'seeding'               => check_paranoia_here('seeding'),
-        'snatched+'             => check_paranoia_here('snatched+'),
-        'snatched'              => check_paranoia_here('snatched'),
-        'torrentcomments+'      => check_paranoia_here('torrentcomments+'),
-        'torrentcomments'       => check_paranoia_here('torrentcomments'),
         'requestsfilled_list'   => check_paranoia_here('requestsfilled_list'),
         'requestsfilled_count'  => check_paranoia_here('requestsfilled_count'),
         'requestsfilled_bounty' => check_paranoia_here('requestsfilled_bounty'),
         'requestsvoted_list'    => check_paranoia_here('requestsvoted_list'),
         'requestsvoted_count'   => check_paranoia_here('requestsvoted_count'),
         'requestsvoted_bounty'  => check_paranoia_here('requestsvoted_bounty'),
-        'uniquegroups+'         => check_paranoia_here('uniquegroups+'),
-        'uniquegroups'          => check_paranoia_here('uniquegroups'),
         'uploads+'              => check_paranoia_here('uploads+'),
         'uploads'               => check_paranoia_here('uploads'),
     ],
@@ -295,38 +264,6 @@ foreach (range(1, 4) as $level) {
     }
 }
 
-if (check_paranoia_here('snatched')) {
-    echo $Twig->render('user/recent.twig', [
-        'id'     => $userId,
-        'recent' => array_map(fn ($id) => $tgMan->findById($id), $user->snatch()->recentSnatchList()),
-        'title'  => 'Snatches',
-        'type'   => 'snatched',
-        'thing'  => 'snatches',
-    ]);
-}
-
-if (check_paranoia_here('uploads')) {
-    echo $Twig->render('user/recent.twig', [
-        'id'     => $userId,
-        'recent' => array_map(fn ($id) => $tgMan->findById($id), $user->recentUploadList()),
-        'title'  => 'Uploads',
-        'type'   => 'uploaded',
-        'thing'  => 'uploads',
-    ]);
-}
-
-if ($OwnProfile || !$user->hasAttr('hide-vote-recent') || $Viewer->permitted('view-release-votes')) {
-    echo $Twig->render('user/recent-vote.twig', [
-        'recent'    => $vote->recent($tgMan),
-        'show_link' => $OwnProfile || !$user->hasAttr('hide-vote-history') || $Viewer->permitted('view-release-votes'),
-        'user_id'   => $userId,
-    ]);
-}
-
-echo $Twig->render('user/collage-list.twig', [
-    'list'    => (new Gazelle\Manager\Collage())->findPersonalByUser($user),
-    'manager' => $tgMan,
-]);
 
 // Linked accounts
 if ($Viewer->permitted('users_linked_users')) {

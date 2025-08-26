@@ -11,7 +11,6 @@ enum NotificationType: string {
     case QUOTES       = 'Quote';
     case STAFFPM      = 'StaffPM';
     case TORRENTS     = 'Torrent';
-    case COLLAGES     = 'Collage';
     case SUBSCRIPTIONS = 'Subscription';
     case GLOBALNOTICE = 'GlobalNotification';
 
