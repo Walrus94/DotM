@@ -20,7 +20,6 @@ $tgMan      = (new Gazelle\Manager\TGroup())->setViewer($Viewer);
 $torMan     = (new Gazelle\Manager\Torrent())->setViewer($Viewer);
 $stats      = new Gazelle\Stats\Artist($artistId);
 $userMan    = new Gazelle\Manager\User();
-$reportMan  = new Gazelle\Manager\Report($userMan);
 $vote       = new Gazelle\User\Vote($Viewer);
 $imgProxy   = new Gazelle\Util\ImageProxy($Viewer);
 
@@ -247,7 +246,6 @@ if ($sections = $artist->sections()) {
             'colspan_add'     => 1,
             'hide'            => $groupsClosed || $sectionClosed,
             'is_snatched_grp' => $isSnatched,
-            'report_man'      => $reportMan,
             'snatcher'        => $snatcher,
             'section_id'      => $sectionId,
             'tgroup'          => $tgroup,

@@ -36,7 +36,6 @@ $vote->setTopLimit($limit);
 $bookmark     = new Gazelle\User\Bookmark($Viewer);
 $snatcher     = $Viewer->snatch();
 $imgProxy     = new Gazelle\Util\ImageProxy($Viewer);
-$reportMan    = new Gazelle\Manager\Report(new Gazelle\Manager\User());
 $tgMan        = (new Gazelle\Manager\TGroup())->setViewer($Viewer);
 $torMan       = (new Gazelle\Manager\Torrent())->setViewer($Viewer);
 $urlStem      = (new Gazelle\User\Stylesheet($Viewer))->imagePath();
@@ -202,7 +201,6 @@ echo ' [' . $tgroup->year() . ']'; } ?></strong>
                 'colspan_add'     => 2,
                 'hide'            => true,
                 'is_snatched_grp' => $isSnatched,
-                'report_man'      => $reportMan,
                 'snatcher'        => $snatcher,
                 'tgroup'          => $tgroup,
                 'torrent_list'    => object_generator($torMan, $tgroup->torrentIdList()),

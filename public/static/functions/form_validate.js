@@ -24,11 +24,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 $("#filter_form").validate();
             }
             break;
-        case "requests":
-            if (query['action'] == "new") {
-                $("#request_form").preventDoubleSubmission();
-            }
-            break;
         case "tools":
             if (query['action'] == "mass_pm") {
                 $("#messageform").validate();

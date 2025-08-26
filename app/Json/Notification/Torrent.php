@@ -44,7 +44,6 @@ class Torrent extends \Gazelle\Json {
             'ripLogIds'       => $torrent->ripLogIdList(),
             'freeTorrent'     => $torrent->isFreeleech(),
             'isNeutralLeech'  => $torrent->isNeutralleech(),
-            'reported'        => (bool)$torrent->reportTotal($this->notifier->user()),
             'time'            => $torrent->created(),
             'description'     => $torrent->description(),
             'filter'          => $info['filter_name'],

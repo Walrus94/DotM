@@ -591,9 +591,7 @@ Must be one of 10 (default), 100 or 250. When `type`="torrents" and `details`="a
 
 `show_filled` - Include filled requests in results - `true` or `false` (default: false).
 
-`filter_cat[]`, `releases[]`, `bitrates[]`, `formats[]`, `media[]` - as used on requests.php
-
-If no arguments are specified then the most recent requests are shown.
+# The requests API is no longer available.
 
 **Response format:**
 

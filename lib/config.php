@@ -576,7 +576,6 @@ defined('RANKING_WEIGHT') or define('RANKING_WEIGHT', [
     'uploaded'   => [ 8, 'DataUpload'],
     'downloaded' => [20, 'DataDownload'],
     'uploads'    => [25, 'Uploads'],
-    'requests'   => [10, 'RequestsFilled'],
     'posts'      => [ 3, 'ForumPosts'],
     'bounty'     => [ 4, 'BountySpent'],
     'artists'    => [ 1, 'ArtistsAdded'],

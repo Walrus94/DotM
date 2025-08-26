@@ -12,7 +12,6 @@
             <a href="artist.php?action=editrequest&amp;artistid={{ artist.id }}" class="brackets">Request an Edit</a>
             <a href="upload.php?artistid={{ artist.id }}" class="brackets">Add upload</a>
 {% if viewer.permitted('site_submit_requests') %}
-            <a href="requests.php?action=new&amp;artistid={{ artist.id }}" class="brackets">Add request</a>
 {% endif %}
 {% if viewer.permitted('site_torrents_notify') %}
 {%  if viewer.hasArtistNotification(artist.name)%}

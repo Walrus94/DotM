@@ -37,13 +37,9 @@
 {%  if not friend.isFriend(user) %}
         <a href="friends.php?action=add&amp;friendid={{ user_id }}&amp;auth={{ viewer.auth }}" class="brackets">Add to friends</a>
 {%  endif %}
-        <a href="reports.php?action=report&amp;type=user&amp;id={{ user_id }}" class="brackets">Report user</a>
 {% endif %}
 {% if own_profile %}
         <a href="friends.php" class="brackets">Friends</a>
-{% endif %}
-{% if viewer.permitted('admin_reports') %}
-        <a href="reportsv2.php?view=reporter&amp;id={{ user_id }}" class="brackets">Reports</a>
 {% endif %}
 {% if own_profile or viewer.permittedAny('users_logout', 'users_view_ips') %}
         <a href="user.php?id={{ user_id }}&amp;action=sessions" class="brackets">Sessions</a>

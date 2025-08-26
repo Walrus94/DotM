@@ -7,7 +7,7 @@ header('Content-type: application/opensearchdescription+xml');
 
 require_once __DIR__ . '/../lib/config.php';
 
-$Type = in_array(($_GET['type'] ?? ''), ['torrents','artists','requests','forums','users','wiki','log'])
+$Type = in_array(($_GET['type'] ?? ''), ['torrents','artists','forums','users','wiki','log'])
     ? $_GET['type']
     : 'artists';
 
@@ -30,12 +30,6 @@ switch ($Type) {
 ?>
     <Url type="text/html" method="get" template="<?=SITE_URL?>/torrents.php?action=basic&amp;searchstr={searchTerms}"></Url>
     <moz:SearchForm><?=SITE_URL?>/torrents.php</moz:SearchForm>
-<?php
-        break;
-    case 'requests':
-?>
-    <Url type="text/html" method="get" template="<?=SITE_URL?>/requests.php?search={searchTerms}"></Url>
-    <moz:SearchForm><?=SITE_URL?>/requests.php</moz:SearchForm>
 <?php
         break;
     case 'forums':

@@ -28,7 +28,7 @@
 {% for tag in list %}
 <tr class="row{{ cycle(['a', 'b'], loop.index0) }}">
     <td class="center">{{ loop.index }}</td>
-    <td><a href="{% if detail == 'top_request' %}requests.php?tags={% else %}torrents.php?taglist={% endif %}{{ tag.name }}">{{ tag.name }}</a></td>
+    <td><a href="torrents.php?taglist={{ tag.name }}">{{ tag.name }}</a></td>
     <td class="number_column">{{ tag.uses|number_format }}</td>
     {% if detail != 'top_request' %}
     <td class="number_column">{{ tag.posVotes|number_format }}</td>

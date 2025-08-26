@@ -297,26 +297,10 @@ if ($Viewer->permitted('users_give_donor')) {
 }
 
 if (!$Viewer->disableRequests() && $user->propertyVisible($previewer, 'requestsvoted_list')) {
-    echo $Twig->render('request/user-unfilled.twig', [
-        'bounty' => $Viewer->ordinal()->value('request-bounty-vote'),
-        'list'   => (new Gazelle\Manager\Request())->findUnfilledByUser($user, 100),
-        'viewer' => $Viewer,
-    ]);
-}
-
 if ($Viewer->permitted('users_mod') || $Viewer->isStaffPMReader()) {
     echo $Twig->render('admin/staffpm-list.twig', [
         'list' => (new Gazelle\Staff($Viewer))->userStaffPmList($user),
     ]);
-}
-
-if ($Viewer->permitted('admin_reports')) {
-    $reports = (new Gazelle\Manager\Report($userMan))->findByReportedUser($user);
-    if ($reports) {
-        echo $Twig->render('admin/user-reports-list.twig', [
-            'list' => $reports
-        ]);
-    }
 }
 
 // Displays a table of forum warnings viewable only to Forum Moderators
@@ -328,20 +312,6 @@ if ($Viewer->permitted('users_warn')) {
     <div class="head">Forum warnings</div>
     <div class="pad">
         <div id="forumwarningslinks" class="AdminComment" style="width: 98%;"><?=Text::full_format($ForumWarnings)?></div>
-    </div>
-</div>
-<?php
-    }
-}
-
-if ($Viewer->permitted('users_auto_reports')) {
-    $raTypeMan = new \Gazelle\Manager\ReportAutoType();
-    $raSearch = new Gazelle\Search\ReportAuto(new \Gazelle\Manager\ReportAuto($raTypeMan), $raTypeMan);
-    $openReports = $raSearch->setUser($user)->setState(\Gazelle\Enum\ReportAutoState::open)->userTotalList($userMan);
-    if ($openReports && $openReports[0][1]) { ?>
-<div class="box">
-    <div class="head">
-        <a href="report_auto.php?userid=<?=$user->id()?>"><?=$openReports[0][1]?> open automated report<?=plural($openReports[0][1])?></a>
     </div>
 </div>
 <?php

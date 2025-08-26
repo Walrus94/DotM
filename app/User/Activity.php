@@ -65,16 +65,6 @@ class Activity extends \Gazelle\BaseUser {
         return $this;
     }
 
-    public function setAutoReport(\Gazelle\Search\ReportAuto $ru): static {
-        if ($this->user->permitted('users_auto_reports')) {
-            $open = $ru->setOwner(null)->setState(\Gazelle\Enum\ReportAutoState::open)->total();
-            if ($open > 0) {
-                $this->setAction('<a class="nobr" href="report_auto.php">' . $open . " Auto report" . plural($open) . "</a>");
-            }
-        }
-        return $this;
-    }
-
     public function setDb(\Gazelle\DB $dbMan): static {
         if ($this->user->permitted('admin_site_debug')) {
             $longRunning = $dbMan->longRunning();
@@ -111,20 +101,6 @@ class Activity extends \Gazelle\BaseUser {
         if ($this->user->permitted('admin_manage_referrals')) {
             if (!$refMan->checkBouncer()) {
                 $this->setAlert('<a href="tools.php?action=referral_sandbox"><span class="nobr" style="color: red">Referral bouncer not responding</span></a>');
-            }
-        }
-        return $this;
-    }
-
-    public function setReport(\Gazelle\Stats\Report $repStat): static {
-        if ($this->user->permitted('admin_reports')) {
-            $this->setAction("Reports:<a class=\"nobr tooltip\" title=\"Torrent reports\" href=\"reportsv2.php\"> {$repStat->torrentOpenTotal()}
-                </a>/<a class=\"nobr tooltip\" title=\"Other reports\" href=\"reports.php\"> {$repStat->otherOpenTotal()} </a>"
-            );
-        } elseif ($this->user->permitted('site_moderate_forums')) {
-            $open = $repStat->forumOpenTotal();
-            if ($open > 0) {
-                $this->setAction("<a href=\"reports.php\">$open Forum report" . plural($open) . '</a>');
             }
         }
         return $this;

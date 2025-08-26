@@ -345,7 +345,7 @@ class Text {
             && isset($info['path'])
             && in_array(
                 $info['path'],
-                ['/artist.php', '/requests.php', '/torrents.php']
+                ['/artist.php', '/torrents.php']
             )
         ) {
             return self::bbcodeCommentUrl((int)$args['postid']);

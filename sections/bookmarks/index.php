@@ -36,10 +36,6 @@ switch ($_REQUEST['action'] ?? 'view') {
                 $_GET['bookmarks'] = '1';
                 include_once __DIR__ . '/../collages/browse.php';
                 break;
-            case 'requests':
-                $_GET['type'] = 'bookmarks';
-                include_once __DIR__ . '/../requests/requests.php';
-                break;
             default:
                 error(404);
         }

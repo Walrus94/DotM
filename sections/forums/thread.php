@@ -184,10 +184,9 @@ if (!empty($userTitle)) {
 ?>
                 </span>
             </span>
-            <span id="bar<?=$PostID?>" style="float: right">
-                <a href="reports.php?action=report&amp;type=post&amp;id=<?=$PostID?>" class="brackets">Report</a>
+              <span id="bar<?=$PostID?>" style="float: right">
 <?php
-    $author = new Gazelle\User($AuthorID);
+      $author = new Gazelle\User($AuthorID);
     if ($Viewer->permitted('users_warn') && $Viewer->id() != $AuthorID && $Viewer->classLevel() >= $author->classLevel()) {
 ?>
                 <form class="manage_form hidden" name="user" id="warn<?=$PostID?>" action="" method="post">
@@ -196,8 +195,8 @@ if (!empty($userTitle)) {
                     <input type="hidden" name="postid" value="<?=$PostID?>" />
                     <input type="hidden" name="userid" value="<?=$AuthorID?>" />
                     <input type="hidden" name="key" value="<?=$Key?>" />
-                </form>
-                - <a href="#" onclick="$('#warn<?=$PostID?>').raw().submit(); return false;" class="brackets">Warn</a>
+                  </form>
+                  <a href="#" onclick="$('#warn<?=$PostID?>').raw().submit(); return false;" class="brackets">Warn</a>
 <?php } ?>
                 &nbsp;
                 <a href="#">↑</a>
