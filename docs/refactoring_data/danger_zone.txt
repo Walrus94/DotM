@@ -2,10 +2,7 @@ app/Artist
 app/Artist.php
 app/Contest
 app/Contest.php
-app/Request
-app/Request.php
 app/Stats
-app/User/Bonus.php
 app/User/History.php
 app/User/Notification.php
 app/User/Privilege.php
