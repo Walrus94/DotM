@@ -205,22 +205,23 @@ Transform Gazelle into a clean music label catalog with streaming platform integ
 **Estimated: 5-7 days**
 
 ### Day 1-2: User System Simplification
-- [ ] **Clean user registration** - Simple email/password, no ratio tracking
-- [ ] **Basic user profiles** - Name, join date, favorite genres
-- [ ] **User permissions** - Admin vs regular user roles
-- [ ] **Remove ratio/stats displays** - Clean user pages
+- [ ] **Preserve user registration** - Keep existing system, remove ratio tracking
+- [ ] **Clean user profiles** - Remove upload/download stats, keep join date, forum posts
+- [ ] **Admin-only content permissions** - Only admins can add/edit releases
+- [ ] **Remove ratio/stats displays** - Clean user pages of BitTorrent elements
 
-### Day 3: Community Features
-- [ ] **Preserve forum system** - Keep existing forum code
-- [ ] **Update comments for releases** - Migrate comment system to releases
-- [ ] **Release ratings/favorites** - Simple like/favorite system
-- [ ] **User collections** - Users can create personal release lists
+### Day 3: Community Features (Preserve Existing)
+- [ ] **Keep forum system intact** - No changes to existing forum functionality
+- [ ] **Keep private messaging** - Preserve existing PM system
+- [ ] **Keep donation system** - Preserve for label support
+- [ ] **Update comments for releases** - Adapt existing comment system to work with releases
+- [ ] **Keep user social features** - Friends, subscriptions, etc.
 
 ### Day 4-5: Frontend Polish
-- [ ] **Responsive design** - Mobile-friendly release pages
-- [ ] **Modern CSS** - Clean, music-focused styling  
-- [ ] **Homepage design** - Featured releases, recent additions
-- [ ] **Navigation cleanup** - Remove torrent-related menu items
+- [ ] **Keep classic Gazelle PostMod design** - Preserve existing CSS/styling
+- [ ] **Navigation cleanup** - Remove torrent-related menu items only
+- [ ] **Homepage adaptation** - Replace torrent features with release features
+- [ ] **Release page styling** - Adapt existing torrent group pages for releases
 
 ### Success Criteria:
 - ✅ Clean user system without BitTorrent elements
