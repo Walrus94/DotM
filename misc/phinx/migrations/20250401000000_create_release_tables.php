@@ -93,7 +93,7 @@ final class CreateReleaseTables extends AbstractMigration {
             ->addColumn('RemasterTitle', 'string', ['limit' => 300, 'null' => true])
             ->addColumn('RemasterCatalogueNumber', 'string', ['limit' => 100, 'null' => true])
             ->addColumn('RemasterRecordLabel', 'string', ['limit' => 200, 'null' => true])
-            ->addColumn('FileList', 'mediumtext', ['null' => true])
+            ->addColumn('FileList', 'text', ['null' => true])
             ->addColumn('Size', 'biginteger', ['null' => true, 'signed' => false])
             ->addColumn('Description', 'text', ['null' => true])
             ->addColumn('created', 'datetime', ['default' => 'CURRENT_TIMESTAMP'])
