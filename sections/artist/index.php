@@ -1,5 +1,6 @@
 <?php
 /** @phpstan-var \Gazelle\User $Viewer */
+/** @phpstan-var \Twig\Environment $Twig */
 
 if (!empty($_POST['action'])) {
     match ($_POST['action']) {
@@ -35,32 +36,33 @@ if (!empty($_POST['action'])) {
         header('Location: torrents.php');
     } else {
         $db = Gazelle\DB::DB();
-        $NameSearch = str_replace('\\', '\\\\', trim($_GET['artistname']));
+        $NameSearch = trim($_GET['artistname']);
         $db->prepared_query("
-            SELECT ArtistID, Name
-            FROM artists_alias
-            WHERE Name = ?
+            SELECT aa.ArtistID, aa.Name
+            FROM artists_alias aa
+            INNER JOIN release_artist ra ON (ra.AliasID = aa.AliasID)
+            WHERE aa.Name LIKE concat(?, '%')
+            GROUP BY aa.ArtistID, aa.Name
+            ORDER BY aa.Name
             ", $NameSearch
         );
-        [$FirstID, $Name] = $db->next_record(MYSQLI_NUM, false);
-        if (is_null($FirstID)) {
-            if ($Viewer->permitted('site_advanced_search') && $Viewer->option('SearchType')) {
-                header('Location: torrents.php?action=advanced&artistname=' . urlencode($_GET['artistname']));
-            } else {
-                header('Location: torrents.php?searchstr=' . urlencode($_GET['artistname']));
-            }
-            exit;
+        $results = $db->to_array(false, MYSQLI_NUM, false);
+        if (!$results) {
+            echo $Twig->render('artist/search.twig', [
+                'query'   => $NameSearch,
+                'results' => [],
+            ]);
+            return;
         }
-        if ($db->record_count() === 1 || !strcasecmp($Name, $NameSearch)) {
-            header("Location: artist.php?id=$FirstID");
-            exit;
-        }
-        while ([$ID, $Name] = $db->next_record(MYSQLI_NUM, false)) {
+        foreach ($results as [$ID, $Name]) {
             if (!strcasecmp($Name, $NameSearch)) {
                 header("Location: artist.php?id=$ID");
                 exit;
             }
         }
-        header("Location: artist.php?id=$FirstID");
+        echo $Twig->render('artist/search.twig', [
+            'query'   => $NameSearch,
+            'results' => array_map(fn($r) => ['id' => $r[0], 'name' => $r[1]], $results),
+        ]);
     }
 }
