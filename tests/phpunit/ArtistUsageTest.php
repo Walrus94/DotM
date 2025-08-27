@@ -11,7 +11,7 @@ class ArtistUsageTest extends TestCase {
         $aliasId = $artist->primaryAliasId();
 
         $db->prepared_query(
-            "INSERT INTO release (Name, Year, catalog_number, record_label, release_type, TagList, WikiBody, WikiImage, created, updated, showcase)
+            "INSERT INTO `release` (Name, Year, catalog_number, record_label, release_type, TagList, WikiBody, WikiImage, created, updated, showcase)
              VALUES ('phpunit release 1', 2000, '', '', 0, '', '', '', now(), now(), 0)"
         );
         $r1 = $db->inserted_id();
@@ -22,7 +22,7 @@ class ArtistUsageTest extends TestCase {
         );
 
         $db->prepared_query(
-            "INSERT INTO release (Name, Year, catalog_number, record_label, release_type, TagList, WikiBody, WikiImage, created, updated, showcase)
+            "INSERT INTO `release` (Name, Year, catalog_number, record_label, release_type, TagList, WikiBody, WikiImage, created, updated, showcase)
              VALUES ('phpunit release 2', 2001, '', '', 0, '', '', '', now(), now(), 0)"
         );
         $r2 = $db->inserted_id();
@@ -36,7 +36,7 @@ class ArtistUsageTest extends TestCase {
         $this->assertSame(2, $artist->usageTotal());
 
         $db->prepared_query("DELETE FROM release_artist WHERE GroupID IN (?, ?)", $r1, $r2);
-        $db->prepared_query("DELETE FROM release WHERE ID IN (?, ?)", $r1, $r2);
+        $db->prepared_query("DELETE FROM `release` WHERE ID IN (?, ?)", $r1, $r2);
         $db->prepared_query("DELETE FROM artists_alias WHERE ArtistID = ?", $artist->id());
         $db->prepared_query("DELETE FROM artists_group WHERE ArtistID = ?", $artist->id());
     }

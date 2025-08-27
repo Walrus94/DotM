@@ -502,7 +502,7 @@ class Artist extends BaseObject implements CollageEntry {
     public function releaseIdUsage(): array {
         self::$db->prepared_query("
             SELECT DISTINCT r.ID
-            FROM release AS r
+            FROM `release` AS r
             INNER JOIN release_artist AS ra ON (ra.GroupID = r.ID)
             INNER JOIN artists_alias      aa ON (ra.AliasID = aa.AliasID)
             WHERE aa.ArtistID = ?
