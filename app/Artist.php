@@ -144,15 +144,22 @@ class Artist extends BaseObject implements CollageEntry {
             ",
             $this->id
         );
+
+        // Always reset these members in case loadArtistRole() is invoked on a
+        // previously populated object or when the artist has no associated
+        // releases. Without this, consumers of sections() and groupIds() can
+        // receive undefined/null values which results in a blank page.
+        $this->section   = [];
+        $this->groupRole = [];
         $this->artistRole = [
-            ARTIST_MAIN => 0,
-            ARTIST_GUEST => 0,
-            ARTIST_REMIXER => 0,
-            ARTIST_COMPOSER => 0,
+            ARTIST_MAIN      => 0,
+            ARTIST_GUEST     => 0,
+            ARTIST_REMIXER   => 0,
+            ARTIST_COMPOSER  => 0,
             ARTIST_CONDUCTOR => 0,
-            ARTIST_DJ => 0,
-            ARTIST_PRODUCER => 0,
-            ARTIST_ARRANGER => 0,
+            ARTIST_DJ        => 0,
+            ARTIST_PRODUCER  => 0,
+            ARTIST_ARRANGER  => 0,
         ];
 
         while ([$groupId, $role, $releaseTypeId] = self::$db->next_record(MYSQLI_NUM, false)) {
