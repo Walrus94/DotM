@@ -24,8 +24,8 @@ define('RSS_HASH',     "");
 define('SEEDBOX_SALT', "");
 define('AVATAR_SALT',  "");
 
-define('SQL_PHINX_USER', 'root');
-define('SQL_PHINX_PASS', 'sc5tlc9JSCC6');
-
 // Docker setup runs the scheduler only once every 15 minutes
 define('SCHEDULER_DELAY', 1200);
+
+// Migrations use the same credentials as the application by default.
+// To override, define SQL_PHINX_USER and SQL_PHINX_PASS here.

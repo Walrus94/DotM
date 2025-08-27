@@ -150,6 +150,10 @@ export MYSQL_PASSWORD=password
 php vendor/bin/phinx seed:run -s ArtistReleaseSeeder
 ```
 
+If the web container fails to start with a database connection error, remove
+any existing `lib/override.config.php` so it can be regenerated with the
+current `MYSQL_*` environment settings.
+
 
 To access the database, look at `misc/docker/mysql-home/.my.cnf`
 The credentials should match those used in the `docker-compose.yml` file.
