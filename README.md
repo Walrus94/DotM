@@ -133,6 +133,23 @@ pg-phinx migrate
 pg-phinx rollback
 ```
 
+To populate the MySQL database with sample data, run the appropriate seeders.
+When working inside the web container:
+
+`docker compose exec -T web php vendor/bin/phinx seed:run -s ArtistReleaseSeeder`
+
+If you prefer to run the seeder from the host, ensure the MySQL container is
+up (`docker compose up -d mysql`) and provide the connection information via
+environment variables:
+
+```
+export MYSQL_HOST=127.0.0.1
+export MYSQL_PORT=36000
+export MYSQL_USER=gazelle
+export MYSQL_PASSWORD=password
+php vendor/bin/phinx seed:run -s ArtistReleaseSeeder
+```
+
 
 To access the database, look at `misc/docker/mysql-home/.my.cnf`
 The credentials should match those used in the `docker-compose.yml` file.

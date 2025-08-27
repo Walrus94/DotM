@@ -157,25 +157,25 @@ defined('USER_EDIT_SALT') or define('USER_EDIT_SALT', 'changeme');
 // environment. It is assumed that all will be changed in production.
 
 // Hostname of the mysql instance.
-defined('SQLHOST') or define('SQLHOST', 'mysql');
+defined('SQLHOST') or define('SQLHOST', getenv('MYSQL_HOST') ?: 'mysql');
 
 // The TCP port to use.
-defined('SQLPORT') or define('SQLPORT', 3306);
+defined('SQLPORT') or define('SQLPORT', getenv('MYSQL_PORT') ?: 3306);
 
 // The socket to use. See the php documentation on mysqli::connect
 // to understand how these fit together. If the database and PHP interpreter
 // are running on the same host then you want to use a socket.
-defined('SQLSOCK') or define('SQLSOCK', null);
+defined('SQLSOCK') or define('SQLSOCK', getenv('MYSQL_SOCKET') ?: null);
 
 // The name of the database schema.
-defined('SQLDB') or define('SQLDB', 'gazelle');
+defined('SQLDB') or define('SQLDB', getenv('MYSQL_DATABASE') ?: 'gazelle');
 
 // The username of the website account. See the docs/01-MysqlRoles.txt
 // document for details on what roles need to be configured.
-defined('SQLLOGIN') or define('SQLLOGIN', 'gazelle');
+defined('SQLLOGIN') or define('SQLLOGIN', getenv('MYSQL_USER') ?: 'gazelle');
 
 // The password of the above account.
-defined('SQLPASS') or define('SQLPASS', 'password');
+defined('SQLPASS') or define('SQLPASS', getenv('MYSQL_PASSWORD') ?: 'password');
 
 // The username of the Phinx account (used for schema modifications).
 // In production, this account will have a different set of grants compared
