@@ -24,7 +24,7 @@ $vote       = new Gazelle\User\Vote($Viewer);
 $imgProxy   = new Gazelle\Util\ImageProxy($Viewer);
 
 $isSubscribed = (new Gazelle\User\Subscription($Viewer))->isSubscribedComments('artist', $artistId);
-$requestList  = $Viewer->disableRequests() ? [] : (new Gazelle\Manager\Request())->findByArtist($artist);
+$requestList  = [];
 if (count($artist->groupIds()) > 1000) {
     // prevent OOMs
     Gazelle\DB::DB()->disableQueryLog();
