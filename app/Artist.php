@@ -131,17 +131,18 @@ class Artist extends BaseObject implements CollageEntry {
     }
 
     public function loadArtistRole(): static {
-        self::$db->prepared_query("
-            SELECT ta.GroupID AS group_id,
-                ta.Importance as artist_role,
-                rt.ID as release_type_id
-            FROM torrents_artists AS ta
-            INNER JOIN torrents_group AS tg ON (tg.ID = ta.GroupID)
-            INNER JOIN release_type AS rt ON (rt.ID = tg.ReleaseType)
-            INNER JOIN artists_alias aa ON (ta.AliasID = aa.AliasID)
+        self::$db->prepared_query(
+            "
+            SELECT ra.GroupID AS group_id,
+                ra.Importance as artist_role,
+                r.release_type as release_type_id
+            FROM release_artist AS ra
+            INNER JOIN `release` AS r ON (r.ID = ra.GroupID)
+            INNER JOIN artists_alias aa ON (ra.AliasID = aa.AliasID)
             WHERE aa.ArtistID = ?
-            ORDER BY tg.Year DESC, tg.Name, rt.ID
-            ", $this->id
+            ORDER BY r.Year DESC, r.Name, r.release_type
+            ",
+            $this->id
         );
         $this->artistRole = [
             ARTIST_MAIN => 0,
