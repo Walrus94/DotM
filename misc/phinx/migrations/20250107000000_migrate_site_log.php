@@ -30,36 +30,40 @@ Exclusion [b]-[/b] (dash) binds tightly, [b]or[/b] binds loosely. The above expr
 Searching is case-insensitive: folk will match both [b]folk[/b] and [b]Folk[/b].
 EOS;
 
-        $this->query("
-            INSERT INTO wiki_articles
-                (Title, Body, MinClassRead, MinClassEdit, Author)
-            VALUES (
-                'Fulltext searching tips',
-                '$article',
-                (SELECT Level FROM permissions WHERE Name = 'User'),
-                (SELECT Level FROM permissions WHERE Name = 'User'),
-                (SELECT um.ID
-                    FROM users_main um
-                    INNER JOIN permissions p ON (p.ID = um.PermissionID)
-                    ORDER BY p.Level DESC
-                    LIMIT 1
+        // Only create the wiki article if there's at least one user in the system
+        $hasUsers = $this->fetchRow("SELECT COUNT(*) as count FROM users_main")['count'] > 0;
+        if ($hasUsers) {
+            $this->query("
+                INSERT INTO wiki_articles
+                    (Title, Body, MinClassRead, MinClassEdit, Author)
+                VALUES (
+                    'Fulltext searching tips',
+                    '$article',
+                    (SELECT Level FROM permissions WHERE Name = 'User'),
+                    (SELECT Level FROM permissions WHERE Name = 'User'),
+                    (SELECT um.ID
+                        FROM users_main um
+                        INNER JOIN permissions p ON (p.ID = um.PermissionID)
+                        ORDER BY p.Level DESC
+                        LIMIT 1
+                    )
                 )
-            )
-        ");
-        $this->query("
-            INSERT INTO wiki_aliases
-                (ArticleID, Alias, UserID)
-            VALUES (
-                (SELECT ID FROM wiki_articles WHERE Title = 'Fulltext searching tips'),
-                'searchfulltext',
-                (SELECT um.ID
-                    FROM users_main um
-                    INNER JOIN permissions p ON (p.ID = um.PermissionID)
-                    ORDER BY p.Level DESC
-                    LIMIT 1
+            ");
+            $this->query("
+                INSERT INTO wiki_aliases
+                    (ArticleID, Alias, UserID)
+                VALUES (
+                    (SELECT ID FROM wiki_articles WHERE Title = 'Fulltext searching tips'),
+                    'searchfulltext',
+                    (SELECT um.ID
+                        FROM users_main um
+                        INNER JOIN permissions p ON (p.ID = um.PermissionID)
+                        ORDER BY p.Level DESC
+                        LIMIT 1
+                    )
                 )
-            )
-        ");
+            ");
+        }
     }
 
     public function down(): void {

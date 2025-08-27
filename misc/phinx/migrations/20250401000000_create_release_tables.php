@@ -1,11 +1,13 @@
 <?php
 
 use Phinx\Migration\AbstractMigration;
+use Phinx\Db\Adapter\MysqlAdapter;
 
 final class CreateReleaseTables extends AbstractMigration {
     public function up(): void {
-        // Create release table - main release information
-        $this->table('release', ['id' => false, 'primary_key' => 'ID'])
+        // Create release table - main release information (only if it doesn't exist)
+        if (!$this->hasTable('release')) {
+            $this->table('release', ['id' => false, 'primary_key' => 'ID'])
             ->addColumn('ID', 'integer', ['limit' => 10, 'identity' => true])
             ->addColumn('Name', 'string', ['limit' => 300, 'null' => false])
             ->addColumn('Year', 'integer', ['limit' => 4, 'null' => true, 'signed' => false])
@@ -24,9 +26,11 @@ final class CreateReleaseTables extends AbstractMigration {
             ->addIndex(['created'], ['name' => 'idx_release_created'])
             ->addForeignKey('release_type', 'release_type', 'ID', ['delete' => 'SET_NULL', 'update' => 'CASCADE'])
             ->create();
+        }
 
-        // Create release_platform table - streaming platform links
-        $this->table('release_platform', ['id' => false, 'primary_key' => 'ID'])
+        // Create release_platform table - streaming platform links (only if it doesn't exist)
+        if (!$this->hasTable('release_platform')) {
+            $this->table('release_platform', ['id' => false, 'primary_key' => 'ID'])
             ->addColumn('ID', 'integer', ['limit' => 10, 'identity' => true])
             ->addColumn('ReleaseID', 'integer', ['limit' => 10, 'null' => false])
             ->addColumn('Platform', 'enum', [
@@ -40,14 +44,16 @@ final class CreateReleaseTables extends AbstractMigration {
             ->addIndex(['Platform'], ['name' => 'idx_platform_type'])
             ->addForeignKey('ReleaseID', 'release', 'ID', ['delete' => 'CASCADE', 'update' => 'CASCADE'])
             ->create();
+        }
 
         // Create release_artist table - artist credits for releases
-        $this->table('release_artist', ['id' => false, 'primary_key' => ['GroupID', 'AliasID', 'artist_role_id']])
+        if (!$this->hasTable('release_artist')) {
+            $this->table('release_artist', ['id' => false, 'primary_key' => ['GroupID', 'AliasID', 'artist_role_id']])
             ->addColumn('GroupID', 'integer', ['limit' => 10, 'null' => false])
             ->addColumn('AliasID', 'integer', ['limit' => 10, 'null' => false])
             ->addColumn('UserID', 'integer', ['limit' => 10, 'null' => false])
             ->addColumn('Importance', 'integer', ['limit' => 2, 'null' => false, 'default' => 1])
-            ->addColumn('artist_role_id', 'integer', ['limit' => 3, 'null' => false, 'default' => 1])
+            ->addColumn('artist_role_id', 'integer', ['limit' => MysqlAdapter::INT_TINY, 'null' => false, 'default' => 1])
             ->addColumn('created', 'datetime', ['default' => 'CURRENT_TIMESTAMP'])
             ->addIndex(['GroupID'], ['name' => 'idx_release_artist_group'])
             ->addIndex(['AliasID'], ['name' => 'idx_release_artist_alias'])
@@ -56,9 +62,11 @@ final class CreateReleaseTables extends AbstractMigration {
             ->addForeignKey('artist_role_id', 'artist_role', 'artist_role_id', ['delete' => 'CASCADE', 'update' => 'CASCADE'])
             ->addForeignKey('UserID', 'users_main', 'ID', ['delete' => 'CASCADE', 'update' => 'CASCADE'])
             ->create();
+        }
 
         // Create release_tag table - tags for releases
-        $this->table('release_tag', ['id' => false, 'primary_key' => ['TagID', 'release_id']])
+        if (!$this->hasTable('release_tag')) {
+            $this->table('release_tag', ['id' => false, 'primary_key' => ['TagID', 'release_id']])
             ->addColumn('TagID', 'integer', ['limit' => 10, 'null' => false])
             ->addColumn('release_id', 'integer', ['limit' => 10, 'null' => false])
             ->addColumn('PositiveVotes', 'integer', ['limit' => 6, 'null' => false, 'default' => 1])
@@ -70,9 +78,11 @@ final class CreateReleaseTables extends AbstractMigration {
             ->addForeignKey('TagID', 'tags', 'ID', ['delete' => 'CASCADE', 'update' => 'CASCADE'])
             ->addForeignKey('UserID', 'users_main', 'ID', ['delete' => 'CASCADE', 'update' => 'CASCADE'])
             ->create();
+        }
 
         // Create edition table - different formats/editions of releases (replaces torrents concept)
-        $this->table('edition', ['id' => false, 'primary_key' => 'edition_id'])
+        if (!$this->hasTable('edition')) {
+            $this->table('edition', ['id' => false, 'primary_key' => 'edition_id'])
             ->addColumn('edition_id', 'integer', ['limit' => 10, 'identity' => true])
             ->addColumn('release_id', 'integer', ['limit' => 10, 'null' => false])
             ->addColumn('UserID', 'integer', ['limit' => 10, 'null' => false])
@@ -93,6 +103,7 @@ final class CreateReleaseTables extends AbstractMigration {
             ->addForeignKey('release_id', 'release', 'ID', ['delete' => 'CASCADE', 'update' => 'CASCADE'])
             ->addForeignKey('UserID', 'users_main', 'ID', ['delete' => 'CASCADE', 'update' => 'CASCADE'])
             ->create();
+        }
     }
 
     public function down(): void {
