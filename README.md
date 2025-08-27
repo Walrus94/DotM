@@ -147,12 +147,15 @@ export MYSQL_HOST=127.0.0.1
 export MYSQL_PORT=36000
 export MYSQL_USER=gazelle
 export MYSQL_PASSWORD=password
+# optional: override migration credentials
+# export MYSQL_PHINX_USER=gazelle
+# export MYSQL_PHINX_PASS=password
 php vendor/bin/phinx seed:run -s ArtistReleaseSeeder
 ```
 
-If the web container fails to start with a database connection error, remove
-any existing `lib/override.config.php` so it can be regenerated with the
-current `MYSQL_*` environment settings.
+The `MYSQL_*` variables override any MySQL settings in
+`lib/override.config.php`. If you still see connection errors, delete the file
+so it can be regenerated with the current values.
 
 
 To access the database, look at `misc/docker/mysql-home/.my.cnf`

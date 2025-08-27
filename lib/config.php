@@ -157,34 +157,66 @@ defined('USER_EDIT_SALT') or define('USER_EDIT_SALT', 'changeme');
 // environment. It is assumed that all will be changed in production.
 
 // Hostname of the mysql instance.
-defined('SQLHOST') or define('SQLHOST', getenv('MYSQL_HOST') ?: 'mysql');
+if (false !== getenv('MYSQL_HOST')) {
+    define('SQLHOST', getenv('MYSQL_HOST'));
+} elseif (!defined('SQLHOST')) {
+    define('SQLHOST', 'mysql');
+}
 
 // The TCP port to use.
-defined('SQLPORT') or define('SQLPORT', getenv('MYSQL_PORT') ?: 3306);
+if (false !== getenv('MYSQL_PORT')) {
+    define('SQLPORT', (int)getenv('MYSQL_PORT'));
+} elseif (!defined('SQLPORT')) {
+    define('SQLPORT', 3306);
+}
 
 // The socket to use. See the php documentation on mysqli::connect
 // to understand how these fit together. If the database and PHP interpreter
 // are running on the same host then you want to use a socket.
-defined('SQLSOCK') or define('SQLSOCK', getenv('MYSQL_SOCKET') ?: null);
+if (false !== getenv('MYSQL_SOCKET')) {
+    define('SQLSOCK', getenv('MYSQL_SOCKET'));
+} elseif (!defined('SQLSOCK')) {
+    define('SQLSOCK', null);
+}
 
 // The name of the database schema.
-defined('SQLDB') or define('SQLDB', getenv('MYSQL_DATABASE') ?: 'gazelle');
+if (false !== getenv('MYSQL_DATABASE')) {
+    define('SQLDB', getenv('MYSQL_DATABASE'));
+} elseif (!defined('SQLDB')) {
+    define('SQLDB', 'gazelle');
+}
 
 // The username of the website account. See the docs/01-MysqlRoles.txt
 // document for details on what roles need to be configured.
-defined('SQLLOGIN') or define('SQLLOGIN', getenv('MYSQL_USER') ?: 'gazelle');
+if (false !== getenv('MYSQL_USER')) {
+    define('SQLLOGIN', getenv('MYSQL_USER'));
+} elseif (!defined('SQLLOGIN')) {
+    define('SQLLOGIN', 'gazelle');
+}
 
 // The password of the above account.
-defined('SQLPASS') or define('SQLPASS', getenv('MYSQL_PASSWORD') ?: 'password');
+if (false !== getenv('MYSQL_PASSWORD')) {
+    define('SQLPASS', getenv('MYSQL_PASSWORD'));
+} elseif (!defined('SQLPASS')) {
+    define('SQLPASS', 'password');
+}
 
 // The username of the Phinx account (used for schema modifications).
 // In production, this account will have a different set of grants compared
 // to the website account (so that if the website account is compromised, it
 // cannot be used to drop tables or any other malicious activities).
-defined('SQL_PHINX_USER') or define('SQL_PHINX_USER', SQLLOGIN);
+if (false !== getenv('MYSQL_PHINX_USER')) {
+    define('SQL_PHINX_USER', getenv('MYSQL_PHINX_USER'));
+} elseif (!defined('SQL_PHINX_USER')) {
+    define('SQL_PHINX_USER', SQLLOGIN);
+}
 
 // Password of the above.
-defined('SQL_PHINX_PASS') or define('SQL_PHINX_PASS', SQLPASS);
+if (false !== getenv('MYSQL_PHINX_PASS')) {
+    define('SQL_PHINX_PASS', getenv('MYSQL_PHINX_PASS'));
+} elseif (!defined('SQL_PHINX_PASS')) {
+    define('SQL_PHINX_PASS', SQLPASS);
+}
 
 // ------------------------------------------------------------------------
 // Postgresql settings
