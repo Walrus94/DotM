@@ -151,17 +151,56 @@ class Mysql {
     }
 
     public function connect(): void {
-        if ($this->LinkID === false) {
-            $server = $this->Server;
-            if ($this->Socket === null && $server === 'localhost') {
-                $server = '127.0.0.1';
+        if ($this->LinkID !== false) {
+            return;
+        }
+        $server = $this->Server;
+        if ($this->Socket === null && $server === 'localhost') {
+            $server = '127.0.0.1';
+        }
+        try {
+            $this->LinkID = mysqli_connect(
+                $server,
+                $this->User,
+                $this->Pass,
+                $this->Database,
+                $this->Port,
+                $this->Socket,
+            );
+        } catch (\mysqli_sql_exception $e) {
+            $this->Errno = $e->getCode();
+            $this->Error = $e->getMessage();
+        }
+        if ($this->LinkID === false
+            && $server === '127.0.0.1'
+            && $this->Server === 'localhost'
+            && $this->Socket === null
+            && $this->Port !== 3306
+        ) {
+            $dockerHost = gethostbyname('host.docker.internal');
+            if ($dockerHost !== 'host.docker.internal') {
+                try {
+                    $server = $dockerHost;
+                    $this->LinkID = mysqli_connect(
+                        $server,
+                        $this->User,
+                        $this->Pass,
+                        $this->Database,
+                        $this->Port,
+                        $this->Socket,
+                    );
+                } catch (\mysqli_sql_exception $e) {
+                    $this->Errno = $e->getCode();
+                    $this->Error = $e->getMessage();
+                }
             }
-            $this->LinkID = mysqli_connect($server, $this->User, $this->Pass, $this->Database, $this->Port, $this->Socket);
-            if ($this->LinkID === false) {
+        }
+        if ($this->LinkID === false) {
+            if (!$this->Errno) {
                 $this->Errno = mysqli_connect_errno();
                 $this->Error = mysqli_connect_error();
-                $this->halt('Connection failed (host:' . $server . ':' . $this->Port . ')');
             }
+            $this->halt('Connection failed (host:' . $server . ':' . $this->Port . ')');
         }
     }
 
