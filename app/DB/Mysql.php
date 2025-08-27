@@ -152,11 +152,15 @@ class Mysql {
 
     public function connect(): void {
         if ($this->LinkID === false) {
-            $this->LinkID = mysqli_connect($this->Server, $this->User, $this->Pass, $this->Database, $this->Port, $this->Socket);
+            $server = $this->Server;
+            if ($this->Socket === null && $server === 'localhost') {
+                $server = '127.0.0.1';
+            }
+            $this->LinkID = mysqli_connect($server, $this->User, $this->Pass, $this->Database, $this->Port, $this->Socket);
             if ($this->LinkID === false) {
                 $this->Errno = mysqli_connect_errno();
                 $this->Error = mysqli_connect_error();
-                $this->halt('Connection failed (host:' . $this->Server . ':' . $this->Port . ')');
+                $this->halt('Connection failed (host:' . $server . ':' . $this->Port . ')');
             }
         }
     }
