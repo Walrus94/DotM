@@ -13,6 +13,8 @@ services:
     environment:
       - ENV=dev
       # These should match what you set for your mysql container below
+      - MYSQL_HOST=mysql
+      - MYSQL_DATABASE=gazelle
       - MYSQL_USER=gazelle
       - MYSQL_PASSWORD=password
 

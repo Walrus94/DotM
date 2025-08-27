@@ -144,18 +144,17 @@ class Artist extends \Gazelle\BaseManager {
         if ($list === false) {
             self::$db->prepared_query("
                 SELECT a.ArtistID AS data,
-                    aa.Name       AS value
+                    aa.Name       AS value,
+                    count(ra.GroupID) AS uses
                 FROM artists_group AS a
-                INNER JOIN artists_alias        aa  ON (a.PrimaryAlias = aa.AliasID)
-                INNER JOIN torrents_artists     ta  ON (ta.AliasID = aa.AliasID)
-                INNER JOIN torrents             t   ON (t.GroupID = ta.GroupID)
-                INNER JOIN torrents_leech_stats tls ON (tls.TorrentID = t.ID)
+                INNER JOIN artists_alias       aa ON (a.PrimaryAlias = aa.AliasID)
+                INNER JOIN release_artist      ra ON (ra.AliasID = aa.AliasID)
                 WHERE aa.Name LIKE concat(?, '%')
                 GROUP BY a.ArtistID, aa.Name
                 ORDER BY aa.Name != ?,
-                    sum(tls.Snatched) DESC
+                    uses DESC
                 LIMIT 20
-                ", str_replace("%", "\\%", $prefix),
+                ", str_replace('%', '\%', $prefix),
                 $prefix,
             );
             $list = self::$db->to_array(false, MYSQLI_ASSOC, false);

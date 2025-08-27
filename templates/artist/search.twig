@@ -1,0 +1,16 @@
+{{ header('Artist search') }}
+<div class="thin">
+    <div class="header">
+        <h2>Artist results</h2>
+    </div>
+    {% if results %}
+        <ul class="nobullet">
+        {% for a in results %}
+            <li><a href="artist.php?id={{ a.id }}">{{ a.name }}</a></li>
+        {% endfor %}
+        </ul>
+    {% else %}
+        <div>No artists found matching "{{ query }}".</div>
+    {% endif %}
+</div>
+{{ footer() }}
