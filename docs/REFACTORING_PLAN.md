@@ -1,7 +1,7 @@
 # Gazelle to Music Label Catalog - Refactoring Plan
 
 ## Project Overview
-Transform Gazelle from a BitTorrent tracker to a static music label catalog with streaming platform integration, preserving excellent music organization features while eliminating all BitTorrent functionality.
+Transform Gazelle from a BitTorrent tracker to a static music label catalog with streaming platform integration (Spotify, Apple Music, Bandcamp, SoundCloud). Starting with a fresh user base and small catalog (< 100 releases initially), focusing on clean implementation over data migration.
 
 ---
 
