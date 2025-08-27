@@ -1,0 +1,113 @@
+{% extends "layout.twig" %}
+
+{% block title %}{{ release.name }}{% endblock %}
+
+{% block content %}
+<div class="header">
+    <h2>
+        {% if artist_role %}
+            {{ artist_role.text }} - {{ release.name }}
+        {% else %}
+            {{ release.name }}
+        {% endif %}
+        {% if release.year %}[{{ release.year }}{% if release.releaseTypeName %} {{ release.releaseTypeName }}{% endif %}]{% endif %}
+    </h2>
+</div>
+
+<table class="layout border" cellpadding="3" cellspacing="1" border="0">
+    <tr>
+        <td class="label">Release:</td>
+        <td>{{ release.name }}</td>
+    </tr>
+    
+    {% if artist_role %}
+    <tr>
+        <td class="label">Artist(s):</td>
+        <td>{{ artist_role.link | raw }}</td>
+    </tr>
+    {% endif %}
+    
+    {% if release.year %}
+    <tr>
+        <td class="label">Year:</td>
+        <td>{{ release.year }}</td>
+    </tr>
+    {% endif %}
+    
+    {% if release.releaseTypeName %}
+    <tr>
+        <td class="label">Release type:</td>
+        <td>{{ release.releaseTypeName }}</td>
+    </tr>
+    {% endif %}
+    
+    {% if release.recordLabel %}
+    <tr>
+        <td class="label">Record label:</td>
+        <td>{{ release.recordLabel }}</td>
+    </tr>
+    {% endif %}
+    
+    {% if release.catalogNumber %}
+    <tr>
+        <td class="label">Catalog number:</td>
+        <td>{{ release.catalogNumber }}</td>
+    </tr>
+    {% endif %}
+    
+    {% if release.tagNameList %}
+    <tr>
+        <td class="label">Tags:</td>
+        <td>
+            {% for tag in release.tagNameList %}
+                <a href="releases.php?searchstr={{ tag }}">{{ tag }}</a>{% if not loop.last %}, {% endif %}
+            {% endfor %}
+        </td>
+    </tr>
+    {% endif %}
+    
+    {% if platforms %}
+    <tr>
+        <td class="label">Streaming:</td>
+        <td>
+            {% for platform in platforms %}
+                <a href="{{ platform.Url }}" target="_blank" class="platform-link" title="Listen on {{ platform.Platform }}">
+                    <strong>{{ platform.Platform }}</strong>
+                </a>{% if not loop.last %} | {% endif %}
+            {% endfor %}
+        </td>
+    </tr>
+    {% endif %}
+    
+    {% if release.image %}
+    <tr>
+        <td class="label">Cover:</td>
+        <td>
+            <img src="{{ release.image }}" alt="Cover art" style="max-width: 300px;" />
+        </td>
+    </tr>
+    {% endif %}
+</table>
+
+{% if release.description %}
+<div class="box">
+    <div class="head"><strong>Description</strong></div>
+    <div class="body">{{ release.description | bbcode | raw }}</div>
+</div>
+{% endif %}
+
+{% if release.isShowcase %}
+<div class="box">
+    <div class="head"><strong>Showcase Release</strong></div>
+    <div class="body">This is a featured showcase release.</div>
+</div>
+{% endif %}
+
+{% if viewer.permitted('admin_manage_releases') %}
+<div class="linkbox">
+    <a href="admin.php?action=releases&amp;mode=edit&amp;id={{ release.id }}" class="brackets">Edit release</a>
+    <a href="admin.php?action=releases&amp;mode=platforms&amp;id={{ release.id }}" class="brackets">Manage platforms</a>
+</div>
+{% endif %}
+
+{% endblock %}

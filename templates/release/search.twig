@@ -1,0 +1,87 @@
+{% extends "layout.twig" %}
+
+{% block title %}Release Search{% endblock %}
+
+{% block content %}
+<div class="header">
+    <h2>
+        {% if query %}
+            Release Search: {{ query }}
+        {% else %}
+            Recent Releases
+        {% endif %}
+    </h2>
+</div>
+
+<form class="search_form" name="releases" action="releases.php" method="get">
+    <table cellpadding="6" cellspacing="1" border="0" class="layout border" width="100%">
+        <tr>
+            <td class="label"><strong>Search for:</strong></td>
+            <td>
+                <input type="text" name="searchstr" size="60" value="{{ query }}" />
+                <input type="submit" value="Search releases" />
+            </td>
+        </tr>
+    </table>
+</form>
+
+{% if results %}
+<div class="linkbox">
+    {{ results|length }} release(s) found
+    {% if total_count %}
+        ({{ total_count }} total releases in catalog)
+    {% endif %}
+</div>
+
+<table width="100%" class="torrent_table">
+    <tr class="colhead">
+        <td width="70%"><strong>Release</strong></td>
+        <td width="15%"><strong>Year</strong></td>
+        <td width="15%"><strong>Streaming</strong></td>
+    </tr>
+    
+    {% for release in results %}
+    <tr class="torrent">
+        <td>
+            <a href="releases.php?action=view&amp;id={{ release.ID }}" title="View release">
+                <strong>
+                    {% if release.ArtistName %}
+                        {{ release.ArtistName }} - {{ release.Name }}
+                    {% else %}
+                        {{ release.Name }}
+                    {% endif %}
+                </strong>
+            </a>
+        </td>
+        <td>{{ release.Year ?? 'Unknown' }}</td>
+        <td>
+            {% if release.platforms %}
+                {% for platform in release.platforms %}
+                    <a href="{{ platform.Url }}" target="_blank" title="{{ platform.Platform }}">
+                        {{ platform.Platform }}
+                    </a>{% if not loop.last %}, {% endif %}
+                {% endfor %}
+            {% else %}
+                <span class="muted">No links</span>
+            {% endif %}
+        </td>
+    </tr>
+    {% endfor %}
+</table>
+
+{% else %}
+    {% if query %}
+        <div class="center">
+            <p>No releases found matching "{{ query }}"</p>
+        </div>
+    {% else %}
+        <div class="center">
+            <p>No releases in catalog yet.</p>
+            {% if viewer.permitted('admin_manage_releases') %}
+                <p><a href="admin.php?action=releases">Add releases</a></p>
+            {% endif %}
+        </div>
+    {% endif %}
+{% endif %}
+
+{% endblock %}
