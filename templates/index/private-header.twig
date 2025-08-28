@@ -8,30 +8,27 @@
 <title>{{ page_title }} ⠶ {{ constant('SITE_NAME') }}</title>
 <link rel="shortcut icon" href="/favicon.ico" />
 <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
-<link rel="search" type="application/opensearchdescription+xml" title="{{ constant('SITE_NAME') }} Torrents" href="opensearch.php?type=torrents" />
+<link rel="search" type="application/opensearchdescription+xml" title="{{ constant('SITE_NAME') }} Releases" href="opensearch.php?type=torrents" />
 <link rel="search" type="application/opensearchdescription+xml" title="{{ constant('SITE_NAME') }} Artists" href="opensearch.php?type=artists" />
-<link rel="search" type="application/opensearchdescription+xml" title="{{ constant('SITE_NAME') }} Requests" href="opensearch.php?type=requests" />
 <link rel="search" type="application/opensearchdescription+xml" title="{{ constant('SITE_NAME') }} Forums" href="opensearch.php?type=forums" />
-<link rel="search" type="application/opensearchdescription+xml" title="{{ constant('SITE_NAME') }} Log" href="opensearch.php?type=log" />
-<link rel="search" type="application/opensearchdescription+xml" title="{{ constant('SITE_NAME') }} Users" href="opensearch.php?type=users" />
 <link rel="search" type="application/opensearchdescription+xml" title="{{ constant('SITE_NAME') }} Wiki" href="opensearch.php?type=wiki" />
 {{ rss_link(viewer, "feed_news", "News") }}
 {{ rss_link(viewer, "feed_blog", "Blog") }}
 {{ rss_link(viewer, "feed_changelog", "Change Log") }}
-{{ rss_link(viewer, "torrents_notify_" ~ viewer.announceKey, "Personal Torrent Notifications") }}
-{{ rss_link(viewer, "torrents_all", "All Torrents") }}
-{{ rss_link(viewer, "torrents_music", "Music Torrents") }}
-{{ rss_link(viewer, "torrents_apps", "Application Torrents") }}
-{{ rss_link(viewer, "torrents_ebooks", "E-Book Torrents") }}
-{{ rss_link(viewer, "torrents_abooks", "Audiobooks Torrents") }}
-{{ rss_link(viewer, "torrents_evids", "E-Learning Video Torrents") }}
-{{ rss_link(viewer, "torrents_comedy", "Comedy Torrents") }}
-{{ rss_link(viewer, "torrents_comics", "Comic Torrents") }}
-{{ rss_link(viewer, "torrents_mp3", "MP3 Torrents") }}
-{{ rss_link(viewer, "torrents_flac", "FLAC Torrents") }}
-{{ rss_link(viewer, "torrents_vinyl", "Vinyl Sourced Torrents") }}
-{{ rss_link(viewer, "torrents_lossless", "Lossless Torrents") }}
-{{ rss_link(viewer, "torrents_lossless24", "24bit Lossless Torrents") }}
+{{ rss_link(viewer, "torrents_notify_" ~ viewer.announceKey, "Personal Release Notifications") }}
+{{ rss_link(viewer, "torrents_all", "All Releases") }}
+{{ rss_link(viewer, "torrents_music", "Music Releases") }}
+{{ rss_link(viewer, "torrents_apps", "Application Releases") }}
+{{ rss_link(viewer, "torrents_ebooks", "E-Book Releases") }}
+{{ rss_link(viewer, "torrents_abooks", "Audiobooks Releases") }}
+{{ rss_link(viewer, "torrents_evids", "E-Learning Video Releases") }}
+{{ rss_link(viewer, "torrents_comedy", "Comedy Releases") }}
+{{ rss_link(viewer, "torrents_comics", "Comic Releases") }}
+{{ rss_link(viewer, "torrents_mp3", "MP3 Releases") }}
+{{ rss_link(viewer, "torrents_flac", "FLAC Releases") }}
+{{ rss_link(viewer, "torrents_vinyl", "Vinyl Sourced Releases") }}
+{{ rss_link(viewer, "torrents_lossless", "Lossless Releases") }}
+{{ rss_link(viewer, "torrents_lossless24", "24bit Lossless Releases") }}
 {% if viewer.permitted('site_torrents_notify') %}
 {%     for id, name in viewer.notifyFilters %}
 {{          rss_link(viewer, "torrents_notify_" ~ id ~ "_" ~ viewer.announceKey, name) }}

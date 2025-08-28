@@ -36,45 +36,9 @@
     <li id="nav_upload" class="brackets{{ _self.active_class(document == 'upload') }}">
         <a href="upload.php" title="Upload">Upload</a>
     </li>
-    <li id="nav_bonus" class="brackets{{ _self.active_class(document == 'user' and action == 'bonus') }}">
-        <a href="bonus.php" class='tooltip' title="BP/hour: {{
-            bonus.hourlyRate|number_format(3) }}">Bonus ({{ viewer.bonusPointsTotal|number_format }})</a>
-    </li>
-    <li id="nav_invite" class="brackets{{ _self.active_class(document == 'user' and action == 'invite') }}">
-        <a href="user.php?action=invite" class='tooltip' title="Invite a friend!">Invite
-        {% if viewer.permitted('site_send_unlimited_invites') %} (∞){% elseif viewer.unusedInviteTotal %} ({{ viewer.unusedInviteTotal }}){% endif %}</a>
-    </li>
     <li id="nav_donate" class="brackets{{ _self.active_class(document == 'donate') }}">
         <a href="donate.php" class='tooltip' title="Donate">Donate ({{ dono_target }}%)</a>
     </li>
-</ul>
-<ul id="userinfo_stats">
-    <li id="stats_seeding">
-        <a href="torrents.php?type=seeding&amp;userid={{ viewer.id }}">Up</a>:
-        <span class="stat tooltip" title="{{ viewer.uploadedSize|octet_size(5) }}">{{ viewer.uploadedSize|octet_size }}</span>
-    </li>
-    <li id="stats_leeching">
-        <a href="torrents.php?type=leeching&amp;userid={{ viewer.id }}">Down</a>:
-        <span class="stat tooltip" title="{{ viewer.downloadedSize|octet_size(5) }}">{{ viewer.downloadedSize|octet_size }}</span>
-    </li>
-    <li id="stats_ratio">
-        Ratio: <span class="stat">{{ ratio(viewer.uploadedSize, viewer.downloadedSize) }}</span>
-    </li>
-{% set required_ratio = viewer.requiredRatio %}
-{% if required_ratio > 0 %}
-    <li id="stats_required">
-        <a href="rules.php?p=ratio">Required</a>:
-        <span class="stat tooltip" title="{{ required_ratio|number_format(5) }}">{{ required_ratio|number_format(2) }}</span>
-    </li>
-{% endif %}
-{% if viewer.tokenCount %}
-    <li id="fl_tokens">
-        <a href="wiki.php?action=article&amp;id=57">Tokens</a>:
-        <span class="stat">
-            <a href="userhistory.php?action=token_history&amp;userid={{ viewer.id }}">{{ viewer.tokenCount|number_format }}</a>
-        </span>
-    </li>
-{% endif %}
 </ul>
 <ul id="userinfo_minor">
 {% for link in nav_links -%}
@@ -87,9 +51,8 @@
 <h4 class="hidden">Site Menu</h4>
 <ul>
 <li id="nav_index"{{    _self.active(document == 'index')    }}><a href="index.php">Home</a> </li>
-<li id="nav_torrents"{{ _self.active(document == 'torrents') }}><a href="torrents.php">Torrents</a> </li>
+<li id="nav_torrents"{{ _self.active(document == 'torrents') }}><a href="torrents.php">Releases</a> </li>
 <li id="nav_collages"{{ _self.active(document == 'collages') }}><a href="collages.php">Collages</a> </li>
-<li id="nav_requests"{{ _self.active(document == 'requests') }}><a href="requests.php">Requests</a> </li>
 <li id="nav_forums"{{   _self.active(document == 'forums')   }}><a href="forums.php">Forums</a> </li>
 <li id="nav_irc"{{      _self.active(document == 'chat')     }}><a href="chat.php">IRC</a> </li>
 <li id="nav_top10"{{    _self.active(document == 'top10')    }}><a href="top10.php">Top 10</a> </li>
@@ -101,15 +64,15 @@
 
 <div id="searchbars">
 <ul>
-<li id="searchbar_torrents">
-    <span class="hidden">Torrents: </span>
-    <form class="search_form" name="torrents" action="torrents.php" method="get">
+<li id="searchbar_releases">
+    <span class="hidden">Releases: </span>
+    <form class="search_form" name="releases" action="torrents.php" method="get">
 {% if viewer.option('SearchType') %}
         <input type="hidden" name="action" value="advanced" />
 {% endif %}
-        <input id="torrentssearch" value="Torrents" placeholder="Torrents" type="text" name="
+        <input id="releasessearch" value="Releases" placeholder="Releases" type="text" name="
             {%- if viewer.option('SearchType') %}groupname{% else %}searchstr{% endif -%}
-            " size="17" spellcheck="false" accesskey="t" />
+            " size="17" spellcheck="false" accesskey="r" />
     </form>
 </li>
 <li id="searchbar_artists">
@@ -128,30 +91,11 @@
             value="Collages" placeholder="Collages" type="text" name="search" size="17" spellcheck="false" accesskey="c" />
     </form>
 </li>
-<li id="searchbar_requests">
-    <span class="hidden">Requests: </span>
-    <form class="search_form" name="requests" action="requests.php" method="get">
-        <input id="requestssearch" value="Requests" placeholder="Requests" type="text" name="search" size="17" spellcheck="false" accesskey="r" />
-    </form>
-</li>
 <li id="searchbar_forums">
     <span class="hidden">Forums: </span>
     <form class="search_form" name="forums" action="forums.php" method="get">
         <input value="search" type="hidden" name="action" />
         <input id="forumssearch" value="Forums" placeholder="Forums" type="text" name="search" size="17" accesskey="f" />
-    </form>
-</li>
-<li id="searchbar_log">
-    <span class="hidden">Log: </span>
-    <form class="search_form" name="log" action="log.php" method="get">
-        <input id="logsearch" value="Log" placeholder="Log" type="text" name="search" size="17" accesskey="l" />
-    </form>
-</li>
-<li id="searchbar_users">
-    <span class="hidden">Users: </span>
-    <form class="search_form" name="users" action="user.php" method="get">
-        <input type="hidden" name="action" value="search" />
-        <input id="userssearch" value="Users" placeholder="Users" type="text" name="search" size="20" spellcheck="false" accesskey="u" />
     </form>
 </li>
 </ul>

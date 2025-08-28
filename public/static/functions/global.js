@@ -572,7 +572,7 @@ document.addEventListener('DOMContentLoaded', () => {
         serviceUrl: COLLAGE_AUTOCOMPLETE_URL,
     });
 
-    if (url.path == 'torrents' || url.path == 'upload' || url.path == 'artist' || (url.path == 'requests' && url.query['action'] == 'new') || url.path == 'collages') {
+    if (url.path == 'torrents' || url.path == 'upload' || url.path == 'artist' || url.path == 'collages') {
         $("#artist_0" + SELECTOR).autocomplete({
             deferRequestBy: 300,
             serviceUrl: ARTIST_AUTOCOMPLETE_URL
@@ -590,7 +590,7 @@ document.addEventListener('DOMContentLoaded', () => {
             serviceUrl: COLLAGE_AUTOCOMPLETE_URL + (url.path == 'artist' ? '&artist=1' : '')
         });
     }
-    if (url.path == 'torrents' || url.path == 'upload' || url.path == 'collages' || url.path == 'requests' || url.path == 'top10' || (url.path == 'requests' && url.query['action'] == 'new')) {
+    if (url.path == 'torrents' || url.path == 'upload' || url.path == 'collages' || url.path == 'top10') {
         $("#tags" + SELECTOR).autocomplete({
             deferRequestBy: 300,
             delimiter: ',',
@@ -603,8 +603,8 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // header search bar
-    $('#torrentssearch').focus(function () { if (this.value == 'Torrents') { this.value = ''; }});
-    $('#torrentssearch').blur(function () { if (this.value == '') { this.value = 'Torrents'; }});
+    $('#releasessearch').focus(function () { if (this.value == 'Releases') { this.value = ''; }});
+    $('#releasessearch').blur(function () { if (this.value == '') { this.value = 'Releases'; }});
 
     $('#artistsearch').focus(function () { if (this.value == 'Artists') { this.value = ''; }});
     $('#artistsearch').blur(function () { if (this.value == '') { this.value = 'Artists'; }});
@@ -612,15 +612,6 @@ document.addEventListener('DOMContentLoaded', () => {
     $('#collagesearch').focus(function () { if (this.value == 'Collages') { this.value = ''; }});
     $('#collagesearch').blur(function () { if (this.value == '') { this.value = 'Collages'; }});
 
-    $('#requestssearch').focus(function () { if (this.value == 'Requests') { this.value = ''; }});
-    $('#requestssearch').blur(function () { if (this.value == '') { this.value = 'Requests'; }});
-
     $('#forumssearch').focus(function () { if (this.value == 'Forums') { this.value = ''; }});
     $('#forumssearch').blur(function () { if (this.value == '') { this.value = 'Forums'; }});
-
-    $('#logsearch').focus(function () { if (this.value == 'Log') { this.value = ''; }});
-    $('#logsearch').blur(function () { if (this.value == '') { this.value = 'Log'; }});
-
-    $('#userssearch').focus(function () { if (this.value == 'Users') { this.value = ''; }});
-    $('#userssearch').blur(function () { if (this.value == '') { this.value = 'Users'; }});
 });
