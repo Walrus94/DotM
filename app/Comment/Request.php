@@ -2,12 +2,18 @@
 
 namespace Gazelle\Comment;
 
+/**
+ * Request Comments have been disabled for music catalog.
+ * All torrent-related request functionality has been removed.
+ */
 class Request extends AbstractComment {
     public function page(): string {
-        return 'requests';
+        // Request system disabled for music catalog
+        return 'disabled';
     }
 
     public function pageUrl(): string {
-        return "requests.php?action=view&id=";
+        // Request system disabled for music catalog
+        return "disabled";
     }
 }

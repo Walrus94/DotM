@@ -2,46 +2,40 @@
 
 namespace Gazelle\Stats;
 
+/**
+ * Request Stats have been disabled for music catalog.
+ * All torrent-related request functionality has been removed.
+ */
 class Request extends \Gazelle\Base {
     protected const CACHE_KEY = 'stats_req';
 
     protected array $info;
 
     public function flush(): static {
-        self::$cache->delete_value(self::CACHE_KEY);
-        unset($this->info);
+        // Request system disabled for music catalog
         return $this;
     }
 
     public function info(): array {
-        if (isset($this->info)) {
-            return $this->info;
-        }
-        $info = self::$cache->get_value(self::CACHE_KEY);
-        if ($info === false) {
-            $info = self::$db->rowAssoc("
-                SELECT count(*)                 AS total,
-                    sum(if(FillerID > 0, 1, 0)) AS filled
-                FROM requests
-            ");
-            $info['filled'] = (int)$info['filled'];
-            self::$cache->cache_value(self::CACHE_KEY, $info, 3600 + random_int(0, 300)); // a bit over an hour
-        }
-        $this->info = $info;
-        return $this->info;
+        // Request system disabled for music catalog
+        return [
+            'total' => 0,
+            'filled' => 0
+        ];
     }
 
     public function total(): int {
-        return $this->info()['total'];
+        // Request system disabled for music catalog
+        return 0;
     }
 
     public function filledTotal(): int {
-        return $this->info()['filled'];
+        // Request system disabled for music catalog
+        return 0;
     }
 
     public function filledPercent(): float {
-        return $this->total() > 0
-            ? $this->filledTotal() / $this->total() * 100
-            : 0.0;
+        // Request system disabled for music catalog
+        return 0.0;
     }
 }

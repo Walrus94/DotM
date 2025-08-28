@@ -939,20 +939,9 @@ class User extends \Gazelle\BaseManager {
     }
 
     public function demotionCriteria(): array {
-        return [
-            USER => [
-                'From' => [MEMBER, POWER, ELITE, TORRENT_MASTER, POWER_TM, ELITE_TM, ULTIMATE_TM],
-                'To' => USER,
-                'Ratio' => 0.65,
-                'Upload' => 0
-            ],
-            MEMBER => [
-                'From' => [POWER, ELITE, TORRENT_MASTER, POWER_TM, ELITE_TM, ULTIMATE_TM],
-                'To' => MEMBER,
-                'Ratio' => 0.95,
-                'Upload' => 25 * 1024 * 1024 * 1024
-            ],
-        ];
+        // Note: Demotion criteria based on torrent tracking (ratio, upload/download) have been removed
+        // for music catalog. This method now returns empty criteria.
+        return [];
     }
 
     public function promotionCriteria(): array {
@@ -1052,121 +1041,15 @@ class User extends \Gazelle\BaseManager {
     }
 
     public function promote(\Gazelle\Task|null $task = null, bool $commit = true): int {
-        $processed = 0;
-        foreach ($this->promotionCriteria() as $level) {
-            $fromClass = $this->userclassName($level['From']);
-            $toClass   = $this->userclassName($level['To']);
-            $query = "
-                SELECT um.ID
-                FROM users_main um
-                INNER JOIN users_leech_stats uls ON (uls.UserID = um.ID)
-                LEFT JOIN user_summary       us  ON (us.user_id = um.ID)
-                WHERE um.Enabled = ?
-                    AND um.PermissionID = ?
-                    AND uls.Uploaded + us.request_vote_size >= ?
-                    AND (uls.Downloaded = 0 OR uls.Uploaded / uls.Downloaded >= ?)
-                    AND um.created <= now() - INTERVAL ? WEEK
-                    AND coalesce(us.upload_total, 0) >= ?
-            ";
-            $args = [UserStatus::enabled->value, $level['From'], $level['MinUpload'], $level['MinRatio'], $level['Weeks'], $level['MinUploads']];
-
-            if (!empty($level['Extra'])) {
-                $query .= ' AND ' . implode(' AND ',
-                    array_map(function ($v) use (&$args) {
-                        $args[] = $v['Count'];
-                        return "{$v['Query']} >= ?";
-                    }, $level['Extra'])
-                );
-            }
-
-            self::$db->prepared_query($query, ...$args);
-            foreach (self::$db->collect(0, false) as $userId) {
-                $user = $this->findById($userId);
-                if (is_null($user) || (new \Gazelle\User\Warning($user))->isWarned()) {
-                    continue;
-                }
-                ++$processed;
-                $task?->debug("Promoting {$user->label()} from $fromClass to $toClass", $userId);
-                if (!$commit) {
-                    continue;
-                }
-
-                $user->setField('PermissionID', $level['To'])
-                    ->addStaffNote("Class changed to $toClass by System")
-                    ->modify();
-                $user->auditTrail()->addEvent(UserAuditEvent::userclass, "Promoted to $toClass");
-                $user->inbox()->createSystem(
-                    "You have been promoted to $toClass",
-                    "Congratulations on your promotion to $toClass!\n\nTo read more about "
-                        . SITE_NAME
-                        . "'s user classes, read [url=wiki.php?action=article&name=userclasses]this wiki article[/url]."
-                );
-            }
-        }
-        return $processed;
+        // Note: Promotion based on torrent tracking (ratio, upload/download) has been removed
+        // for music catalog. This method now returns 0 (no promotions).
+        return 0;
     }
 
     public function demote(\Gazelle\Task|null $task = null, bool $commit = true): int {
-        $processed = 0;
-        foreach (array_reverse($this->promotionCriteria()) as $level) {
-            $fromClass = $this->userclassName($level['To']);  // note: To/From are reversed
-            $toClass   = $this->userclassName($level['From']);
-            $task?->debug("Begin demoting users from $fromClass to $toClass");
-
-            $query = "
-                SELECT ID
-                FROM users_main um
-                INNER JOIN users_leech_stats uls ON (uls.UserID = um.ID)
-                LEFT JOIN user_summary       us  ON (us.user_id = um.ID)
-                WHERE um.Enabled = ?
-                    AND um.PermissionID = ?
-                    AND (
-                        uls.Uploaded + coalesce(us.request_vote_size, 0) < ?
-                        OR (? > 0 AND coalesce(us.upload_total, 0) < ?)
-            ";
-            $args = [
-                UserStatus::enabled->value,
-                $level['To'],
-                $level['MinUpload'],
-                $level['MinUploads'],
-                $level['MinUploads']
-            ];
-
-            if (!empty($level['Extra'])) {
-                $query .= ' OR NOT ' . implode(' AND ',
-                    array_map(function ($v) use (&$args) {
-                        $args[] = $v['Count'];
-                        return "{$v['Query']} >= ?";
-                    }, $level['Extra'])
-                );
-            }
-            $query .= ')';
-
-            self::$db->prepared_query($query, ...$args);
-            foreach (self::$db->collect('ID', false) as $userId) {
-                $user = $this->findById($userId);
-                if (is_null($user)) {
-                    continue;
-                }
-                ++$processed;
-                $task?->debug("Demoting {$user->label()} from $fromClass to $toClass", $userId);
-                if (!$commit) {
-                    continue;
-                }
-
-                $user->setField('PermissionID', $level['From'])
-                    ->addStaffNote("Class changed to $toClass by System")
-                    ->modify();
-                $user->auditTrail()->addEvent(UserAuditEvent::userclass, "Demoted to $toClass");
-                $user->inbox()->createSystem(
-                    "You have been demoted to $toClass",
-                    "You now only qualify for the \"$toClass\" user class.\n\nTo read more about "
-                        . SITE_NAME
-                        . "'s user classes, read [url=wiki.php?action=article&name=userclasses]this wiki article[/url]."
-                );
-            }
-        }
-        return $processed;
+        // Note: Demotion based on torrent tracking (ratio, upload/download) has been removed
+        // for music catalog. This method now returns 0 (no demotions).
+        return 0;
     }
 
     public function updateRatioRequirements(): int {

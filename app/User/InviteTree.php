@@ -59,26 +59,21 @@ class InviteTree extends \Gazelle\BaseUser {
                                             AS paranoid_last_seen,
                 um.Username                 AS username,
                 um.RequiredRatio            AS required_ratio,
-                if(ui.RatioWatchEnds IS NOT NULL
-                    AND ui.RatioWatchEnds < now()
-                    AND uls.Uploaded <= uls.Downloaded * um.RequiredRatio,
-                    1, 0)                   AS on_ratio_watch,
+                0 AS on_ratio_watch,
                 if(um.Enabled = '2', 1, 0)  AS disabled,
                 p.Name                      AS userclass,
                 p.Level                     AS userlevel,
-                uls.Uploaded                AS uploaded,
-                if(locate('s:10:\"uploaded\";', um.Paranoia) > 0, 1, 0)
-                                            AS paranoid_up,
-                uls.Downloaded              AS downloaded,
-                if(locate('s:10:\"downloaded\";', um.Paranoia) > 0, 1, 0)
-                                            AS paranoid_down,
+                0 AS uploaded,
+                0 AS paranoid_up,
+                0 AS downloaded,
+                0 AS paranoid_down,
                 if(ul.UserID IS NULL, 0, 1) AS donor,
                 r.depth                     AS depth
             FROM r
             INNER JOIN users_main um ON (um.ID = r.user_id)
             INNER JOIN users_info ui ON (um.ID = ui.UserID)
             INNER JOIN permissions p ON (p.ID = um.PermissionID)
-            INNER JOIN users_leech_stats uls ON (uls.UserID = um.ID)
+
             LEFT JOIN user_last_access ula ON (ula.user_id = um.ID)
             LEFT JOIN users_levels ul ON (
                 ul.UserID = um.ID

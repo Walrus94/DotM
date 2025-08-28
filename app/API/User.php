@@ -31,19 +31,17 @@ class User extends AbstractAPI {
                 um.Username,
                 um.Enabled,
                 um.IRCKey,
-                uls.Uploaded,
-                uls.Downloaded,
+                0 AS Uploaded,
+                0 AS Downloaded,
                 um.PermissionID AS Class,
                 um.Paranoia,
-                coalesce(ub.points, 0) as BonusPoints,
+                0 as BonusPoints,
                 p.Name as ClassName,
                 p.Level,
                 GROUP_CONCAT(ul.PermissionID SEPARATOR ',') AS SecondaryClasses
             FROM users_main AS um
-            INNER JOIN users_leech_stats AS uls ON (uls.UserID = um.ID)
             INNER JOIN permissions AS p ON (p.ID = um.PermissionID)
             LEFT JOIN users_levels AS ul ON (ul.UserID = um.ID)
-            LEFT JOIN user_bonus AS ub ON (ub.user_id = um.ID)
             WHERE $cond
             ", $arg
         );

@@ -8,13 +8,13 @@ class DataUpload extends \Gazelle\UserRank\AbstractUserRank {
     }
 
     public function selector(): string {
+        // Note: users_leech_stats table has been removed - upload stats are no longer tracked
+        // This method is deprecated and will always return empty result
         return "
-            SELECT greatest(uls.Uploaded - " . STARTING_UPLOAD . ", 0) AS n
+            SELECT 0 AS n
             FROM users_main um
-            INNER JOIN users_leech_stats AS uls ON (uls.UserID = um.ID)
             WHERE um.Enabled = '1'
-                AND uls.Uploaded > " . STARTING_UPLOAD . "
-            ORDER BY 1
+            LIMIT 1
         ";
     }
 }

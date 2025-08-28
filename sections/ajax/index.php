@@ -145,7 +145,8 @@ switch ($Action) {
         include_once 'usersearch.php';
         break;
     case 'requests':
-        include_once 'requests.php';
+         // Request system disabled for music catalog
+        json_error('Request system has been disabled for music catalog');
         break;
     case 'artist':
         include_once 'artist.php';
@@ -169,7 +170,8 @@ switch ($Action) {
         include_once 'announcements.php';
         break;
     case 'request':
-        include_once 'request.php';
+        // Request system disabled for music catalog
+        json_error('Request system has been disabled for music catalog');
         break;
     case 'loadavg':
         include_once 'loadavg.php';
@@ -248,7 +250,8 @@ switch ($Action) {
         include_once __DIR__ . '/../torrents/download.php';
         break;
     case 'request_fill':
-        json_print('success', include_once __DIR__ . '/../requests/fill_handle.php');
+        // Request system disabled for music catalog
+        json_error('Request system has been disabled for music catalog');
         break;
     case 'add_log':
         include_once __DIR__ . '/add_log.php';

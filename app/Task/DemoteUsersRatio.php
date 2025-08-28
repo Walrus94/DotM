@@ -4,10 +4,9 @@ namespace Gazelle\Task;
 
 class DemoteUsersRatio extends \Gazelle\Task {
     public function run(): void {
-        $userMan = new \Gazelle\Manager\User();
-        foreach ($userMan->demotionCriteria() as $criteria) {
-            $this->demote($criteria['To'], $criteria['Ratio'], $criteria['Upload'], $criteria['From'], $userMan);
-        }
+        // Note: This task is disabled as it depends on torrent-related functionality
+        // (users_leech_stats, ratio calculations, etc.) that has been removed for music catalog
+        $this->info("DemoteUsersRatio task disabled - torrent functionality removed", 0);
     }
 
     private function demote(int $newClass, float $ratio, int $upload, array $demoteClasses, \Gazelle\Manager\User $userMan): void {

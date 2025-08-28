@@ -32,21 +32,22 @@ class View {
         $activity->configure()
             ->setStaffPM($staffPmManager);
 
-        $notifier  = new Gazelle\User\Notification($Viewer);
+        // Note: Notification system disabled for music catalog - user_attr table removed
+        $notifier  = null;
         $module    = $Viewer->requestContext()->module();
-        $alertList = $notifier->setDocument($module, $_REQUEST['action'] ?? '')->alertList();
-        foreach ($alertList as $alert) {
-            if (in_array($alert->display(), [Gazelle\User\Notification::DISPLAY_TRADITIONAL, Gazelle\User\Notification::DISPLAY_TRADITIONAL_PUSH])) {
-                $activity->setAlert(sprintf('<a href="%s">%s</a>', $alert->notificationUrl(), $alert->title()));
-            }
-        }
+        $alertList = [];
+        // foreach ($alertList as $alert) {
+        //     if (in_array($alert->display(), [Gazelle\User\Notification::DISPLAY_TRADITIONAL, Gazelle\User\Notification::DISPLAY_TRADITIONAL_PUSH])) {
+        //         $activity->setAlert(sprintf('<a href="%s">%s</a>', $alert->notificationUrl(), $alert->title()));
+        //     }
+        // }
 
         $payMan = new Gazelle\Manager\Payment();
         if ($Viewer->permitted('users_mod')) {
             $raTypeMan = new Gazelle\Manager\ReportAutoType();
             $activity->setStaff(new Gazelle\Staff($Viewer))
                 ->setReport(new Gazelle\Stats\Report())
-                ->setPayment($payMan)
+                // Note: Payment system disabled for music catalog
                 ->setApplicant(new Gazelle\Manager\Applicant())
                 ->setDb(new Gazelle\DB())
                 ->setScheduler(new Gazelle\TaskScheduler())
@@ -58,11 +59,12 @@ class View {
                     )
                 );
 
-            $threshold = (new \Gazelle\Manager\SiteOption())
-                ->findValueByName('download-warning-threshold');
-            if ($threshold) {
-                $activity->setStats((int)$threshold, new Gazelle\Stats\Torrent());
-            }
+            // Note: Torrent stats disabled for music catalog
+            // $threshold = (new \Gazelle\Manager\SiteOption())
+            //     ->findValueByName('download-warning-threshold');
+            // if ($threshold) {
+            //     $activity->setStats((int)$threshold, new Gazelle\Stats\Torrent());
+            // }
 
             if (OPEN_EXTERNAL_REFERRALS) {
                 $activity->setReferral(new Gazelle\Manager\Referral());
@@ -131,14 +133,14 @@ class View {
             'scss_style'   => isset($option['css'])
                 ? array_map(fn($s) => "$s/style.css", explode(',', $option['css'])) : [],
             'stylesheet'   => new \Gazelle\User\Stylesheet($Viewer),
-            'use_noty'     => $notifier->useNoty(),
+            'use_noty'     => false, // Note: Notifications disabled for music catalog
             'viewer'       => $Viewer,
         ])
         . $Twig->render('index/page-header.twig', [
             'action'      => $_REQUEST['action'] ?? null,
             'action_list' => $activity->actionList(),
             'alert_list'  => $activity->alertList(),
-            'bonus'       => new Gazelle\User\Bonus($Viewer),
+            'bonus'       => null, // Note: Bonus system disabled for music catalog
             'document'    => $module,
             'dono_target' => $payMan->monthlyPercent(new Gazelle\Manager\Donation()),
             'nav_links'   => $navLinks,
@@ -191,18 +193,21 @@ class View {
             $launch = SITE_LAUNCH_YEAR . "-$launch";
         }
 
-        $alertList = (new Gazelle\User\Notification($Viewer))
-            ->setDocument(
-                $Viewer->requestContext()->module(),
-                $_REQUEST['action'] ?? ''
-            )
-            ->alertList();
+        // Note: Notification system disabled for music catalog - user_attr table removed
+        $alertList = [];
         $notification = [];
-        foreach ($alertList as $alert) {
-            if (in_array($alert->display(), [Gazelle\User\Notification::DISPLAY_POPUP, Gazelle\User\Notification::DISPLAY_POPUP_PUSH])) {
-                $notification[] = $alert;
-            }
-        }
+        // $alertList = (new Gazelle\User\Notification($Viewer))
+        //     ->setDocument(
+        //         $Viewer->requestContext()->module(),
+        //         $_REQUEST['action'] ?? ''
+        //     )
+        //     ->alertList();
+        // $notification = [];
+        // foreach ($alertList as $alert) {
+        //     if (in_array($alert->display(), [Gazelle\User\Notification::DISPLAY_POPUP, Gazelle\User\Notification::DISPLAY_POPUP_PUSH])) {
+        //         $notification[] = $alert;
+        //     }
+        // }
 
         global $Cache, $Debug, $SessionID;
         return $Twig->render('index/private-footer.twig', [

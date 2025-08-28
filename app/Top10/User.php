@@ -24,50 +24,8 @@ class User extends \Gazelle\Base {
     ];
 
     public function fetch(string $type, int $limit): array {
-        if (!array_key_exists($type, $this->sortMap)) {
-            return [];
-        }
-
-        $list = self::$cache->get_value(sprintf(self::CACHE_KEY, $type, $limit));
-        if ($list === false) {
-            $orderBy = $this->sortMap[$type];
-            self::$db->prepared_query("
-                SELECT
-                    um.ID                  AS id,
-                    um.created             AS created,
-                    uls.Uploaded           AS uploaded,
-                    uls.Downloaded         AS downloaded,
-                    coalesce(bs.Bounty, 0) AS request_votes,
-                    coalesce(bf.Fills, 0)  AS request_fills,
-                    abs(uls.Uploaded - ?) / (unix_timestamp() - unix_timestamp(um.created)) AS up_speed,
-                    uls.Downloaded / (unix_timestamp() - unix_timestamp(um.created))        AS down_speed,
-                    count(t.ID) AS num_uploads
-                FROM users_main AS um
-                INNER JOIN users_leech_stats AS uls ON (uls.UserID = um.ID)
-                LEFT JOIN torrents AS t ON (t.UserID = um.ID)
-                LEFT JOIN
-                (
-                    SELECT UserID, sum(Bounty) AS Bounty
-                    FROM requests_votes
-                    GROUP BY UserID
-                ) AS bs ON (bs.UserID = um.ID)
-                LEFT JOIN
-                (
-                    SELECT FillerID, count(*) AS Fills
-                    FROM requests
-                    GROUP BY FillerID
-                ) AS bf ON (bf.FillerID = um.ID)
-                WHERE um.Enabled = '1'
-                    AND (um.Paranoia IS NULL OR (um.Paranoia NOT LIKE '%\"uploaded\"%' AND um.Paranoia NOT LIKE '%\"downloaded\"%'))
-                GROUP BY um.ID
-                ORDER BY {$orderBy} DESC
-                LIMIT ?
-                ", STARTING_UPLOAD, $limit
-            );
-
-            $list = self::$db->to_array(false, MYSQLI_ASSOC, false);
-            self::$cache->cache_value(sprintf(self::CACHE_KEY, $type, $limit), $list, 3600 * 12);
-        }
-        return $list;
+        // Note: Most torrent-related functionality has been removed for music catalog
+        // This method is deprecated and will always return empty array
+        return [];
     }
 }

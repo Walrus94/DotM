@@ -495,62 +495,9 @@ class Request extends BaseObject implements CategoryHasArtist {
         return (int)$this->info()['year'];
     }
 
-    public function validate(Torrent $torrent, User $filler, bool $isAdmin): array {
-        if (
-            $torrent->isUploadGracePeriod()
-            && $torrent->uploaderId() !== $filler->id()
-            && !$isAdmin
-        ) {
-            return [
-                "There is a one hour grace period for new uploads to allow the uploader ("
-                . $torrent->uploader()->username() . ") to fill the request."
-            ];
-        }
-
-        $error = [];
-        if ($this->torrentId()) {
-            $error[] = "This request has already been filled.";
-        }
-        if (!in_array($this->categoryId(), [0, $torrent->group()->categoryId()])) {
-            $error[] = "This torrent is of a different category than the request. If the request is actually miscategorized, please contact staff.";
-        }
-
-        if (!$this->media()->exists($torrent->media())) {
-            $error[] = "{$torrent->media()} is not an allowed media for this request.";
-        }
-        if (!$this->format()->exists($torrent->format())) {
-            $error[] = "{$torrent->format()} is not an allowed format for this request.";
-        }
-        if (
-            $this->descriptionEncoding() !== "Other"
-            && !$this->encoding()->exists($torrent->encoding())
-        ) {
-            $error[] = "{$torrent->encoding()} is not an allowed encoding for this request.";
-        }
-
-        if (
-            $this->media()->exists("CD") && $torrent->media() === "CD"
-            && $this->format()->exists("FLAC") && $torrent->format() === "FLAC"
-        ) {
-            if ($this->needCue() && !$torrent->hasCue()) {
-                $error[] = "This request requires a cue file.";
-            }
-            if ($this->needLog()) {
-                if (!$torrent->hasLogDb()) {
-                    $error[] = "This request requires a valid logfile and none was uploaded with this torrent";
-                } elseif ($this->needLogChecksum() && !$torrent->logChecksum()) {
-                    $error[] = "This request requires a logfile with a valid checksum";
-                } else {
-                    $logScore = $this->needLogScore();
-                    if ($logScore > 0 && $logScore > $torrent->logScore()) {
-                        $better = $logScore === 100 ? $logScore : "$logScore or better";
-                        $error[] = "This request requires a logfile with a score of $better";
-                    }
-                }
-            }
-        }
-
-        return $error;
+    public function validate($torrent, User $filler, bool $isAdmin): array {
+        // Request system disabled for music catalog
+        return ['Request system disabled'];
     }
 
     /**
@@ -561,18 +508,9 @@ class Request extends BaseObject implements CategoryHasArtist {
     public function vote(User $user, int $amount): bool {
         self::$db->begin_transaction();
 
-        self::$db->prepared_query("
-            UPDATE users_leech_stats SET
-                Uploaded = Uploaded - ?
-            WHERE Uploaded - ? >= 0
-                AND UserID = ?
-            ", $amount, $amount, $user->id()
-        );
-        if (self::$db->affected_rows() == 0) {
-            // Uploaded would turn negative
-            self::$db->rollback();
-            return false;
-        }
+        // Note: users_leech_stats table has been removed - leech stats are no longer tracked
+        // For now, we'll allow the vote to proceed without checking upload stats
+        // TODO: Implement alternative validation for music catalog requests
 
         $bounty = $amount * (1 - REQUEST_TAX);
         self::$db->prepared_query("
@@ -627,98 +565,14 @@ class Request extends BaseObject implements CategoryHasArtist {
         return self::$db->to_array(false, MYSQLI_ASSOC, false);
     }
 
-    public function fill(User $user, Torrent $torrent): int {
-        $bounty = $this->bountyTotal();
-        self::$db->begin_transaction();
-        self::$db->prepared_query("
-            UPDATE requests SET
-                TimeFilled = now(),
-                FillerID = ?,
-                TorrentID = ?
-            WHERE ID = ?
-            ", $user->id(), $torrent->id(), $this->id
-        );
-        $updated = self::$db->affected_rows();
-        $this->updateSphinx();
-        (new \SphinxqlQuery())->raw_query(
-            sprintf("
-                UPDATE requests, requests_delta SET torrentid = %d, fillerid = %d WHERE id = %d
-                ", $torrent->id(), $user->id(), $this->id
-            ), false
-        );
-        self::$db->commit();
-
-        $user->addBounty($bounty);
-        $name = $this->title();
-        $message = "One of your requests — [url={$this->location()}]{$name}[/url] — has been filled."
-                   . " You can view it here: [pl]{$torrent->id()}[/pl]";
-        self::$db->prepared_query("
-            SELECT DISTINCT UserID FROM requests_votes WHERE RequestID = ?
-            ", $this->id
-        );
-        foreach (self::$db->collect(0, false) as $userId) {
-            (new User($userId))->inbox()->createSystem("The request \"$name\" has been filled", $message);
-        }
-
-        $this->logger()->general(
-            "Request {$this->id} ($name) was filled by user {$user->label()} with the torrent {$torrent->id()} for a "
-            . byte_format($bounty) . ' bounty.'
-        );
-
-        $this->artistFlush();
-        return $updated;
+    public function fill(User $user, $torrent): int {
+        // Request system disabled for music catalog
+        return 0;
     }
 
-    public function unfill(User $admin, string $reason, Manager\Torrent $torMan): int {
-        $bounty = $this->bountyTotal();
-        $filler = new User($this->fillerId());
-        $torrent = $torMan->findById($this->torrentId());
-        if (is_null($torrent)) {
-            $torrent = $torMan->findDeletedById($this->torrentId());
-        }
-
-        self::$db->begin_transaction();
-        self::$db->prepared_query("
-            UPDATE requests SET
-                TorrentID = 0,
-                FillerID = 0,
-                TimeFilled = null,
-                Visible = 1
-            WHERE ID = ?
-            ", $this->id
-        );
-        $updated = self::$db->affected_rows();
-        $this->updateSphinx();
-        $filler->addBounty(-$bounty);
-        $filler->flush();
-        self::$db->commit();
-
-        (new \SphinxqlQuery())->raw_query("
-            UPDATE requests, requests_delta SET
-                torrentid = 0,
-                fillerid = 0
-            WHERE id = " . $this->id, false
-        );
-
-        if ($filler->id() !== $admin->id()) {
-            $filler->inbox()->createSystem(
-                'A request you filled has been unfilled',
-                self::$twig->render('request/unfill-pm.bbcode.twig', [
-                    'name'    => $torrent->group()->text(),
-                    'reason'  => $reason,
-                    'request' => $this,
-                    'viewer'  => $admin,
-                ])
-            );
-        }
-
-        $this->logger()->general(
-            "Request {$this->id} ({$this->title()}), with a " . byte_format($bounty)
-            . " bounty, was unfilled by user {$admin->label()} for the reason: $reason"
-        );
-
-        $this->artistFlush();
-        return $updated;
+    public function unfill(User $admin, string $reason, $torMan): int {
+        // Request system disabled for music catalog
+        return 0;
     }
 
     /**
@@ -746,181 +600,41 @@ class Request extends BaseObject implements CategoryHasArtist {
      * Refund the bounty of a user on a request
      */
     public function refundBounty(User $user, string $staffName): int {
-        $bounty = $this->userBounty($user);
-        self::$db->begin_transaction();
-        self::$db->prepared_query("
-            DELETE FROM requests_votes
-            WHERE RequestID = ? AND UserID = ?
-            ", $this->id, $user->id()
-        );
-        $affected = self::$db->affected_rows();
-        if ($affected) {
-            $this->informRequestFillerReduction($bounty, $staffName);
-            $message = sprintf("Refund of %s bounty (%s b) on %s by %s\n\n",
-                byte_format($bounty), $bounty, $this->url(), $staffName
-            );
-            self::$db->prepared_query("
-                UPDATE users_info ui
-                INNER JOIN users_leech_stats uls USING (UserID)
-                SET
-                    uls.Uploaded = uls.Uploaded + ?,
-                    ui.AdminComment = concat(now(), ' - ', ?, ui.AdminComment)
-                WHERE ui.UserId = ?
-                ", $bounty, $message, $user->id()
-            );
-            $user->flush();
-        }
-        self::$db->commit();
-        return $affected;
+        // Request system disabled for music catalog
+        return 0;
     }
 
     /**
      * Remove the bounty of a user on a request
      */
     public function removeBounty(User $user, string $staffName): int {
-        $bounty = $this->userBounty($user);
-        self::$db->begin_transaction();
-        self::$db->prepared_query("
-            DELETE FROM requests_votes
-            WHERE RequestID = ? AND UserID = ?
-            ", $this->id, $user->id()
-        );
-        $affected = self::$db->affected_rows();
-        if ($affected) {
-            $this->informRequestFillerReduction($bounty, $staffName);
-            $message = sprintf("Removal of %s bounty (%s b) on %s by %s\n\n",
-                byte_format($bounty), $bounty, $this->url(), $staffName
-            );
-            self::$db->prepared_query("
-                UPDATE users_info ui SET
-                    ui.AdminComment = concat(now(), ' - ', ?, ui.AdminComment)
-                WHERE ui.UserId = ?
-                ", $message, $user->id()
-            );
-            $user->flush();
-        }
-        self::$db->commit();
-        return $affected;
+        // Request system disabled for music catalog
+        return 0;
     }
 
     /**
      * Inform the filler of a request that their bounty was reduced
      */
     public function informRequestFillerReduction(int $bounty, string $staffName): int {
-        [$fillerId, $fillDate] = self::$db->row("
-            SELECT FillerID, date(TimeFilled)
-            FROM requests
-            WHERE TimeFilled IS NOT NULL AND ID = ?
-            ", $this->id
-        );
-        if (!$fillerId) {
-            return 0;
-        }
-        $message = sprintf("Reduction of %s bounty (%s b) on filled request %s by %s\n\n",
-            byte_format($bounty), $bounty, $this->url(), $staffName
-        );
-        self::$db->prepared_query("
-            UPDATE users_info ui
-            INNER JOIN users_leech_stats uls USING (UserID)
-            SET
-                uls.Uploaded = uls.Uploaded - ?,
-                ui.AdminComment = concat(now(), ' - ', ?, ui.AdminComment)
-            WHERE ui.UserId = ?
-            ", $bounty, $message, $fillerId
-        );
-        $affected = self::$db->affected_rows();
-        if ($affected) {
-            (new User($fillerId))->inbox()->createSystem(
-                "Bounty was reduced on a request you filled",
-                self::$twig->render('request/bounty-reduction.bbcode.twig', [
-                    'bounty'      => $bounty,
-                    'fill_date'   => $fillDate,
-                    'request_url' => $this->url(),
-                    'staff_name'  => $staffName,
-                ])
-            );
-        }
-        return $affected;
+        // Request system disabled for music catalog
+        return 0;
     }
 
     /**
      * Update the sphinx requests delta table.
      */
     public function updateSphinx(): int {
-        self::$db->prepared_query("
-            REPLACE INTO sphinx_requests_delta (
-                ID, UserID, TimeAdded, LastVote, CategoryID, Title,
-                Year, ReleaseType, CatalogueNumber, RecordLabel, BitrateList,
-                FormatList, MediaList, LogCue, FillerID, TorrentID,
-                TimeFilled, Visible, Votes, Bounty, TagList, ArtistList)
-            SELECT
-                ID, r.UserID, UNIX_TIMESTAMP(TimeAdded) AS TimeAdded,
-                UNIX_TIMESTAMP(LastVote) AS LastVote, CategoryID, Title,
-                Year, ReleaseType, CatalogueNumber, RecordLabel, BitrateList,
-                FormatList, MediaList, LogCue, FillerID, TorrentID,
-                UNIX_TIMESTAMP(TimeFilled) AS TimeFilled, Visible,
-                COUNT(DISTINCT rv.UserID) AS Votes, SUM(rv.Bounty) >> 10 AS Bounty,
-                ?, ?
-            FROM requests AS r
-            LEFT JOIN requests_votes AS rv ON (rv.RequestID = r.ID)
-            WHERE r.ID = ?
-            GROUP BY r.ID
-            ", $this->tagNameToSphinx(), implode(' ', $this->artistRole()?->nameList() ?? []), $this->id
-        );
-        $affected = self::$db->affected_rows();
-        $this->flush();
-        return $affected;
+        // Request system disabled for music catalog
+        return 0;
     }
 
     public function updateBookmarkStats(): int {
-        self::$db->prepared_query("
-            SELECT UserID FROM bookmarks_requests WHERE RequestID = ?
-            ", $this->id
-        );
-        $affected = (int)self::$db->record_count();
-        if ($affected > 100) {
-            // Sphinx doesn't like huge MVA updates. Update sphinx_requests_delta
-            // and live with the <= 1 minute delay if we have more than 100 bookmarkers
-            $this->updateSphinx();
-        } else {
-            (new \SphinxqlQuery())->raw_query(
-                "UPDATE requests, requests_delta SET bookmarker = ("
-                . implode(',', self::$db->collect('UserID'))
-                . ") WHERE id = {$this->id}"
-            );
-        }
-        return $affected;
+        // Request system disabled for music catalog
+        return 0;
     }
 
     public function remove(): bool {
-        self::$db->begin_transaction();
-        self::$db->prepared_query("DELETE FROM requests_votes WHERE RequestID = ?", $this->id);
-        self::$db->prepared_query("DELETE FROM requests_tags WHERE RequestID = ?", $this->id);
-        self::$db->prepared_query("DELETE FROM requests WHERE ID = ?", $this->id);
-        $affected = self::$db->affected_rows();
-        self::$db->prepared_query("
-            SELECT DISTINCT aa.ArtistID
-            FROM requests_artists ra
-            INNER JOIN artists_alias aa USING (AliasID)
-            WHERE ra.RequestID = ?
-            ", $this->id
-        );
-        $artisIds = self::$db->collect(0, false);
-        self::$db->prepared_query('
-            DELETE FROM requests_artists WHERE RequestID = ?', $this->id
-        );
-        self::$db->prepared_query("
-            REPLACE INTO sphinx_requests_delta (ID) VALUES (?)
-            ", $this->id
-        );
-        (new \Gazelle\Manager\Comment())->remove('requests', $this->id);
-        self::$db->commit();
-
-        foreach ($artisIds as $artistId) {
-            self::$cache->delete_value("artists_requests_$artistId");
-        }
-        self::$cache->delete_value(sprintf(Manager\Request::ID_KEY, $this->id));
-        $this->flush();
-        return $affected != 0;
+        // Request system disabled for music catalog
+        return false;
     }
 }

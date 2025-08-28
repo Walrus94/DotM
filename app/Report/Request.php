@@ -2,6 +2,10 @@
 
 namespace Gazelle\Report;
 
+/**
+ * Request Reports have been disabled for music catalog.
+ * All torrent-related request functionality has been removed.
+ */
 class Request extends AbstractReport {
     protected bool $isUpdate = false;
 
@@ -11,28 +15,33 @@ class Request extends AbstractReport {
     ) {}
 
     public function template(): string {
-        return $this->isUpdate ? 'report/request-update.twig' : 'report/request.twig';
+        // Request system disabled for music catalog
+        return 'report/disabled.twig';
     }
 
     public function bbLink(): string {
-        return "the request [url={$this->subject->url()}]" . display_str($this->subject->title()) . '[/url]';
+        // Request system disabled for music catalog
+        return "the request [disabled]Request system disabled[/disabled]";
     }
 
     public function titlePrefix(): string {
-        return 'Request Report: ';
+        // Request system disabled for music catalog
+        return 'Request System Disabled: ';
     }
 
     public function title(): string {
-        return $this->subject->title();
+        // Request system disabled for music catalog
+        return 'Request system has been disabled for music catalog';
     }
 
     public function isUpdate(bool $isUpdate): static {
-        $this->isUpdate = $isUpdate;
+        // Request system disabled for music catalog
+        $this->isUpdate = false;
         return $this;
     }
 
     public function needReason(): bool {
-        /* Don't need to show the report reason for request updates */
-        return !$this->isUpdate;
+        // Request system disabled for music catalog
+        return false;
     }
 }

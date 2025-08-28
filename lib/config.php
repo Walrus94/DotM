@@ -82,7 +82,6 @@ defined('SERVER_ROOT') or define('SERVER_ROOT', '/var/www');
 // production files are, set the path here. The only reason that this is
 // still needed is if you are storing riplogs in the document root and
 // serving them directly. On a new installation this may be left as-is.
-defined('SERVER_ROOT') or define('SERVER_ROOT', '/var/www');
 defined('SERVER_ROOT_LIVE') or define('SERVER_ROOT_LIVE', SERVER_ROOT);
 
 // System account used to generate Editing Requests.
@@ -349,8 +348,8 @@ defined('IRC_CHAN') or define('IRC_CHAN', '#mygazelle');
 // Channel announcing new uploads
 defined('IRC_CHAN_ANNOUNCE') or define('IRC_CHAN_ANNOUNCE', '#announce');
 
-// Channel announcing new requests
-defined('IRC_CHAN_REQUEST') or define('IRC_CHAN_REQUEST', '#requests');
+// Channel announcing new requests - DISABLED for music catalog
+// defined('IRC_CHAN_REQUEST') or define('IRC_CHAN_REQUEST', '#requests');
 
 // Public channel for inactive users, login problems and similar
 defined('IRC_CHAN_BLOCKED') or define('IRC_CHAN_BLOCKED', '#blocked');
@@ -496,11 +495,11 @@ defined('NEUTRAL_LEECH_THRESHOLD') or define('NEUTRAL_LEECH_THRESHOLD', 1024);
 // are suspended?
 defined('RATIO_GAMBLE') or define('RATIO_GAMBLE', 10 * 1024 ** 3); // 10 GiB
 
-// How much buffer does a request vote represent?
-defined('REQUEST_MIN') or define('REQUEST_MIN', 100); // in MiB
+// How much buffer does a request vote represent? - DISABLED for music catalog
+// defined('REQUEST_MIN') or define('REQUEST_MIN', 100); // in MiB
 
-// How much request buffer is removed as tax? (0 = none, 0.1 = 10%, 0.25 = 25% and so on).
-defined('REQUEST_TAX') or define('REQUEST_TAX', 0.0);
+// How much request buffer is removed as tax? - DISABLED for music catalog
+// defined('REQUEST_TAX') or define('REQUEST_TAX', 0.0);
 
 // Retain this many days of hourly snapshots.
 defined('DELETE_USER_STATS_DAILY_DAY') or define('DELETE_USER_STATS_DAILY_DAY', 15);
@@ -576,9 +575,9 @@ defined('RANKING_WEIGHT') or define('RANKING_WEIGHT', [
     'uploaded'   => [ 8, 'DataUpload'],
     'downloaded' => [20, 'DataDownload'],
     'uploads'    => [25, 'Uploads'],
-    'requests'   => [10, 'RequestsFilled'],
+            // 'requests'   => [10, 'RequestsFilled'], // DISABLED for music catalog
     'posts'      => [ 3, 'ForumPosts'],
-    'bounty'     => [ 4, 'BountySpent'],
+            // 'bounty'     => [ 4, 'BountySpent'], // DISABLED for music catalog
     'artists'    => [ 1, 'ArtistsAdded'],
     'collage'    => [ 5, 'CollageContribution'],
     'votes'      => [ 5, 'ReleaseVotes'],
@@ -610,11 +609,11 @@ defined('IGNORE_PAGE_MAX_MEMORY') or define('IGNORE_PAGE_MAX_MEMORY', ['artist',
 // Do not report these pages for being slow
 defined('IGNORE_PAGE_MAX_TIME') or define('IGNORE_PAGE_MAX_TIME', ['top10']);
 
-// How many days to wait until a never active torrent can be requested for reseed
-defined('RESEED_NEVER_ACTIVE_TORRENT') or define('RESEED_NEVER_ACTIVE_TORRENT', 3);
+// How many days to wait until a never active torrent can be requested for reseed - DISABLED for music catalog
+// defined('RESEED_NEVER_ACTIVE_TORRENT') or define('RESEED_NEVER_ACTIVE_TORRENT', 3);
 
-// How many days to wait until a previously active torrent can be requested for reseed
-defined('RESEED_TORRENT') or define('RESEED_TORRENT', 14);
+// How many days to wait until a previously active torrent can be requested for reseed - DISABLED for music catalog
+// defined('RESEED_TORRENT') or define('RESEED_TORRENT', 14);
 
 // Where are the Twig templates found (relative to the root directory)
 defined('TEMPLATE_PATH') or define('TEMPLATE_PATH', 'templates/');
@@ -714,7 +713,7 @@ defined('MESSAGES_PER_PAGE')         or define('MESSAGES_PER_PAGE', 25);
 defined('PEERS_PER_PAGE')            or define('PEERS_PER_PAGE', 100);
 defined('POSTS_PER_PAGE')            or define('POSTS_PER_PAGE', 25);
 defined('REPORTS_PER_PAGE')          or define('REPORTS_PER_PAGE', 10);
-defined('REQUESTS_PER_PAGE')         or define('REQUESTS_PER_PAGE', 25);
+// defined('REQUESTS_PER_PAGE')         or define('REQUESTS_PER_PAGE', 25); // DISABLED for music catalog
 defined('TOPICS_PER_PAGE')           or define('TOPICS_PER_PAGE', 50);
 defined('TORRENTS_PER_PAGE')         or define('TORRENTS_PER_PAGE', 50);
 defined('TORRENT_COMMENTS_PER_PAGE') or define('TORRENT_COMMENTS_PER_PAGE', 10);
@@ -768,8 +767,8 @@ defined('RECOVERY_MAPPING_TABLE') or define('RECOVERY_MAPPING_TABLE', 'users_' .
 // Which table stores proof about prior IRC users?
 defined('RECOVERY_IRC_TABLE') or define('RECOVERY_IRC_TABLE', 'users_' . RECOVERY_DB . '_irc');
 
-// Are recovery requests that validate correctly automatically accepted?
-defined('RECOVERY_AUTOVALIDATE') or define('RECOVERY_AUTOVALIDATE', true);
+// Are recovery requests that validate correctly automatically accepted? - DISABLED for music catalog
+// defined('RECOVERY_AUTOVALIDATE') or define('RECOVERY_AUTOVALIDATE', true);
 
 // How many validations are performed per scheduled run?
 defined('RECOVERY_AUTOVALIDATE_LIMIT') or define('RECOVERY_AUTOVALIDATE_LIMIT', 20);
@@ -818,8 +817,8 @@ defined('DONOR_FORUM') or define('DONOR_FORUM', 70);
 // Where Announcements are sent.
 defined('ANNOUNCEMENT_FORUM_ID') or define('ANNOUNCEMENT_FORUM_ID', 12);
 
-// Where Edit Requests are sent.
-defined('EDITING_FORUM_ID') or define('EDITING_FORUM_ID', 34);
+// Where Edit Requests are sent. - DISABLED for music catalog
+// defined('EDITING_FORUM_ID') or define('EDITING_FORUM_ID', 34);
 
 // Staff forum (for polls that display the names of voters).
 defined('STAFF_FORUM_ID') or define('STAFF_FORUM_ID', 5);
@@ -1094,7 +1093,7 @@ defined('CACHE_NAMESPACE') or define('CACHE_NAMESPACE', [
         'a2' => 'artist_comments_%d',
         'a3' => 'artist_comments_%d_catalogue_0',
         'a5' => 'artists_collages_%d',
-        'a6' => 'artists_requests_%d',
+        // 'a6' => 'artists_requests_%d', // DISABLED for music catalog
         'a7' => 'similar_positions_%d',
     ],
     'collage' => [

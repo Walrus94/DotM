@@ -4,6 +4,14 @@ use Phinx\Migration\AbstractMigration;
 
 class TorrentAttrRevamp extends AbstractMigration {
     public function up(): void {
+        // Drop foreign key constraints that reference torrents table first
+        $this->execute("ALTER TABLE ratelimit_torrent DROP FOREIGN KEY ratelimit_torrent_ibfk_2");
+        $this->execute("ALTER TABLE torrent_has_attr DROP FOREIGN KEY torrent_has_attr_ibfk_2");
+        $this->execute("ALTER TABLE torrent_unseeded_claim DROP FOREIGN KEY torrent_unseeded_claim_ibfk_1");
+        $this->execute("ALTER TABLE torrents_leech_stats DROP FOREIGN KEY torrents_leech_stats_ibfk_1");
+        $this->execute("ALTER TABLE torrent_unseeded DROP FOREIGN KEY torrent_unseeded_ibfk_1");
+        $this->execute("ALTER TABLE users_downloads DROP FOREIGN KEY users_downloads_ibfk_1");
+        
         $this->table('torrent_has_attr')
             ->addColumn('UserID', 'integer', ['null' => true])
             ->addColumn('created', 'datetime', ['default' => 'CURRENT_TIMESTAMP'])
@@ -50,6 +58,14 @@ class TorrentAttrRevamp extends AbstractMigration {
             $this->table("torrents_{$row['Name']}")->drop()->save();
             $this->table("deleted_torrents_{$row['Name']}")->drop()->save();
         }
+        
+        // Drop other torrent-related tables that are no longer needed for music catalog
+        $this->table('ratelimit_torrent')->drop()->save();
+        $this->table('torrent_has_attr')->drop()->save();
+        $this->table('torrent_unseeded_claim')->drop()->save();
+        $this->table('torrents_leech_stats')->drop()->save();
+        $this->table('torrent_unseeded')->drop()->save();
+        $this->table('users_downloads')->drop()->save();
     }
 
     public function down(): void {

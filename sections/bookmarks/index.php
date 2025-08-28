@@ -37,8 +37,8 @@ switch ($_REQUEST['action'] ?? 'view') {
                 include_once __DIR__ . '/../collages/browse.php';
                 break;
             case 'requests':
-                $_GET['type'] = 'bookmarks';
-                include_once __DIR__ . '/../requests/requests.php';
+                // Request system disabled for music catalog
+                error('Request system has been disabled for music catalog');
                 break;
             default:
                 error(404);

@@ -193,14 +193,6 @@ class UserCreator extends Base {
 
         // Create the remaining rows in auxilliary tables
         self::$db->prepared_query("
-            INSERT INTO user_bonus (user_id) VALUES (?)
-            ", $this->id
-        );
-        self::$db->prepared_query("
-            INSERT INTO user_flt (user_id) VALUES (?)
-            ", $this->id
-        );
-        self::$db->prepared_query("
             INSERT INTO user_summary (user_id) VALUES (?)
             ", $this->id
         );
@@ -213,10 +205,6 @@ class UserCreator extends Base {
         self::$db->prepared_query("
             INSERT INTO users_history_ips (UserID, IP) VALUES (?, ?)
             ", $this->id, $ipaddr
-        );
-        self::$db->prepared_query("
-            INSERT INTO users_leech_stats (UserID, Uploaded) VALUES (?, ?)
-            ", $this->id, STARTING_UPLOAD
         );
         foreach (NotificationType::cases() as $attr) {
             $attr = strtolower($attr->toString());

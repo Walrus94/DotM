@@ -2,6 +2,10 @@
 
 namespace Gazelle\Search;
 
+/**
+ * Request Search has been disabled for music catalog.
+ * All torrent-related request functionality has been removed.
+ */
 class Request extends \Gazelle\Base {
     protected bool $negate;
     protected int $total;
@@ -23,319 +27,135 @@ class Request extends \Gazelle\Base {
     }
 
     public function isBookmarkView(): bool {
-        return isset($this->bookmarkerId);
+        // Request system disabled for music catalog
+        return false;
     }
 
     public function setBookmarker(\Gazelle\User $user): static {
-        $this->text         = "{$user->username()} › Bookmarked requests";
-        $this->title        = "{$user->link()} › Bookmarked requests";
-        $this->bookmarkerId = $user->id();
+        // Request system disabled for music catalog
+        $this->text = "Request system disabled";
+        $this->title = "Request system disabled";
+        $this->bookmarkerId = 0;
         return $this;
     }
 
     public function setCategory(array $categoryList): static {
-        if (in_array(count($categoryList), [0, count(CATEGORY)])) {
-            return $this;
-        }
-        $term = [];
-        foreach ($categoryList as $idx) {
-            if (isset(CATEGORY[$idx])) {
-                $term[] = $idx + 1;
-            }
-        }
-        if ($term) {
-            $this->sphinxq->where('categoryid', $term);
-        }
+        // Request system disabled for music catalog
         return $this;
     }
 
     public function setCreator(\Gazelle\User $user): static {
-        $this->text = "{$user->username()} › Requests created";
-        $this->title = "{$user->link()} › Requests created";
-        $this->sphinxq->where('userid', $user->id());
+        // Request system disabled for music catalog
+        $this->text = "Request system disabled";
+        $this->title = "Request system disabled";
         return $this;
     }
 
     public function setFiller(\Gazelle\User $user): static {
-        $this->text = "{$user->username()} › Requests filled";
-        $this->title = "{$user->link()} › Requests filled";
-        $this->sphinxq->where('fillerid', $user->id());
+        // Request system disabled for music catalog
+        $this->text = "Request system disabled";
+        $this->title = "Request system disabled";
         return $this;
     }
 
     public function setEncoding(array $encodingList, bool $strict): static {
-        if (in_array(count($encodingList), [0, count(ENCODING)])) {
-            return $this;
-        }
-        [$args, $term] = $this->setResourceFilter(ENCODING, $encodingList, $strict);
-        $this->encodingList = $args;
-        $this->negate      = true;
-        $this->sphinxq->where_match(implode(' ', $term), 'bitratelist', false);
+        // Request system disabled for music catalog
+        $this->encodingList = [];
+        $this->negate = false;
         return $this;
     }
 
     public function setFormat(array $formatList, bool $strict): static {
-        if (in_array(count($formatList), [0, count(FORMAT)])) {
-            return $this;
-        }
-        [$args, $term] = $this->setResourceFilter(FORMAT, $formatList, $strict);
-        $this->formatList = $args;
-        $this->negate     = true;
-        $this->sphinxq->where_match(implode(' ', $term), 'formatlist', false);
+        // Request system disabled for music catalog
+        $this->formatList = [];
+        $this->negate = false;
         return $this;
     }
 
     public function setMedia(array $mediaList, bool $strict): static {
-        if (in_array(count($mediaList), [0, count(MEDIA)])) {
-            return $this;
-        }
-        [$args, $term] = $this->setResourceFilter(MEDIA, $mediaList, $strict);
-        $this->mediaList = $args;
-        $this->negate    = true;
-        $this->sphinxq->where_match(implode(' ', $term), 'medialist', false);
+        // Request system disabled for music catalog
+        $this->mediaList = [];
+        $this->negate = false;
         return $this;
     }
 
-    /**
-     * @return array<array>
-     */
-    protected function setResourceFilter(array $source, array $selected, bool $strict): array {
-        $args = [];
-        $term = [];
-        if (!$strict) {
-            $term[] = 'any';
-        }
-        foreach ($source as $idx => $value) {
-            if (in_array($idx, $selected)) {
-                $args[] = $idx;
-                $term[] = strtolower($value);
-            }
-        }
-        $term = [
-            '(',
-            implode(
-                ' | ',
-                array_map(fn ($t) => "\"$t\"", $term)
-            ),
-            ')'
-        ];
-        if ($strict) {
-            foreach ($source as $idx => $value) {
-                if (!in_array($idx, $selected)) {
-                    $term[] = '-"' . strtolower($value) . '"';
-                }
-            }
-        }
-        return [$args, $term];
-    }
-
-    public function setReleaseType(array $releaseTypeList, array $allReleaseType): static {
-        if (in_array(count($releaseTypeList), [0, count($allReleaseType)])) {
-            return $this;
-        }
-        $term = [];
-        foreach ($releaseTypeList as $idx) {
-            if (isset($allReleaseType[$idx])) {
-                $term[] = $idx;
-            }
-        }
-        if ($term) {
-            $this->releaseTypeList = $term;
-            $this->sphinxq->where('releasetype', $term);
-        }
+    public function setReleaseType(array $releaseTypeList, bool $strict): static {
+        // Request system disabled for music catalog
+        $this->releaseTypeList = [];
         return $this;
     }
 
-    public function setRequestor(int $requestor): static {
-        $this->sphinxq->where('userid', $requestor);
-        return $this;
-    }
-
-    public function setTag(string $tagList, string $tagMode): static {
-        $tagList = str_replace('.', '_', trim($tagList));
-        if ($tagList === '') {
-            return $this;
-        }
-        $include = [];
-        $exclude = [];
-        $split = preg_split('/\s*,\s*/', $tagList);
-        if ($split === false) {
-            return $this;
-        }
-        foreach ($split as $tag) {
-            if (preg_match('/^(![^!]+)$/', $tag, $match)) {
-                $exclude[] = $match[1];
-            } else {
-                $include[] = $tag;
-                $this->negate = true;
-            }
-        }
-        $filter = (new \Gazelle\Manager\Tag())->sphinxFilter(['include' => $include, 'exclude' => $exclude], $this->negate, $tagMode === 'all');
-        $this->tagList = $filter['input'];
-        if ($filter['predicate']) {
-            $this->sphinxq->where_match($filter['predicate'], 'taglist', false);
-        }
+    public function setTags(array $tagList, bool $strict): static {
+        // Request system disabled for music catalog
+        $this->tagList = '';
         return $this;
     }
 
     public function setText(string $text): static {
-        $text = trim($text);
-        if ($text === '') {
-            return $this;
-        }
-        $include = [];
-        $exclude = [];
-        $nrTerms = 0;
-        $split = preg_split('/\s+/', $text);
-        if ($split === false) {
-            return $this;
-        }
-        foreach ($split as $term) {
-            // Skip isolated hyphens to enable "Artist - Title" searches
-            if (in_array($term, ['-', '–'])) {
-                continue;
-            }
-            ++$nrTerms;
-            if (preg_match('/^!([^!]+)$/', $term, $match)) {
-                $exclude[] = '!' . \Sphinxql::sph_escape_string($match[1]);
-            } else {
-                $include[] = \Sphinxql::sph_escape_string($term);
-                $this->negate = true;
-            }
-        }
-        if ($nrTerms === 0) {
-            return $this;
-        }
-
-        $queryTerm = $include;
-        if (isset($this->negate) && $exclude) {
-            $queryTerm = [...$queryTerm, ...$exclude];
-        }
-        if ($queryTerm) {
-            $this->sphinxq->where_match(implode(' ', $queryTerm), '*', false);
-        }
-        return $this;
-    }
-
-    public function setVisible(bool $truth): static {
-        $this->sphinxq->where('visible', (int)$truth);
-        return $this;
-    }
-
-    public function setVoter(\Gazelle\User $user): static {
-        $this->text = "{$user->username()} › Requests voted on";
-        $this->title = "{$user->link()} › Requests voted on";
-        $this->sphinxq->where('voter', $user->id());
+        // Request system disabled for music catalog
+        $this->text = "Request system disabled";
         return $this;
     }
 
     public function setYear(int $year): static {
-        $this->sphinxq->where('year', $year);
+        // Request system disabled for music catalog
         return $this;
     }
 
-    public function showUnfilled(): static {
-        $this->sphinxq->where('torrentid', 0);
-        return $this;
-    }
-
-    public function limit(int $offset, int $limit, int $end): static {
-        $this->sphinxq->limit($offset, $limit, $end);
+    public function setLimit(int $limit, int $offset): static {
+        // Request system disabled for music catalog
         return $this;
     }
 
     public function execute(string $orderBy, string $direction): int {
-        if (isset($this->bookmarkerId)) {
-            switch ($orderBy) {
-                case 'bounty':
-                    $needVoteTable = true;
-                    $orderBy       = 'sum(rv.Bounty)';
-                    break;
-                case 'filled':
-                    $needVoteTable = false;
-                    $orderBy       = 'if(r.TorrentID = 0, 1, 0)';
-                    break;
-                case 'lastvote':
-                    $needVoteTable = false;
-                    $orderBy       = 'r.LastVote';
-                    break;
-                case 'votes':
-                    $needVoteTable = true;
-                    $orderBy       = 'count(rv.RequestID)';
-                    break;
-                default:
-                    $needVoteTable = false;
-                    $orderBy       = 'br.Time';
-                    break;
-            }
-            if ($needVoteTable) {
-                $voteJoin = 'INNER JOIN requests_votes rv USING (RequestID)';
-                $groupBy  = 'GROUP BY r.ID';
-            } else {
-                $voteJoin = '';
-                $groupBy  = '';
-            }
-            self::$db->prepared_query("
-                SELECT r.ID
-                FROM requests r
-                INNER JOIN bookmarks_requests br ON (br.RequestID = r.ID)
-                $voteJoin
-                WHERE br.UserID = ?
-                $groupBy
-                ORDER BY $orderBy $direction
-                ", $this->bookmarkerId
-            );
-            $list = self::$db->collect(0, false);
-            $this->total = count($list);
-        } else {
-            $this->sphinxq->select('id')->from('requests, requests_delta');
-            $this->sphinxq->order_by($orderBy, $direction);
-            $result      = $this->sphinxq->sphinxquery();
-            if ($result !== false) {
-                $this->total = (int)$result->get_meta('total_found');
-                $list = array_keys($result->to_array('id'));
-            } else {
-                $this->total = 0;
-                $list = [];
-            }
-        }
-        $this->list = array_map(fn ($id) => $this->manager->findById($id), $list);
-        return count($this->list);
+        // Request system disabled for music catalog
+        $this->total = 0;
+        $this->list = [];
+        return 0;
     }
 
     public function list(): array {
-        return $this->list ?? [];
+        // Request system disabled for music catalog
+        return [];
     }
 
     public function total(): int {
-        return $this->total ?? 0;
+        // Request system disabled for music catalog
+        return 0;
     }
 
     public function encodingList(): array {
-        return $this->encodingList ?? [];
+        // Request system disabled for music catalog
+        return [];
     }
 
     public function formatList(): array {
-        return $this->formatList ?? [];
+        // Request system disabled for music catalog
+        return [];
     }
 
     public function mediaList(): array {
-        return $this->mediaList ?? [];
+        // Request system disabled for music catalog
+        return [];
     }
 
     public function releaseTypeList(): array {
-        return $this->releaseTypeList ?? [];
+        // Request system disabled for music catalog
+        return [];
     }
 
     public function tagList(): string {
-        return $this->tagList ?? '';
+        // Request system disabled for music catalog
+        return '';
     }
 
     public function text(): string {
-        return $this->text ?? 'Requests';
+        // Request system disabled for music catalog
+        return 'Request system disabled';
     }
 
     public function title(): string {
-        return $this->title ?? 'Requests';
+        // Request system disabled for music catalog
+        return 'Request system disabled';
     }
 }

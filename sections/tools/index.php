@@ -51,7 +51,8 @@ switch ($_REQUEST['action'] ?? '') {
         include_once 'managers/email_search.php';
         break;
     case 'enable_requests':
-        include_once 'managers/enable_requests.php';
+        // Request system disabled for music catalog
+        error('Request system has been disabled for music catalog');
         break;
     case 'ajax_take_enable_request':
         if (FEATURE_EMAIL_REENABLE) {

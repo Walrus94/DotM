@@ -160,20 +160,17 @@ class User extends BaseObject {
                 ui.RatioWatchEnds,
                 ui.RatioWatchDownload,
                 ui.SiteOptions,
-                uls.Uploaded,
-                uls.Downloaded,
+                0 AS Uploaded,
+                0 AS Downloaded,
                 p.Level AS Class,
                 p.Name  AS className,
                 if(p.Level >= (SELECT Level FROM permissions WHERE ID = ?), 1, 0) as isStaff,
-                uf.tokens AS FLTokens,
-                coalesce(ub.points, 0) AS BonusPoints,
+                0 AS FLTokens,
+                0 AS BonusPoints,
                 la.Type as locked_account
             FROM users_main              AS um
-            INNER JOIN users_leech_stats AS uls ON (uls.UserID = um.ID)
             INNER JOIN users_info        AS ui ON (ui.UserID = um.ID)
-            INNER JOIN user_flt          AS uf ON (uf.user_id = um.ID)
             LEFT JOIN permissions        AS p ON (p.ID = um.PermissionID)
-            LEFT JOIN user_bonus         AS ub ON (ub.user_id = um.ID)
             LEFT JOIN locked_accounts    AS la ON (la.UserID = um.ID)
             WHERE um.ID = ?
             ", FORUM_MOD, $this->id
@@ -369,7 +366,8 @@ class User extends BaseObject {
      * Is a user allowed to download a torrent file?
      */
     public function canLeech(): bool {
-        return $this->info()['can_leech'];
+        // Note: Torrent tracking removed for music catalog - always allow leeching
+        return true;
     }
 
     public function classLevel(): int {
@@ -695,7 +693,8 @@ class User extends BaseObject {
     }
 
     public function ratioWatchExpiry(): ?string {
-        return $this->info()['RatioWatchEnds'];
+        // Note: Torrent tracking removed for music catalog - no ratio watch expiry
+        return null;
     }
 
     public function recoveryFinalSize(): ?float {
@@ -1043,14 +1042,15 @@ class User extends BaseObject {
         if ($this->field('leech_download') !== null) {
             $leech['Downloaded = ?'] = $this->clearField('leech_download');
         }
-        if ($leech) {
-            $columns = implode(', ', array_keys($leech));
-            self::$db->prepared_query("
-                UPDATE users_leech_stats SET $columns WHERE UserID = ?
-                ", ...[...array_values($leech), $this->id]
-            );
-            $changed = $changed || self::$db->affected_rows() === 1;
-        }
+        // Note: users_leech_stats table has been removed - leech stats are no longer tracked
+        // if ($leech) {
+        //     $columns = implode(', ', array_keys($leech));
+        //     self::$db->prepared_query("
+        //         UPDATE users_leech_stats SET $columns WHERE UserID = ?
+        //         ", ...[...array_values($leech), $this->id]
+        //     );
+        //     $changed = $changed || self::$db->affected_rows() === 1;
+        // }
 
         if ($this->field('lock-type') !== null) {
             $lockType = $this->clearField('lock-type');
@@ -1079,32 +1079,9 @@ class User extends BaseObject {
     }
 
     public function mergeLeechStats(string $username, string $staffname): ?array {
-        [$mergeId, $up, $down] = self::$db->row("
-            SELECT um.ID, uls.Uploaded, uls.Downloaded
-            FROM users_main um
-            INNER JOIN users_leech_stats AS uls ON (uls.UserID = um.ID)
-            WHERE um.Username = ?
-            ", $username
-        );
-        if (!$mergeId) {
-            return null;
-        }
-        self::$db->prepared_query("
-            UPDATE users_leech_stats uls
-            INNER JOIN users_info ui USING (UserID)
-            SET
-                uls.Uploaded = 0,
-                uls.Downloaded = 0,
-                ui.AdminComment = concat(now(), ' - ', ?, ui.AdminComment)
-            WHERE uls.UserID = ?
-            ", sprintf("leech stats (up: %s, down: %s, ratio: %s) transferred to %s (%s) by %s\n\n",
-                    byte_format($up), byte_format($down), ratio($up, $down),
-                    $this->url(), $this->username(), $staffname
-            ),
-            $mergeId
-        );
-        $this->flush();
-        return ['up' => $up, 'down' => $down, 'userId' => $mergeId];
+        // Note: users_leech_stats table has been removed - leech stats are no longer tracked
+        // This method is deprecated and will always return null
+        return null;
     }
 
     public function lockType(): ?int {
@@ -1112,14 +1089,9 @@ class User extends BaseObject {
     }
 
     public function updateTokens(int $n): bool {
-        self::$db->prepared_query('
-            UPDATE user_flt SET
-                tokens = ?
-            WHERE user_id = ?
-            ', $n, $this->id
-        );
-        $this->flush();
-        return self::$db->affected_rows() === 1;
+        // Note: user_flt table has been removed - freeleech tokens are no longer tracked
+        // This method is deprecated and will always return false
+        return false;
     }
 
     /**
@@ -1189,9 +1161,8 @@ class User extends BaseObject {
     }
 
     public function onRatioWatch(): bool {
-        return $this->info()['RatioWatchEndsEpoch'] !== false
-            && time() > $this->info()['RatioWatchEndsEpoch']
-            && $this->uploadedSize() <= $this->downloadedSize() * $this->requiredRatio();
+        // Note: Torrent tracking removed for music catalog - never on ratio watch
+        return false;
     }
 
     public function modifyAnnounceKeyHistory(string $oldPasskey, string $newPasskey): int {
@@ -1780,41 +1751,12 @@ class User extends BaseObject {
      * Negative bounty can be added (!) in the case of a request unfill.
      */
     public function addBounty(int $bounty): int {
-        if ($bounty > 0) {
-            // adding
-            self::$db->prepared_query("
-                UPDATE users_leech_stats SET
-                    Uploaded = Uploaded + ?
-                WHERE UserID = ?
-                ", $bounty, $this->id
-            );
-        } else {
-            // removing, $bounty is negative
-            $this->flush();
-            $uploaded = $this->uploadedSize();
-            if ($uploaded + $bounty < 0) {
-                // If we can't take it all out of upload, zero that out and add whatever is left as download.
-                self::$db->prepared_query("
-                    UPDATE users_leech_stats SET
-                        Uploaded = 0,
-                        Downloaded = Downloaded + ?
-                    WHERE UserID = ?
-                    ", $uploaded + $bounty, $this->id
-                );
-            } else {
-                self::$db->prepared_query("
-                    UPDATE users_leech_stats SET
-                        Uploaded = Uploaded + ?
-                    WHERE UserID = ?
-                    ", $bounty, $this->id
-                );
-            }
-        }
-        $nr = self::$db->affected_rows();
+        // Note: users_leech_stats table has been removed - leech stats are no longer tracked
+        // This method is deprecated and will always return 0
         $this->flush();
         $this->stats()->increment('request_bounty_total', $bounty > 0 ? 1 : -1);
         $this->stats()->increment('request_bounty_size', $bounty);
-        return $nr;
+        return 0;
     }
 
     public function buffer(): array {

@@ -4,6 +4,9 @@ use Phinx\Migration\AbstractMigration;
 
 final class DropBittorrentTables extends AbstractMigration {
     public function up(): void {
+        // First, drop all foreign key constraints that reference the torrents table
+        $this->execute("SET FOREIGN_KEY_CHECKS = 0");
+        
         // Drop torrent-related tables
         $tables_to_drop = [
             // Core torrent tables
@@ -62,9 +65,12 @@ final class DropBittorrentTables extends AbstractMigration {
 
         foreach ($tables_to_drop as $table) {
             if ($this->hasTable($table)) {
-                $this->table($table)->drop()->update();
+                $this->table($table)->drop()->save();
             }
         }
+        
+        // Re-enable foreign key checks
+        $this->execute("SET FOREIGN_KEY_CHECKS = 1");
     }
 
     public function down(): void {

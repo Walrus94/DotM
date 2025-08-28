@@ -84,10 +84,10 @@ class Invite extends \Gazelle\BaseUser {
     }
 
     public function page(string $orderBy, string $direction, int $limit, int $offset): array {
+        // Note: users_leech_stats table has been removed - simplified query
         self::$db->prepared_query("
             SELECT um.ID
             FROM users_main AS um
-            INNER JOIN users_leech_stats AS uls ON (uls.UserID = um.ID)
             LEFT  JOIN user_last_access AS ula ON (ula.user_id = um.ID)
             WHERE um.inviter_user_id = ?
             ORDER BY $orderBy $direction

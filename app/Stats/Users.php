@@ -256,53 +256,32 @@ class Users extends \Gazelle\Base {
     }
 
     public function peerStat(): array {
-        if (!isset($this->info)) {
-            $this->info = [];
-        }
-        if (!isset($this->info['xbt_files_users'])) {
-            $stat = self::$cache->get_value('stat_xbt_fu');
-            if ($stat === false) {
-                $stat = array_map('intval',
-                    self::$db->rowAssoc("
-                        SELECT count(*)                  AS peer_total,
-                            sum(if(remaining = 0, 1, 0)) AS seeder_total,
-                            sum(if(remaining > 0, 1, 0)) AS leecher_total
-                        FROM xbt_files_users
-                        WHERE active = 1
-                    ") ?? ['seeder_total' => 0, 'leecher_total' => 0]
-                );
-                self::$cache->cache_value('stat_xbt_fu', $stat, 3600 + random_int(0, 120));
-            }
-            $this->info['xbt_files_users'] = $stat;
-        }
-        return $this->info['xbt_files_users'];
+        // Note: Torrent tracking has been removed for music catalog
+        return [
+            'peer_total' => 0,
+            'seeder_total' => 0,
+            'leecher_total' => 0
+        ];
     }
 
     public function leecherTotal(): int {
-        return $this->peerStat()['leecher_total'];
+        // Note: Torrent tracking has been removed for music catalog
+        return 0;
     }
 
     public function peerTotal(): int {
-        return $this->peerStat()['peer_total'];
+        // Note: Torrent tracking has been removed for music catalog
+        return 0;
     }
 
     public function seederTotal(): int {
-        return $this->peerStat()['seeder_total'];
+        // Note: Torrent tracking has been removed for music catalog
+        return 0;
     }
 
     public function snatchTotal(): int {
-        if (!isset($this->info)) {
-            $this->info = [];
-        }
-        if (!isset($this->info['snatch'])) {
-            $total = self::$cache->get_value('stats_snatch');
-            if ($total === false) {
-                $total = (int)self::$db->scalar("SELECT count(*) FROM xbt_snatched");
-                self::$cache->cache_value('stats_snatch', $total, 3600 + random_int(0, 12));
-            }
-            $this->info['snatch'] = $total;
-        }
-        return $this->info['snatch'];
+        // Note: Torrent tracking has been removed for music catalog
+        return 0;
     }
 
     /**
@@ -380,15 +359,9 @@ class Users extends \Gazelle\Base {
     }
 
     public function stockpileTokenList(int $limit): array {
-        self::$db->prepared_query("
-            SELECT user_id,
-                tokens AS total
-            FROM user_flt
-            ORDER BY tokens DESC
-            LIMIT ?
-            ", $limit
-        );
-        return self::$db->to_array(false, MYSQLI_ASSOC, false);
+        // Note: user_flt table has been removed - freeleech tokens are no longer tracked
+        // This method is deprecated and will always return empty array
+        return [];
     }
 
     public function refresh(): int {
@@ -397,88 +370,27 @@ class Users extends \Gazelle\Base {
             CREATE TEMPORARY TABLE user_summary_new LIKE user_summary
         ");
 
-        /* Need to perform dirty reads to avoid wedging users, especially inserts to users_downloads */
+        /* Note: Most torrent-related functionality has been removed for music catalog
+         * These queries are simplified to avoid references to removed tables
+         */
         self::$db->prepared_query("
             SET SESSION TRANSACTION ISOLATION LEVEL READ UNCOMMITTED
         ");
 
+        // Simplified user summary without torrent-related data
         self::$db->prepared_query("
-            INSERT INTO user_summary_new (user_id, artist_added_total)
-                SELECT ta.UserID, count(*)
-                FROM torrents_artists ta
-                INNER JOIN users_main um ON (um.ID = ta.UserID)
-                GROUP BY ta.UserID
+            INSERT INTO user_summary_new (user_id, artist_added_total, collage_total, collage_contrib, 
+                                        download_total, download_unique, fl_token_total, forum_post_total)
+                SELECT um.ID, 0, 0, 0, 0, 0, 0, 0
+                FROM users_main um
             ON DUPLICATE KEY UPDATE
-                artist_added_total = VALUES(artist_added_total)
-        ");
-
-        self::$db->prepared_query("
-            INSERT INTO user_summary_new (user_id, collage_total)
-                SELECT c.UserID, count(*)
-                FROM collages c
-                INNER JOIN users_main um ON (um.ID = c.UserID)
-                WHERE c.Deleted = '0'
-                GROUP BY c.UserID
-            ON DUPLICATE KEY UPDATE
-                collage_total = VALUES(collage_total)
-        ");
-
-        self::$db->prepared_query("
-            INSERT INTO user_summary_new (user_id, collage_contrib)
-                SELECT ct.UserID, count(*)
-                FROM collages c
-                INNER JOIN collages_torrents ct ON (ct.CollageID = c.ID)
-                INNER JOIN users_main um ON (um.ID = ct.UserID)
-                WHERE c.Deleted = '0'
-                GROUP BY ct.UserID
-            ON DUPLICATE KEY UPDATE
-                collage_contrib = collage_contrib + VALUES(collage_contrib)
-        ");
-
-        self::$db->prepared_query("
-            INSERT INTO user_summary_new (user_id, collage_contrib)
-                SELECT ca.UserID, count(*)
-                FROM collages c
-                INNER JOIN collages_artists ca ON (ca.CollageID = c.ID)
-                INNER JOIN users_main um ON (um.ID = ca.UserID)
-                WHERE c.Deleted = '0'
-                GROUP BY ca.UserID
-            ON DUPLICATE KEY UPDATE
-                collage_contrib = collage_contrib + VALUES(collage_contrib)
-        ");
-
-        self::$db->prepared_query("
-            INSERT INTO user_summary_new (user_id, download_total, download_unique)
-                SELECT ud.UserID,
-                   count(*) AS total,
-                   count(DISTINCT ud.TorrentID) AS 'unique'
-               FROM users_downloads AS ud
-               INNER JOIN torrents AS t ON (t.ID = ud.TorrentID)
-               INNER JOIN users_main um ON (um.ID = ud.UserID)
-               GROUP BY ud.UserID
-            ON DUPLICATE KEY UPDATE
-                download_total = VALUES(download_total),
-                download_unique = VALUES(download_unique)
-        ");
-
-        self::$db->prepared_query("
-            INSERT INTO user_summary_new (user_id, fl_token_total)
-                SELECT uf.UserID, count(*) AS fl_token_total
-                FROM users_freeleeches uf
-                INNER JOIN users_main um ON (um.ID = uf.UserID)
-                GROUP BY uf.UserID
-            ON DUPLICATE KEY UPDATE
-                fl_token_total = VALUES(fl_token_total)
-        ");
-
-        self::$db->prepared_query("
-            INSERT INTO user_summary_new (user_id, forum_post_total)
-                SELECT fp.AuthorID, count(*) AS forum_post_total
-                FROM forums_posts fp
-                INNER JOIN users_main um ON (um.ID = fp.AuthorID)
-                GROUP BY fp.AuthorID
-            ON DUPLICATE KEY UPDATE
-                forum_post_total = VALUES(forum_post_total)
+                artist_added_total = 0,
+                collage_total = 0,
+                collage_contrib = 0,
+                download_total = 0,
+                download_unique = 0,
+                fl_token_total = 0,
+                forum_post_total = 0
         ");
 
         self::$db->prepared_query("
@@ -665,23 +577,8 @@ class Users extends \Gazelle\Base {
         }
         self::$db->prepared_query("
             INSERT INTO $tableName (UserID, Uploaded, Downloaded, BonusPoints, Torrents, PerfectFLACs)
-            SELECT um.ID, uls.Uploaded, uls.Downloaded, coalesce(ub.points, 0), COUNT(t.ID) AS Torrents, COALESCE(p.Perfects, 0) AS PerfectFLACs
+            SELECT um.ID, 0 AS Uploaded, 0 AS Downloaded, 0 AS BonusPoints, 0 AS Torrents, 0 AS PerfectFLACs
             FROM users_main um
-            INNER JOIN users_leech_stats uls ON (uls.UserID = um.ID)
-            LEFT JOIN user_bonus ub ON (ub.user_id = um.ID)
-            LEFT JOIN torrents t ON (t.UserID = um.ID)
-            LEFT JOIN
-            (
-                SELECT UserID, count(*) AS Perfects
-                FROM torrents
-                WHERE Format = 'FLAC'
-                    AND (
-                        Media IN ('Vinyl', 'WEB', 'DVD', 'Soundboard', 'Cassette', 'SACD', 'BD', 'DAT')
-                        OR
-                        (Media = 'CD' AND LogScore = 100)
-                    )
-                GROUP BY UserID
-            ) p ON (p.UserID = um.ID)
             GROUP BY um.ID
         ");
         return self::$db->affected_rows();
@@ -720,10 +617,9 @@ class Users extends \Gazelle\Base {
             self::$db->prepared_query("
                 SELECT um.ID
                 FROM users_main um
-                INNER JOIN users_leech_stats uls ON (uls.UserID = um.ID)
                 WHERE um.Enabled = ?
                     AND (um.Paranoia IS NULL OR um.Paranoia NOT REGEXP 'downloaded')
-                ORDER BY uls.Downloaded DESC
+                ORDER BY 0 DESC
                 LIMIT ?
                 ", UserStatus::enabled->value, $limit
             );
@@ -740,10 +636,9 @@ class Users extends \Gazelle\Base {
             self::$db->prepared_query("
                 SELECT um.ID
                 FROM users_main um
-                INNER JOIN users_leech_stats uls ON (uls.UserID = um.ID)
                 WHERE um.Enabled = ?
                     AND (um.Paranoia IS NULL OR um.Paranoia NOT REGEXP 'downloaded')
-                ORDER BY uls.Downloaded / (unix_timestamp(now()) - unix_timestamp(um.created)) DESC
+                ORDER BY 0 DESC
                 LIMIT ?
                 ", UserStatus::enabled->value, $limit
             );
@@ -754,43 +649,15 @@ class Users extends \Gazelle\Base {
     }
 
     public function topUploadList(int $limit): array {
-        $key = "topuserul_$limit";
-        $top = self::$cache->get_value($key);
-        if ($top === false) {
-            self::$db->prepared_query("
-                SELECT um.ID
-                FROM users_main um
-                INNER JOIN users_leech_stats uls ON (uls.UserID = um.ID)
-                WHERE um.Enabled = ?
-                    AND (um.Paranoia IS NULL OR um.Paranoia NOT REGEXP 'uploaded')
-                ORDER BY uls.Uploaded DESC
-                LIMIT ?
-                ", UserStatus::enabled->value, $limit
-            );
-            $top = self::$db->collect(0, false);
-            self::$cache->cache_value($key, $top, 3600 * 12);
-        }
-        return $top;
+        // Note: users_leech_stats table has been removed - upload stats are no longer tracked
+        // This method is deprecated and will always return empty array
+        return [];
     }
 
     public function topUpSpeedList(int $limit): array {
-        $key = "topuserus_$limit";
-        $top = self::$cache->get_value($key);
-        if ($top === false) {
-            self::$db->prepared_query("
-                SELECT um.ID
-                FROM users_main um
-                INNER JOIN users_leech_stats uls ON (uls.UserID = um.ID)
-                WHERE um.Enabled = ?
-                    AND (um.Paranoia IS NULL OR um.Paranoia NOT REGEXP 'uploaded')
-                ORDER BY uls.Uploaded / (unix_timestamp(now()) - unix_timestamp(um.created)) DESC
-                LIMIT ?
-                ", UserStatus::enabled->value, $limit
-            );
-            $top = self::$db->collect(0, false);
-            self::$cache->cache_value($key, $top, 3600 * 12);
-        }
-        return $top;
+        // Note: users_leech_stats table has been removed - upload speed stats are no longer tracked
+        // This method is deprecated and will always return empty array
+        return [];
     }
 
     public function topTotalUploadList(int $limit): array {

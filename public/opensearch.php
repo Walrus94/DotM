@@ -34,8 +34,7 @@ switch ($Type) {
         break;
     case 'requests':
 ?>
-    <Url type="text/html" method="get" template="<?=SITE_URL?>/requests.php?search={searchTerms}"></Url>
-    <moz:SearchForm><?=SITE_URL?>/requests.php</moz:SearchForm>
+    <!-- Request system disabled for music catalog -->
 <?php
         break;
     case 'forums':

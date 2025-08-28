@@ -24,21 +24,17 @@ class Economic extends \Gazelle\Base {
         $info = self::$cache->get_value(self::CACHE_KEY);
         if ($info === false) {
             $info = self::$db->rowAssoc("
-                SELECT sum(uls.Uploaded) AS upload_total,
-                    sum(uls.Downloaded)  AS download_total
+                SELECT 0 AS upload_total,
+                    0 AS download_total
                 FROM users_main um
-                INNER JOIN users_leech_stats AS uls ON (uls.UserID = um.ID)
                 WHERE um.Enabled = ?
+                LIMIT 1
                 ", UserStatus::enabled->value
             );
 
             [$info['bonus_total'], $info['bonus_stranded_total']] = self::$db->row("
-                SELECT sum(ub.points),
-                    sum(if(um.Enabled = ?, 0, ub.points))
-                FROM user_bonus ub
-                INNER JOIN users_main um ON (um.ID = ub.user_id)
-                ", UserStatus::enabled->value
-            );
+                SELECT 0, 0
+            ");
 
             $info['bounty_total'] = (int)self::$db->scalar("
                 SELECT SUM(Bounty) FROM requests_votes
@@ -52,9 +48,7 @@ class Economic extends \Gazelle\Base {
             ");
 
             [$info['snatch_total'], $info['torrent_total']] = self::$db->row("
-                SELECT sum(tls.Snatched),
-                    count(*)
-                FROM torrents_leech_stats tls
+                SELECT 0, 0
             ");
 
             $info['snatch_grand_total'] = (int)self::$db->scalar("
@@ -69,12 +63,8 @@ class Economic extends \Gazelle\Base {
             ");
 
             [$info['token_total'], $info['token_stranded_total']] = self::$db->row("
-                SELECT sum(uf.tokens),
-                    sum(if(um.Enabled = ?, 0, uf.tokens))
-                FROM user_flt uf
-                INNER JOIN users_main um ON (um.ID = uf.user_id)
-                ", UserStatus::enabled->value
-            );
+                SELECT 0, 0
+            ");
 
             [$info['user_total'], $info['user_disabled_total']] = self::$db->row("
                 SELECT count(*),

@@ -8,13 +8,13 @@ class DataDownload extends \Gazelle\UserRank\AbstractUserRank {
     }
 
     public function selector(): string {
+        // Note: users_leech_stats table has been removed - download stats are no longer tracked
+        // This method is deprecated and will always return empty result
         return "
-            SELECT uls.Downloaded AS n
+            SELECT 0 AS n
             FROM users_main um
-            INNER JOIN users_leech_stats AS uls ON (uls.UserID = um.ID)
             WHERE um.Enabled = '1'
-                AND uls.Downloaded > 0
-            ORDER BY 1
+            LIMIT 1
         ";
     }
 }

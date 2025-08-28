@@ -39,14 +39,15 @@ class Activity extends \Gazelle\BaseUser {
     }
 
     public function configure(): static {
-        if ($this->user->onRatioWatch()) {
-            $this->setAlert('<a class="nobr" href="rules.php?p=ratio">Ratio Watch</a>: You have '
-                . time_diff($this->user->ratioWatchExpiry(), 3)
-                . ' to get your ratio over your required ratio or your leeching abilities will be suspended.'
-            );
-        } elseif (!$this->user->canLeech()) {
-            $this->setAlert('<a class="nobr" href="rules.php?p=ratio">Ratio Watch</a>: Your downloading privileges are suspended until you meet your required ratio.');
-        }
+        // Note: Ratio watch system disabled for music catalog - torrent tracking removed
+        // if ($this->user->onRatioWatch()) {
+        //     $this->setAlert('<a class="nobr" href="rules.php?p=ratio">Ratio Watch</a>: You have '
+        //         . time_diff($this->user->ratioWatchExpiry(), 3)
+        //         . ' to get your ratio over your required ratio or your leeching abilities will be suspended.'
+        //     );
+        // } elseif (!$this->user->canLeech()) {
+        //     $this->setAlert('<a class="nobr" href="rules.php?p=ratio">Ratio Watch</a>: Your downloading privileges are suspended until you meet your required ratio.');
+        // }
         if ($this->user->permitted('users_mod')) {
             $this->setAction('<a class="nobr" href="tools.php">Toolbox</a>');
         }

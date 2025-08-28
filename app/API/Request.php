@@ -2,40 +2,16 @@
 
 namespace Gazelle\API;
 
+/**
+ * Request API has been disabled for music catalog.
+ * All torrent-related request functionality has been removed.
+ */
 class Request extends AbstractAPI {
     public function run(): array {
-        $request = (new \Gazelle\Manager\Request())->findById((int)($_GET['request_id'] ?? 0));
-        if (is_null($request)) {
-            json_error('Missing request id');
-        }
-
-        return [
-            'ID'              => $request->id(),
-            'UserID'          => $request->userId(),
-            'TimeAdded'       => $request->created(),
-            'LastVote'        => $request->lastVoteDate(),
-            'CategoryID'      => $request->categoryId(),
-            'Title'           => $request->title(),
-            'Year'            => $request->year(),
-            'Image'           => (string)$request->image(),
-            'Description'     => $request->description(),
-            'CatalogueNumber' => $request->catalogueNumber(),
-            'RecordLabel'     => $request->recordLabel(),
-            'ReleaseType'     => $request->releaseType(),
-            'BitrateList'     => $request->legacyEncodingList(),
-            'FormatList'      => $request->legacyFormatList(),
-            'MediaList'       => $request->legacyMediaList(),
-            'LogCue'          => $request->descriptionLogCue(),
-            'Checksum'        => $request->legacyLogChecksum(),
-            'FillerID'        => $request->fillerId(),
-            'TorrentID'       => $request->torrentId(),
-            'TimeFilled'      => (string)$request->fillDate(),
-            'GroupID'         => (string)$request->tgroupId(),
-            'OCLC'            => $request->oclc(),
-            'Tags'            => $request->tagNameList(),
-            'Artists'         => $request->artistRole()->idList(),
-            'DisplayArtists'  => $request->artistRole()->text(),
-            'Category'        => $request->categoryName(),
-        ];
+        // Request system disabled for music catalog
+        json_error('Request system has been disabled for music catalog');
+        
+        // This code will never execute, but keeps the method signature valid
+        return [];
     }
 }

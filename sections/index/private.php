@@ -10,8 +10,6 @@ $featured   = new Gazelle\Manager\FeaturedAlbum();
 $contestMan = new Gazelle\Manager\Contest();
 $newsMan    = new Gazelle\Manager\News();
 $newsReader = new Gazelle\WitnessTable\UserReadNews();
-$tgMan      = new Gazelle\Manager\TGroup();
-$torMan     = new Gazelle\Manager\Torrent();
 
 if ($newsMan->latestId() != -1 && $newsReader->lastRead($Viewer) < $newsMan->latestId()) {
     $newsReader->witness($Viewer);
@@ -49,7 +47,7 @@ echo $Twig->render('index/private-sidebar.twig', [
     'staff_blog'    => new Gazelle\Manager\StaffBlog(),
     'poll'          => (new Gazelle\Manager\ForumPoll())->findByFeaturedPoll(),
     'request_stats' => new Gazelle\Stats\Request(),
-    'torrent_stats' => new Gazelle\Stats\Torrent(),
+    'torrent_stats' => null, // Disabled for music catalog
     'user_stats'    => new Gazelle\Stats\Users(),
     'viewer'        => $Viewer,
 ]);
@@ -57,6 +55,6 @@ echo $Twig->render('index/private-sidebar.twig', [
 echo $Twig->render('index/private-main.twig', [
     'admin'   => (int)$Viewer->permitted('admin_manage_news'),
     'contest' => $contestMan->currentContest(),
-    'latest'  => $torMan->latestUploads(5),
+    'latest'  => [], // Disabled torrent uploads for music catalog
     'news'    => $newsMan->headlines(),
 ]);

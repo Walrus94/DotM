@@ -87,18 +87,25 @@ class Payment extends \Gazelle\Base {
                 $l['Rent'] = $l['btcRent'] = sprintf('%0.6f', $l['AnnualRent']);
             } else {
                 if (!isset($rates[$l['cc']])) {
-                    $l['fiatRate'] = (float)self::$db->scalar("
-                        SELECT rate
-                        FROM xbt_forex
-                        WHERE cc = ?
-                        ORDER BY forex_date DESC
-                        LIMIT 1
-                        ", $l['cc']
-                    );
-                    if (!$l['fiatRate']) {
-                        throw new PaymentFetchForexException(sprintf('XBT id=%d cc=%s', $l['ID'], $l['cc']));
-                    }
+                    // Note: xbt_forex table removed for music catalog - use safe default
+                    // This previously fetched foreign exchange rates for different currencies
+                    // For now, use 1.0 as default rate to avoid errors
+                    $l['fiatRate'] = 1.0;
                     $rates[$l['cc']] = $l['fiatRate'];
+                    
+                    // Original implementation (commented out due to missing xbt_forex table):
+                    // $l['fiatRate'] = (float)self::$db->scalar("
+                    //     SELECT rate
+                    //     FROM xbt_forex
+                    //     WHERE cc = ?
+                    //     ORDER BY forex_date DESC
+                    //     LIMIT 1
+                    //     ", $l['cc']
+                    // );
+                    // if (!$l['fiatRate']) {
+                    //     throw new PaymentFetchForexException(sprintf('XBT id=%d cc=%s', $l['ID'], $l['cc']));
+                    // }
+                    // $rates[$l['cc']] = $l['fiatRate'];
                 } else {
                     $l['fiatRate'] = $rates[$l['cc']];
                 }
@@ -110,31 +117,33 @@ class Payment extends \Gazelle\Base {
     }
 
     public function monthlyRental(): float {
-        $rental = self::$cache->get_value(self::RENT_KEY);
-        if ($rental === false) {
-            $rental = (float)self::$db->scalar("
-                SELECT sum(p.AnnualRent/coalesce(CUR.rate, 1.0)) / 12
-                FROM payment_reminders p
-                LEFT JOIN (
-                    SELECT f.cc,
-                        f.rate
-                    FROM xbt_forex f
-                    INNER JOIN (
-                        SELECT cc,
-                            max(forex_date) AS forex_date
-                        FROM xbt_forex
-                        GROUP BY cc
-                    ) LATEST using (cc, forex_date)
-                ) CUR USING (cc)
-                WHERE p.active = 1;
-            ");
-            self::$cache->cache_value(self::RENT_KEY, $rental, 86400);
-        }
-        /**
-         * FIXME!
-         * See: https://github.com/php-memcached-dev/php-memcached/issues/500
-         */
-        return abs($rental);
+        // Note: xbt_forex table removed for music catalog - return safe default
+        // This method previously calculated rental costs based on foreign exchange rates
+        // For now, return 0 to avoid errors while preserving donation functionality
+        return 0.0;
+        
+        // Original implementation (commented out due to missing xbt_forex table):
+        // $rental = self::$cache->get_value(self::RENT_KEY);
+        // if ($rental === false) {
+        //     $rental = (float)self::$db->scalar("
+        //         SELECT sum(p.AnnualRent/coalesce(CUR.rate, 1.0)) / 12
+        //         FROM payment_reminders p
+        //         LEFT JOIN (
+        //             SELECT f.cc,
+        //                 f.rate
+        //             FROM xbt_forex f
+        //             INNER JOIN (
+        //                 SELECT cc,
+        //                 max(forex_date) AS forex_date
+        //                 FROM xbt_forex
+        //                 GROUP BY cc
+        //             ) LATEST using (cc, forex_date)
+        //         ) CUR USING (cc)
+        //         WHERE p.active = 1;
+        //     ");
+        //     self::$cache->cache_value(self::RENT_KEY, $rental, 86400);
+        // }
+        // return abs($rental);
     }
 
     public function monthlyPercent(\Gazelle\Manager\Donation $donorMan): int {

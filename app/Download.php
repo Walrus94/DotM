@@ -88,36 +88,9 @@ class Download extends Base {
                 return DownloadStatus::free;
             }
 
-            // Spend some tokens to make it personal freeleech
-            if (!$user->hasToken($this->torrent)) {
-                self::$db->begin_transaction();
-                self::$db->prepared_query('
-                    UPDATE user_flt SET
-                        tokens = tokens - ?
-                    WHERE tokens >= ? AND user_id = ?
-                    ', $tokenCount, $tokenCount, $userId
-                );
-                if (self::$db->affected_rows() == 0) {
-                    self::$db->rollback();
-                    return DownloadStatus::no_tokens;
-                }
-                if (!(new \Gazelle\Tracker())->addToken($this->torrent, $user)) {
-                    self::$db->rollback();
-                    return DownloadStatus::tracker;
-                }
-                self::$db->prepared_query("
-                    INSERT INTO users_freeleeches (UserID, TorrentID, Uses, Time)
-                    VALUES (?, ?, ?, now())
-                    ON DUPLICATE KEY UPDATE
-                        Time = VALUES(Time),
-                        Expired = FALSE,
-                        Uses = Uses + ?
-                    ", $userId, $this->torrent->id(), $tokenCount, $tokenCount
-                );
-                self::$db->commit();
-                self::$cache->delete_value("user_tokens_$userId");
-                $user->flush();
-            }
+            // Note: user_flt table has been removed - freeleech tokens are no longer tracked
+            // This functionality is deprecated for music catalog
+            return DownloadStatus::no_tokens;
         }
         return $this->success();
     }
