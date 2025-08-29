@@ -615,10 +615,6 @@ if ($changePassword && $Viewer->permitted('users_edit_password')) {
     (new \Gazelle\User\Session($user))->dropAll();
 }
 
-if ($newBonusPoints !== false) {
-    (new Gazelle\User\Bonus($user))->setPoints($newBonusPoints);
-}
-
 if ($flTokens != $user->tokenCount()) {
     $user->updateTokens($flTokens);
 }

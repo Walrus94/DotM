@@ -574,15 +574,12 @@ defined('IMAGE_HOST_RECOMMENDED') or define('IMAGE_HOST_RECOMMENDED', []);
 defined('RANKING_WEIGHT') or define('RANKING_WEIGHT', [
     'uploaded'   => [ 8, 'DataUpload'],
     'downloaded' => [20, 'DataDownload'],
-    'uploads'    => [25, 'Uploads'],
-            // 'requests'   => [10, 'RequestsFilled'], // DISABLED for music catalog
+    // 'uploads'    => [25, 'Uploads'], // DISABLED for music catalog - torrent uploads not tracked
     'posts'      => [ 3, 'ForumPosts'],
-            // 'bounty'     => [ 4, 'BountySpent'], // DISABLED for music catalog
     'artists'    => [ 1, 'ArtistsAdded'],
     'collage'    => [ 5, 'CollageContribution'],
     'votes'      => [ 5, 'ReleaseVotes'],
-    'bonus'      => [ 6, 'BonusPoints'],
-    'comment-t'  => [18, 'CommentTorrent'],
+    // 'comment-t'  => [18, 'CommentTorrent'], // DISABLED for music catalog - torrent comments not tracked
 ]);
 
 // Successive login failures generate increasing delays.

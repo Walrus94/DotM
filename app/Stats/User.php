@@ -165,18 +165,6 @@ class User extends \Gazelle\BaseObject {
         return $this->info()['collage_contrib'];
     }
 
-    public function downloadTotal(): int {
-        return $this->info()['download_total'];
-    }
-
-    public function downloadUnique(): int {
-        return $this->info()['download_unique'];
-    }
-
-    public function flTokenTotal(): int {
-        return $this->info()['fl_token_total'];
-    }
-
     public function forumPostTotal(): int {
         return $this->info()['forum_post_total'];
     }
@@ -189,66 +177,6 @@ class User extends \Gazelle\BaseObject {
         return $this->info()['invited_total'];
     }
 
-    public function leechTotal(): int {
-        return $this->info()['leech_total'];
-    }
-
-    public function perfectFlacTotal(): int {
-        return $this->info()['perfect_flac_total'];
-    }
-
-    public function perfecterFlacTotal(): int {
-        return $this->info()['perfecter_flac_total'];
-    }
-
-    public function requestBountySize(): int {
-        return $this->info()['request_bounty_size'];
-    }
-
-    public function requestBountyTotal(): int {
-        return $this->info()['request_bounty_total'];
-    }
-
-    public function requestCreatedSize(): int {
-        return $this->info()['request_created_size'];
-    }
-
-    public function requestCreatedTotal(): int {
-        return $this->info()['request_created_total'];
-    }
-
-    public function requestVoteSize(): int {
-        return $this->info()['request_vote_size'];
-    }
-
-    public function requestVoteTotal(): int {
-        return $this->info()['request_vote_total'];
-    }
-
-    public function seedingTotal(): int {
-        return $this->info()['seeding_total'];
-    }
-
-    public function seedtimeHour(): int {
-        return $this->info()['seedtime_hour'];
-    }
-
-    public function snatchTotal(): int {
-        return $this->info()['snatch_total'];
-    }
-
-    public function snatchUnique(): int {
-        return $this->info()['snatch_unique'];
-    }
-
-    public function uniqueGroupTotal(): int {
-        return $this->info()['unique_group_total'];
-    }
-
-    public function uploadTotal(): int {
-        return $this->info()['upload_total'];
-    }
-
     public function timeline(): array {
         $key = "u_statgraphs_" . $this->id;
         $charts = self::$cache->get_value($key);
@@ -259,47 +187,17 @@ class User extends \Gazelle\BaseObject {
                 ['name' => 'yearly',  'interval' => 24 * 7, 'count' => 52],
             ];
             foreach ($charts as &$chart) {
-                self::$db->prepared_query("
-                    SELECT unix_timestamp(Time) * 1000 AS epoch,
-                        Uploaded              AS data_up,
-                        Downloaded            AS data_down,
-                        Uploaded - Downloaded AS buffer,
-                        BonusPoints           AS bp,
-                        Torrents              AS uploads,
-                        PerfectFLACs          AS perfect
-                    FROM users_stats_{$chart['name']}
-                    WHERE UserID = ?
-                    ORDER BY Time DESC
-                    LIMIT ?
-                    ", $this->id, $chart['count']
-                );
-                $stats = array_reverse(self::$db->to_array(false, MYSQLI_ASSOC, false));
-                $timeline = array_column($stats, 'epoch');
-                foreach (['data_up', 'data_down', 'buffer', 'bp', 'uploads', 'perfect'] as $dimension) {
-                    $series = array_column($stats, $dimension);
-                    $chart[$dimension] = array_map(fn($n) => [$timeline[$n], $series[$n]], range(0, count($series) - 1));
-                }
-                $chart['start'] = $timeline[0] ?? null;
+                // Note: Torrent-related stats disabled for music catalog
+                // Return empty timeline data for now
+                $chart['data_up'] = [];
+                $chart['data_down'] = [];
+                $chart['buffer'] = [];
+                $chart['uploads'] = [];
+                $chart['start'] = null;
                 unset($chart);
             }
             self::$cache->cache_value($key, $charts, 3600);
         }
         return $charts;
-    }
-
-    /**
-     * How many unresolved torrent reports are there for this user?
-     *
-     * @return int number of unresolved reports
-     */
-    public function unresolvedReportsTotal(): int {
-        return (int)self::$db->scalar("
-            SELECT count(*)
-            FROM reportsv2 AS r
-            INNER JOIN torrents AS t ON (t.ID = r.TorrentID)
-            WHERE r.Status != 'Resolved'
-                AND t.UserID = ?
-            ", $this->id
-        );
     }
 }

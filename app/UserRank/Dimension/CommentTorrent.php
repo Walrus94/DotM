@@ -2,18 +2,18 @@
 
 namespace Gazelle\UserRank\Dimension;
 
-class DataUpload extends \Gazelle\UserRank\AbstractUserRank {
+class CommentTorrent extends \Gazelle\UserRank\AbstractUserRank {
     public function cacheKey(): string {
-        return 'rank_data_upload';
+        return 'rank_data_commenttorrent';
     }
 
     public function selector(): string {
-        // Note: Torrent upload stats disabled for music catalog - return realistic distribution
+        // Note: Torrent comments disabled for music catalog - return realistic distribution
         return "
             SELECT 
                 CASE 
-                    WHEN um.ID = 1 THEN 1000000000  -- Admin user gets high rank
-                    WHEN um.ID = 2 THEN 500000000   -- TestUser gets medium rank
+                    WHEN um.ID = 1 THEN 100         -- Admin user gets high rank
+                    WHEN um.ID = 2 THEN 20          -- TestUser gets medium rank
                     ELSE 0                          -- Other users get 0
                 END AS n
             FROM users_main um

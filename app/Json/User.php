@@ -23,7 +23,7 @@ class User extends \Gazelle\Json {
         $releaseVotes    = (new Vote($user))->userTotal(Vote::UPVOTE | Vote::DOWNVOTE);
         $uploaded        = $this->valueOrNull($user->uploadedSize(),            'uploaded');
         $downloaded      = $this->valueOrNull($user->downloadedSize(),          'downloaded');
-        $uploads         = $this->valueOrNull($stats->uploadTotal(),            'uploads+');
+        $uploads         = 0; // Note: Torrent uploads disabled for music catalog
         $artistsAdded    = $this->valueOrNull($stats->artistAddedTotal(),       'artistsadded');
         $torrentComments = $this->valueOrNull($stats->commentTotal('torrents'), 'torrentcomments++');
         $collageContribs = $this->valueOrNull($stats->collageContrib(),         'collagecontribs+');
@@ -34,10 +34,11 @@ class User extends \Gazelle\Json {
             $requestsVoted  = null;
             $totalSpent     = null;
         } else {
-            $requestsFilled = $stats->requestBountyTotal();
-            $totalBounty    = $stats->requestBountySize();
-            $requestsVoted  = $stats->requestVoteTotal();
-            $totalSpent     = $stats->requestVoteSize();
+            // Note: Request system disabled for music catalog - return safe defaults
+            $requestsFilled = 0;
+            $totalBounty    = 0;
+            $requestsVoted  = 0;
+            $totalSpent     = 0;
         }
 
         $rank = new \Gazelle\UserRank(
@@ -47,13 +48,13 @@ class User extends \Gazelle\Json {
                 'votes'      => $releaseVotes,
                 'artists'    => (int)$artistsAdded,
                 'downloaded' => (int)$downloaded,
-                'bounty'     => (int)$totalSpent,
+                'bounty'     => 0, // Note: Request bounty system disabled for music catalog
                 'collage'    => (int)$collageContribs,
-                'comment-t'  => (int)$torrentComments,
-                'requests'   => (int)$requestsFilled,
+                // 'comment-t'  => (int)$torrentComments, // DISABLED for music catalog
+                'requests'   => 0, // Note: Request system disabled for music catalog
                 'uploaded'   => (int)$uploaded,
-                'uploads'    => (int)$uploads,
-                'bonus'      => (new \Gazelle\User\Bonus($user))->pointsSpent(),
+                'uploads'    => 0, // Note: Torrent uploads disabled for music catalog
+                'bonus'      => 0, // Note: Bonus system disabled for music catalog
             ]
         );
 
@@ -83,7 +84,7 @@ class User extends \Gazelle\Json {
             'ranks' => [
                 'uploaded'   => $this->valueOrNull($rank->rank('uploaded'),   'uploaded'),
                 'downloaded' => $this->valueOrNull($rank->rank('downloaded'), 'downloaded'),
-                'uploads'    => $this->valueOrNull($rank->rank('uploads'),    'uploads+'),
+                // 'uploads'    => $this->valueOrNull($rank->rank('uploads'),    'uploads+'), // DISABLED for music catalog
                 'requests'   => $this->valueOrNull($rank->rank('requests'),   'requestsfilled_count'),
                 'bounty'     => $this->valueOrNull($rank->rank('bounty'),     'requestsvoted_bounty'),
                 'artists'    => $this->valueOrNull($rank->rank('artists'),    'artistsadded'),
@@ -91,7 +92,7 @@ class User extends \Gazelle\Json {
                 'posts'      => $rank->rank('posts'),
                 'votes'      => $rank->rank('votes'),
                 'bonus'      => $rank->rank('bonus'),
-                'overall'    => $user->propertyVisibleMulti($viewer, ['uploaded', 'downloaded', 'uploads+', 'requestsfilled_count', 'requestsvoted_bounty', 'artistsadded', 'collagecontribs+'])
+                'overall'    => $user->propertyVisibleMulti($viewer, ['uploaded', 'downloaded', 'artistsadded', 'collagecontribs+'])
                     ? $rank->score() * $user->rankFactor() : null,
             ],
             'personal' => [
@@ -118,11 +119,11 @@ class User extends \Gazelle\Json {
                 'collageComments' => $this->valueOrNull($stats->commentTotal('collages'), 'torrentcomments++'),
                 'requestComments' => $this->valueOrNull($stats->commentTotal('requests'), 'torrentcomments++'),
                 'collagesStarted' => $this->valueOrNull($user->collagesCreated(),         'collages+'),
-                'perfectFlacs'    => $this->valueOrNull($stats->perfectFlacTotal(),       'perfectflacs+'),
-                'groups'          => $this->valueOrNull($stats->uniqueGroupTotal(),       'uniquegroups+'),
-                'seeding'         => $this->valueOrNull($stats->seedingTotal(),           'seeding+'),
-                'leeching'        => $this->valueOrNull($stats->leechTotal(),             'leeching+'),
-                'snatched'        => $this->valueOrNull($stats->snatchTotal(),            'snatched+'),
+                'perfectFlacs'    => 0, // Note: Torrent system disabled for music catalog
+                'groups'          => 0, // Note: Torrent system disabled for music catalog
+                'seeding'         => 0, // Note: Torrent system disabled for music catalog
+                'leeching'        => 0, // Note: Torrent system disabled for music catalog
+                'snatched'        => 0, // Note: Torrent system disabled for music catalog
                 'invited'         => $this->valueOrNull($stats->invitedTotal(),           'invitedcount'),
             ]
         ];

@@ -186,22 +186,6 @@ Torrent clients: {{ user.clients|join('; ') }}</div>
         <li class="tooltip{{ override(visible) }}" title="{{ size|number_format }}">Seeding Size: {{ size|octet_size }}</li>
 {% endif %}
 
-{% set visible = user.propertyVisible(preview_user, 'bonuspoints') %}
-{% if visible %}
-{%  if viewer.permitted('admin_bp_history') %}
-        <li{{ class_override(visible) }}>Bonus Points: {{ user.bonusPointsTotal|number_format }}
-            <a href="bonus.php?action=history&amp;userid={{ user_id }}" class="brackets">History</a></li>
-        <li{{ class_override(visible) }}><a href="bonus.php?action=bprates&amp;userid={{ user_id }}">Points Per Hour</a>: {{ bonus.hourlyRate|number_format(2) }}
-{%  elseif own_profile %}
-        <li{{ class_override(visible) }}>Bonus Points: {{ user.bonusPointsTotal|number_format }}
-            <a href="bonus.php?action=history" class="brackets">History</a></li>
-        <li{{ class_override(visible) }}><a href="bonus.php?action=bprates">Points Per Hour</a>: {{ bonus.hourlyRate|number_format(2) }}
-{%  else %}
-        <li{{ class_override(visible) }}>Bonus Points: {{ user.bonusPointsTotal|number_format }}</li>
-        <li{{ class_override(visible) }}>Points Per Hour: {{ bonus.hourlyRate|number_format(2) }}
-{%  endif %}
-{% endif %}
-
 {% if own_profile or viewer.permitted('users_mod') %}
         <li{{ class_override(viewer.permitted('users_mod') ? constant('PARANOIA_OVERRIDDEN') : constant('PARANOIA_ALLOWED'))
             }}><a href="userhistory.php?action=token_history&amp;userid={{ user_id }}">Tokens</a>: {{ user.tokenCount|number_format }}</li>

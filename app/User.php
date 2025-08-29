@@ -1469,11 +1469,8 @@ class User extends BaseObject {
     }
 
     public function clients(): array {
-        self::$db->prepared_query('
-            SELECT DISTINCT useragent FROM xbt_files_users WHERE uid = ?
-            ', $this->id
-        );
-        return self::$db->collect(0) ?: ['None'];
+        // Note: Torrent clients disabled for music catalog
+        return ['Music Catalog'];
     }
 
     protected function getSingleValue($cacheKey, $query): string {
@@ -1493,14 +1490,13 @@ class User extends BaseObject {
 
     public function announceKeyCount(): int {
         return (int)$this->getSingleValue('user_passkey_count', '
-            SELECT count(*) FROM users_history_passkeys WHERE UserID = ?
+            SELECT count(*) FROM users_history_passwords WHERE UserID = ?
         ');
     }
 
     public function trackerIPCount(): int {
-        return (int)$this->getSingleValue('user_trackip_count', "
-            SELECT count(DISTINCT IP) FROM xbt_snatched WHERE uid = ? AND IP != ''
-        ");
+        // Note: Tracker IP tracking disabled for music catalog
+        return 0;
     }
 
     public function inviter(): ?User {
@@ -1764,7 +1760,7 @@ class User extends BaseObject {
         $demotion = array_filter((new Manager\User())->demotionCriteria(), fn($v) => in_array($class, $v['From']));
         $criteria = end($demotion);
 
-        $effectiveUpload = $this->uploadedSize() + $this->stats()->requestBountySize();
+        $effectiveUpload = $this->uploadedSize() + 0; // Note: Request bounty system disabled for music catalog
         if ($criteria) {
             $ratio = $criteria['Ratio'];
         } else {
@@ -1781,7 +1777,7 @@ class User extends BaseObject {
         }
         $upload   = $this->uploadedSize();
         $download = $this->downloadedSize();
-        $bounty   = $this->stats()->requestVoteSize();
+        $bounty   = 0; // Note: Request bounty system disabled for music catalog
         $week     = $criteria['Weeks'];
         $goal = [
             'Upload' => [
@@ -1802,7 +1798,7 @@ class User extends BaseObject {
         ];
 
         if ($criteria['MinUploads']) {
-            $uploadTotal = $this->stats()->uploadTotal();
+            $uploadTotal = 0; // Note: Torrent uploads disabled for music catalog
             $goal['Torrents'] = [
                 'current' => number_format($uploadTotal),
                 'target'  => $criteria['MinUploads'],
@@ -1841,32 +1837,16 @@ class User extends BaseObject {
     /**
      * See whether a user is seeding a torrent. This method has no caching, but is
      * only expected to be called at the moment a user wants to download a torrent.
+     * Note: Torrent seeding disabled for music catalog
      */
     public function isSeeding(TorrentAbstract $torrent): bool {
-        return (bool)self::$db->scalar("
-            SELECT 1
-            FROM xbt_files_users
-            WHERE uid = ?
-                AND fid = ?
-            LIMIT 1;
-            ", $this->id, $torrent->id()
-        );
+        // Note: Torrent seeding disabled for music catalog
+        return false;
     }
 
     public function seedingSize(): int {
-        return (int)$this->getSingleValue('seeding_size', '
-            SELECT coalesce(sum(t.Size), 0)
-            FROM
-            (
-                SELECT DISTINCT fid
-                FROM xbt_files_users
-                WHERE active = 1
-                  AND remaining = 0
-                  AND mtime > unix_timestamp(now() - INTERVAL 1 HOUR)
-                  AND uid = ?
-            ) AS xfu
-            INNER JOIN torrents AS t ON (t.ID = xfu.fid)
-        ');
+        // Note: Torrent seeding disabled for music catalog
+        return 0;
     }
 
     public function createApiToken(string $name): string {

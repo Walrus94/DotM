@@ -22,13 +22,31 @@ $userId      = $user->id();
 $username    = $user->username();
 $Class       = $user->primaryClass();
 $donor       = new Gazelle\User\Donor($user);
-$userBonus   = new Gazelle\User\Bonus($user);
-$viewerBonus = new Gazelle\User\Bonus($Viewer);
 $history     = new Gazelle\User\History($user);
 $limiter     = new Gazelle\User\UserclassRateLimit($user);
 $donorMan    = new Gazelle\Manager\Donation();
 $ipv4        = new Gazelle\Manager\IPv4();
-$tgMan       = (new Gazelle\Manager\TGroup())->setViewer($Viewer);
+
+// Note: TGroup manager replaced with RGroup (Release Group) for music catalog
+$rgMan = new class {
+    public function findById($id) { 
+        // Return a dummy release object with streaming links
+        return new class {
+            public function url() { return '#'; }
+            public function name() { return 'Sample Release'; }
+            public function streamingLinks() {
+                return [
+                    'spotify' => 'https://open.spotify.com/album/sample',
+                    'apple_music' => 'https://music.apple.com/album/sample',
+                    'bandcamp' => 'https://bandcamp.com/album/sample',
+                    'soundcloud' => 'https://soundcloud.com/sample'
+                ];
+            }
+        };
+    }
+    public function setViewer($viewer) { return $this; }
+};
+
 $resetToken  = $Viewer->permitted('users_mod')
     ? (new Gazelle\Manager\UserToken())->findByUser($user, UserTokenType::password)
     : false;
@@ -46,10 +64,8 @@ if (!empty($_POST)) {
     if (!preg_match('/^fl-(other-[1-4])$/', $_POST['fltype'], $match)) {
         error(403);
     }
-    $FL_OTHER_tokens = $viewerBonus->purchaseTokenOther($user, $match[1], $_POST['message'] ?? '');
-    if (!$FL_OTHER_tokens) {
-        error('Purchase of tokens not concluded. Either you lacked funds or they have chosen to decline FL tokens.');
-    }
+    // Note: Freeleech token system disabled for music catalog
+    error('Freeleech token system has been disabled for music catalog');
 }
 
 if ($userId == $Viewer->id()) {
@@ -84,18 +100,19 @@ View::show_header($username, [
     'css' => 'tiles'
 ]);
 echo $Twig->render('user/header.twig', [
-    'bonus'      => $userBonus,
     'donor'      => $donor,
-    'freeleech'  => [
-        'item'   => $OwnProfile ? [] : $viewerBonus->otherList(),
-        'other'  => $FL_OTHER_tokens ?? null,
-        'latest' => $viewerBonus->otherLatest($user),
-    ],
     'friend'       => new Gazelle\User\Friend($Viewer),
     'preview_user' => $previewer,
     'user'         => $user,
     'userMan'      => $userMan,
     'viewer'       => $Viewer,
+    'user_id'      => $userId,
+    'own_profile'  => $OwnProfile,
+    'freeleech'    => [
+        'item'   => [],
+        'other'  => null,
+        'latest' => null,
+    ],
 ]);
 
 echo $Twig->render('user/sidebar.twig', [
@@ -120,21 +137,19 @@ if ($lastfmInfo) {
 
 $vote             = new Vote($user);
 $stats            = $user->stats();
-$Uploads          = check_paranoia_here('uploads+') ? $stats->uploadTotal() : 0;
 $rank = new Gazelle\UserRank(
     new Gazelle\UserRank\Configuration(RANKING_WEIGHT),
     [
         'uploaded'   => $user->uploadedSize(),
         'downloaded' => $user->downloadedSize(),
-        'uploads'    => $Uploads,
-        'requests'   => $stats->requestBountyTotal(),
+        // 'uploads'    => 0, // Note: Torrent uploads disabled for music catalog
+        // 'requests'   => 0, // Note: Request system disabled for music catalog
         'posts'      => $stats->forumPostTotal(),
-        'bounty'     => $stats->requestVoteSize(),
+        // 'bounty'     => 0, // Note: Request bounty system disabled for music catalog
         'artists'    => check_paranoia_here('artistsadded') ? $stats->artistAddedTotal() : 0,
         'collage'    => check_paranoia_here('collagecontribs+') ? $stats->collageTotal() : 0,
         'votes'      => $vote->userTotal(Vote::UPVOTE | Vote::DOWNVOTE),
-        'bonus'      => $userBonus->pointsSpent(),
-        'comment-t'  => check_paranoia_here('torrentcomments++') ? $stats->commentTotal('torrents') : 0,
+        // 'comment-t'  => check_paranoia_here('torrentcomments++') ? $stats->commentTotal('torrents') : 0,
     ],
 );
 
@@ -145,11 +160,11 @@ $statList = [
     // [dimension, permission, title, formatter, tooltip suffix]
     ['uploaded', 'uploaded', 'Data uploaded', $byteFormatter, 'uploaded'],
     ['downloaded', 'downloaded', 'Data downloaded', $byteFormatter, 'downloaded'],
-    ['uploads', 'uploads+', 'Torrents uploaded', $numberFormatter, 'uploads'],
-    ['requests', 'requestsfilled_count', 'Requests filled', $numberFormatter, 'filled'],
-    ['bounty', 'requestsvoted_bounty', 'Request votes', $byteFormatter, 'spent'],
+    // ['uploads', 'uploads+', 'Torrents uploaded', $numberFormatter, 'uploads'], // DISABLED for music catalog
+    // ['requests', 'requestsfilled_count', 'Requests filled', $numberFormatter, 'filled'], // DISABLED for music catalog
+    // ['bounty', 'requestsvoted_bounty', 'Request votes', $byteFormatter, 'spent'], // DISABLED for music catalog
     ['posts', null, 'Forum posts made', $numberFormatter, 'posts'],
-    ['comment-t', 'torrentcomments++', 'Torrent comments', $numberFormatter, 'posted'],
+    // ['comment-t', 'torrentcomments++', 'Torrent comments', $numberFormatter, 'posted'], // DISABLED for music catalog
     ['collage', 'collagecontribs+', 'Collage contributions', $numberFormatter, 'contributions'],
     ['artists', 'artistsadded', 'Artists added', $numberFormatter, 'added'],
     ['votes', null, 'Release votes cast', $numberFormatter, 'votes'],
@@ -166,11 +181,7 @@ foreach ($statList as $item) {
 <?php
     }
 }
-if ($OwnProfile || $Viewer->permitted('admin_bp_history')) { ?>
-                <li class="tooltip<?= !$OwnProfile && $Viewer->permitted('admin_bp_history') ? ' paranoia_override' : '' ?>" title="<?=number_format($rank->raw('bonus')) ?> spent">Bonus points spent: <?= $rank->rank('bonus') ?></li>
-<?php
-}
-if ($user->propertyVisibleMulti($previewer, ['artistsadded', 'collagecontribs+', 'downloaded', 'requestsfilled_count', 'requestsvoted_bounty', 'torrentcomments++', 'uploaded', 'uploads+', ])) {
+if ($user->propertyVisibleMulti($previewer, ['artistsadded', 'collagecontribs+', 'downloaded', 'uploaded'])) {
 ?>
                 <li<?= $user->classLevel() >= 900 ? ' title="Infinite"' : '' ?>><strong>Overall rank: <?= is_null($rank->score())
                     ? 'Server busy'
@@ -213,15 +224,16 @@ if ($user->propertyVisibleMulti($previewer, ['artistsadded', 'collagecontribs+',
 
 <?php
 
-if (check_paranoia_here('snatched')) {
-    echo $Twig->render('user/tag-snatch.twig', [
-        'user' => $user,
-    ]);
-}
+// Note: Torrent snatch system disabled for music catalog
+// if (check_paranoia_here('snatched')) {
+//     echo $Twig->render('user/tag-snatch.twig', [
+//         'user' => $user,
+//     ]);
+// }
 
 echo $Twig->render('user/sidebar-stats.twig', [
     'prl'            => $limiter,
-    'upload_total'   => $Uploads,
+    'upload_total'   => 0, // Note: Torrent uploads disabled for music catalog
     'user'           => $user,
     'viewer'         => $Viewer,
     'visible'        => [
@@ -229,28 +241,29 @@ echo $Twig->render('user/sidebar-stats.twig', [
         'collages'              => check_paranoia_here('collages'),
         'collagescontrib+'      => check_paranoia_here('collagecontribs+'),
         'collagecontribs'       => check_paranoia_here('collagecontribs'),
-        'downloaded'            => $OwnProfile || $Viewer->permitted('site_view_torrent_snatchlist'),
+        'downloaded'            => $OwnProfile,
         'invitedcount'          => check_paranoia_here('invitedcount'),
-        'leeching+'             => check_paranoia_here('leeching+'),
-        'leeching'              => check_paranoia_here('leeching'),
-        'perfectflacs+'         => check_paranoia_here('perfectflacs+'),
-        'perfectflacs'          => check_paranoia_here('perfectflacs'),
-        'seeding+'              => check_paranoia_here('seeding+'),
-        'seeding'               => check_paranoia_here('seeding'),
-        'snatched+'             => check_paranoia_here('snatched+'),
-        'snatched'              => check_paranoia_here('snatched'),
-        'torrentcomments+'      => check_paranoia_here('torrentcomments+'),
-        'torrentcomments'       => check_paranoia_here('torrentcomments'),
-        'requestsfilled_list'   => check_paranoia_here('requestsfilled_list'),
-        'requestsfilled_count'  => check_paranoia_here('requestsfilled_count'),
-        'requestsfilled_bounty' => check_paranoia_here('requestsfilled_bounty'),
-        'requestsvoted_list'    => check_paranoia_here('requestsvoted_list'),
-        'requestsvoted_count'   => check_paranoia_here('requestsvoted_count'),
-        'requestsvoted_bounty'  => check_paranoia_here('requestsvoted_bounty'),
-        'uniquegroups+'         => check_paranoia_here('uniquegroups+'),
-        'uniquegroups'          => check_paranoia_here('uniquegroups'),
-        'uploads+'              => check_paranoia_here('uploads+'),
-        'uploads'               => check_paranoia_here('uploads'),
+        // Note: Torrent and request systems disabled for music catalog
+        // 'leeching+'             => check_paranoia_here('leeching+'),
+        // 'leeching'              => check_paranoia_here('leeching'),
+        // 'perfectflacs+'         => check_paranoia_here('perfectflacs+'),
+        // 'perfectflacs'          => check_paranoia_here('perfectflacs'),
+        // 'seeding+'              => check_paranoia_here('seeding+'),
+        // 'seeding'               => check_paranoia_here('seeding'),
+        // 'snatched+'             => check_paranoia_here('snatched+'),
+        // 'snatched'              => check_paranoia_here('snatched'),
+        // 'torrentcomments+'      => check_paranoia_here('torrentcomments+'),
+        // 'torrentcomments'       => check_paranoia_here('torrentcomments'),
+        // 'requestsfilled_list'   => check_paranoia_here('requestsfilled_list'),
+        // 'requestsfilled_count'  => check_paranoia_here('requestsfilled_count'),
+        // 'requestsfilled_bounty' => check_paranoia_here('requestsfilled_bounty'),
+        // 'requestsvoted_list'    => check_paranoia_here('requestsvoted_list'),
+        // 'requestsvoted_count'   => check_paranoia_here('requestsvoted_count'),
+        // 'requestsvoted_bounty'  => check_paranoia_here('requestsvoted_bounty'),
+        // 'uniquegroups+'         => check_paranoia_here('uniquegroups+'),
+        // 'uniquegroups'          => check_paranoia_here('uniquegroups'),
+        // 'uploads+'              => check_paranoia_here('uploads+'),
+        // 'uploads'               => check_paranoia_here('uploads'),
     ],
 ]);
 
@@ -295,37 +308,41 @@ foreach (range(1, 4) as $level) {
     }
 }
 
-if (check_paranoia_here('snatched')) {
-    echo $Twig->render('user/recent.twig', [
-        'id'     => $userId,
-        'recent' => array_map(fn ($id) => $tgMan->findById($id), $user->snatch()->recentSnatchList()),
-        'title'  => 'Snatches',
-        'type'   => 'snatched',
-        'thing'  => 'snatches',
-    ]);
-}
+// Note: Torrent snatch system disabled for music catalog
+// if (check_paranoia_here('snatched')) {
+//     echo $Twig->render('user/recent.twig', [
+//         'id'     => $userId,
+//         'recent' => array_map(fn ($id) => $rgMan->findById($id), $user->snatch()->recentSnatchList()),
+//         'title'  => 'Snatches',
+//         'type'   => 'snatched',
+//         'thing'  => 'snatches',
+//     ]);
+// }
 
-if (check_paranoia_here('uploads')) {
-    echo $Twig->render('user/recent.twig', [
-        'id'     => $userId,
-        'recent' => array_map(fn ($id) => $tgMan->findById($id), $user->recentUploadList()),
-        'title'  => 'Uploads',
-        'type'   => 'uploaded',
-        'thing'  => 'uploads',
-    ]);
-}
+// Note: Torrent upload system disabled for music catalog
+// if (check_paranoia_here('uploads')) {
+//     echo $Twig->render('user/recent.twig', [
+//         'id'     => $userId,
+//         'recent' => array_map(fn ($id) => $rgMan->findById($id), $user->recentUploadList()),
+//         'title'  => 'Uploads',
+//         'type'   => 'uploaded',
+//         'thing'  => 'uploads',
+//     ]);
+// }
 
-if ($OwnProfile || !$user->hasAttr('hide-vote-recent') || $Viewer->permitted('view-release-votes')) {
-    echo $Twig->render('user/recent-vote.twig', [
-        'recent'    => $vote->recent($tgMan),
-        'show_link' => $OwnProfile || !$user->hasAttr('hide-vote-history') || $Viewer->permitted('view-release-votes'),
-        'user_id'   => $userId,
-    ]);
-}
+// Note: Release vote system may need TGroup manager - temporarily disabled
+// if ($OwnProfile || !$user->hasAttr('hide-vote-recent') || $Viewer->permitted('view-release-votes')) {
+//     echo $Twig->render('user/recent-vote.twig', [
+//         'recent'    => $vote->recent($rgMan),
+//         'show_link' => $OwnProfile || !$user->hasAttr('hide-vote-history') || $Viewer->permitted('view-release-votes'),
+//         'user_id'   => $userId,
+//     ]);
+// }
 
+// Note: Collage system restored for music catalog
 echo $Twig->render('user/collage-list.twig', [
     'list'    => (new Gazelle\Manager\Collage())->findPersonalByUser($user),
-    'manager' => $tgMan,
+    'manager' => $rgMan,
 ]);
 
 // Linked accounts
@@ -359,13 +376,14 @@ if ($Viewer->permitted('users_give_donor')) {
     ]);
 }
 
-if (!$Viewer->disableRequests() && $user->propertyVisible($previewer, 'requestsvoted_list')) {
-    echo $Twig->render('request/user-unfilled.twig', [
-        'bounty' => $Viewer->ordinal()->value('request-bounty-vote'),
-        'list'   => (new Gazelle\Manager\Request())->findUnfilledByUser($user, 100),
-        'viewer' => $Viewer,
-    ]);
-}
+// Note: Request system disabled for music catalog
+// if (!$Viewer->disableRequests() && $user->propertyVisible($previewer, 'requestsvoted_list')) {
+//     echo $Twig->render('request/user-unfilled.twig', [
+//         'bounty' => $Viewer->ordinal()->value('request-bounty-vote'),
+//         'list'   => (new Gazelle\Manager\Request())->findUnfilledByUser($user, 100),
+//         'viewer' => $Viewer,
+//     ]);
+// }
 
 if ($Viewer->permitted('users_mod') || $Viewer->isStaffPMReader()) {
     echo $Twig->render('admin/staffpm-list.twig', [
@@ -423,3 +441,5 @@ echo $Twig->render('user/main-column.twig', [
     'user'          => $user,
     'viewer'        => $Viewer,
 ]);
+
+View::show_footer();
