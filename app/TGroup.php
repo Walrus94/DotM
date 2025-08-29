@@ -8,7 +8,7 @@ use Gazelle\Intf\CategoryHasArtist;
 use Gazelle\Intf\CollageEntry;
 
 class TGroup extends BaseObject implements CategoryHasArtist, CollageEntry {
-    final public const tableName            = 'torrents_group';
+    final public const tableName            = 'releases_group';
     final public const CACHE_KEY            = 'tg_%d';
     final public const CACHE_TLIST_KEY      = 'tlist_%d';
     final public const CACHE_COVERART_KEY   = 'tg_cover_%d';
