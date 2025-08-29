@@ -8,7 +8,7 @@ use Gazelle\Intf\CategoryHasArtist;
 use Gazelle\Intf\CollageEntry;
 
 class TGroup extends BaseObject implements CategoryHasArtist, CollageEntry {
-    final public const tableName            = 'torrents_group';
+    final public const tableName            = 'releases_group';
     final public const CACHE_KEY            = 'tg_%d';
     final public const CACHE_TLIST_KEY      = 'tlist_%d';
     final public const CACHE_COVERART_KEY   = 'tg_cover_%d';
@@ -87,8 +87,8 @@ class TGroup extends BaseObject implements CategoryHasArtist, CollageEntry {
 
         self::$db->prepared_query("
             SELECT DISTINCT UserID
-            FROM torrents AS t
-            LEFT JOIN torrents_group AS tg ON (t.GroupID = tg.ID)
+            FROM releases AS t
+            LEFT JOIN releases_group AS tg ON (t.GroupID = tg.ID)
             WHERE tg.ID = ?
             ", $this->id
         );
@@ -99,7 +99,7 @@ class TGroup extends BaseObject implements CategoryHasArtist, CollageEntry {
         self::$db->prepared_query("
             SELECT DISTINCT xs.uid
             FROM xbt_snatched xs
-            INNER JOIN torrents t ON (t.ID = xs.fid)
+                            INNER JOIN releases t ON (t.ID = xs.fid)
             WHERE t.GroupID = ?
             ", $this->id
         );
@@ -111,7 +111,7 @@ class TGroup extends BaseObject implements CategoryHasArtist, CollageEntry {
 
     public function touch(): static {
         self::$db->prepared_query('
-            UPDATE torrents_group SET
+            UPDATE releases_group SET
                 Time = now()
             WHERE ID = ?
             ', $this->id
@@ -210,8 +210,8 @@ class TGroup extends BaseObject implements CategoryHasArtist, CollageEntry {
                 (tgha.TorrentGroupID IS NOT NULL) AS noCoverArt,
                 max(coalesce(t.Size, 0)) AS max_torrent_size,
                 max(coalesce(t.created, '2000-01-01 00:00:00')) AS most_recent_upload
-            FROM torrents_group AS tg
-            LEFT JOIN torrents AS t ON (t.GroupID = tg.ID)
+            FROM releases_group AS tg
+            LEFT JOIN releases AS t ON (t.GroupID = tg.ID)
             LEFT JOIN torrents_tags AS tt ON (tt.GroupID = tg.ID)
             LEFT JOIN tags as tag ON (tag.ID = tt.TagID)
             LEFT JOIN torrent_group_has_attr AS tgha ON (tgha.TorrentGroupID = tg.ID
@@ -259,7 +259,7 @@ class TGroup extends BaseObject implements CategoryHasArtist, CollageEntry {
 
         self::$db->prepared_query("
             SELECT t.ID
-            FROM torrents t
+            FROM releases t
             WHERE t.GroupID = ?
             ORDER BY t.Remastered, (t.RemasterYear != 0) DESC, t.RemasterYear, t.RemasterTitle,
                 t.RemasterRecordLabel, t.RemasterCatalogueNumber, t.Media, t.Format, t.Encoding, t.ID
@@ -286,10 +286,10 @@ class TGroup extends BaseObject implements CategoryHasArtist, CollageEntry {
     protected function fetchIsSnatched(): bool {
         return isset($this->viewer) && $this->viewer->option('ShowSnatched') && (bool)self::$db->scalar("
             SELECT 1
-            FROM torrents_group tg
+            FROM releases_group tg
             WHERE exists(
                 SELECT 1
-                FROM torrents t
+                FROM releases t
                 INNER JOIN xbt_snatched xs ON (xs.fid = t.ID)
                 WHERE t.GroupID = tg.ID
                     AND xs.uid = ?
@@ -415,7 +415,7 @@ class TGroup extends BaseObject implements CategoryHasArtist, CollageEntry {
                 RemasterTitle           AS title,
                 RemasterRecordLabel     AS record_label,
                 RemasterCatalogueNumber AS catalogue_number
-            FROM torrents
+            FROM releases
             WHERE Remastered = '1'
                 AND RemasterYear != 0
                 AND GroupID = ?
@@ -503,7 +503,7 @@ class TGroup extends BaseObject implements CategoryHasArtist, CollageEntry {
     public function canEdit(User $user): bool {
         return $user->permitted('torrents_edit')
             || (bool)self::$db->scalar("
-                    SELECT 1 FROM torrents WHERE GroupID = ? AND UserID = ? LIMIT 1
+                    SELECT 1 FROM releases WHERE GroupID = ? AND UserID = ? LIMIT 1
                     ", $this->id, $user->id()
                 );
     }
@@ -682,7 +682,7 @@ class TGroup extends BaseObject implements CategoryHasArtist, CollageEntry {
         return (int)self::$db->scalar("
             SELECT count(*)
             FROM reportsv2 AS r
-            INNER JOIN torrents AS t ON (t.ID = r.TorrentID)
+            INNER JOIN releases AS t ON (t.ID = r.TorrentID)
             WHERE r.Status != 'Resolved'
                 AND t.GroupID = ?
             ", $this->id
@@ -718,7 +718,7 @@ class TGroup extends BaseObject implements CategoryHasArtist, CollageEntry {
         );
         if ($hasTags) {
             self::$db->prepared_query("
-                UPDATE torrents_group SET
+                UPDATE releases_group SET
                     TagList = (
                         SELECT REPLACE(GROUP_CONCAT(tags.Name SEPARATOR ' '), '.', '_')
                         FROM torrents_tags AS t
@@ -745,9 +745,9 @@ class TGroup extends BaseObject implements CategoryHasArtist, CollageEntry {
                 coalesce(t.RemasterYear, 0), t.RemasterTitle, t.RemasterRecordLabel, t.RemasterCatalogueNumber,
                 replace(replace(t.FileList, '_', ' '), '/', ' ') AS FileList,
                 replace(group_concat(coalesce(t2.Name, '') SEPARATOR ' '), '.', '_'), ?, ?
-            FROM torrents t
+            FROM releases t
             INNER JOIN torrents_leech_stats tls ON (tls.TorrentID = t.ID)
-            INNER JOIN torrents_group g ON (g.ID = t.GroupID)
+            INNER JOIN releases_group g ON (g.ID = t.GroupID)
             LEFT JOIN torrents_tags tt ON (tt.GroupID = g.ID)
             LEFT JOIN tags t2 ON (t2.ID = tt.TagID)
             WHERE g.ID = ?
@@ -775,7 +775,7 @@ class TGroup extends BaseObject implements CategoryHasArtist, CollageEntry {
         );
         $revisionId = self::$db->inserted_id();
         self::$db->prepared_query("
-            UPDATE torrents_group SET
+            UPDATE releases_group SET
                 RevisionID = ?
             WHERE ID = ?
             ", $revisionId, $this->id
@@ -839,7 +839,7 @@ class TGroup extends BaseObject implements CategoryHasArtist, CollageEntry {
     public function absorb(Torrent $torrent, User $user): int {
         self::$db->begin_transaction();
         self::$db->prepared_query("
-            UPDATE torrents SET
+            UPDATE releases SET
                 GroupID = ?
             WHERE ID = ?
             ", $this->id, $torrent->id()
@@ -849,7 +849,7 @@ class TGroup extends BaseObject implements CategoryHasArtist, CollageEntry {
         $old      = $torrent->group();
         $oldId    = $old->id();
 
-        if ((bool)self::$db->scalar("SELECT count(*) FROM torrents WHERE GroupID = ?", $oldId)) {
+        if ((bool)self::$db->scalar("SELECT count(*) FROM releases WHERE GroupID = ?", $oldId)) {
             $old->flush();
             $old->refresh();
         } else {
@@ -968,7 +968,7 @@ class TGroup extends BaseObject implements CategoryHasArtist, CollageEntry {
         );
 
         $manager = new \Gazelle\DB();
-        [$ok, $message] = $manager->softDelete(SQLDB, 'torrents_group', [['ID', $this->id]]);
+        [$ok, $message] = $manager->softDelete(SQLDB, 'releases_group', [['ID', $this->id]]);
         if (!$ok) {
             return false;
         }
@@ -1020,7 +1020,7 @@ class TGroup extends BaseObject implements CategoryHasArtist, CollageEntry {
                 if(d.Remastered = '1', d.RemasterRecordLabel, tg.RecordLabel)         AS record_label,
                 if(d.Remastered = '1', d.RemasterCatalogueNumber, tg.CatalogueNumber) AS catalogue_number
             FROM deleted_torrents d
-            LEFT JOIN torrents_group tg ON (tg.ID = d.GroupID)
+            LEFT JOIN releases_group tg ON (tg.ID = d.GroupID)
             WHERE d.GroupID = ?
             GROUP BY remastered, year, title, record_label, catalogue_number, media
             ORDER BY remastered, year, title, record_label, catalogue_number, media

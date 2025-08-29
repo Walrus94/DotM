@@ -5,7 +5,7 @@ namespace Gazelle;
 class Torrent extends TorrentAbstract {
     use Pg;
 
-    final public const tableName               = 'torrents';
+    final public const tableName               = 'releases';
     final public const CACHE_KEY               = 't2_%d';
     final public const CACHE_FOLDERNAME        = 'foldername_%s';
     final public const CACHE_KEY_PEERLIST_PAGE = 'peerlist_page_%d_%d';
@@ -47,7 +47,7 @@ class Torrent extends TorrentAbstract {
                 tls.Snatched,
                 tls.last_action,
                 group_concat(tl.LogID) AS ripLogIds
-            FROM torrents t
+            FROM releases t
             INNER JOIN torrents_leech_stats tls ON (tls.TorrentID = t.ID)
             LEFT JOIN torrents_logs      AS tl  ON (tl.TorrentID  = t.ID)
             WHERE t.ID = ?
@@ -153,7 +153,7 @@ class Torrent extends TorrentAbstract {
         );
         if (!$count) {
             self::$db->prepared_query("
-                UPDATE torrents SET
+                UPDATE releases SET
                     HasLogDB    = '0',
                     LogChecksum = '0',
                     LogScore    = 0
@@ -162,7 +162,7 @@ class Torrent extends TorrentAbstract {
             );
         } else {
             self::$db->prepared_query("
-                UPDATE torrents AS t
+                UPDATE releases AS t
                 LEFT JOIN (
                     SELECT TorrentID,
                         min(CASE WHEN Adjusted = '1' AND AdjustedScore    != Score    THEN AdjustedScore    ELSE Score    END) AS Score,
@@ -252,7 +252,7 @@ class Torrent extends TorrentAbstract {
      */
     public function issueReseedRequest(User $viewer, Manager\User $userMan): int {
         self::$db->prepared_query('
-            UPDATE torrents SET
+            UPDATE releases SET
                 LastReseedRequest = now()
             WHERE ID = ?
             ', $this->id
@@ -336,7 +336,7 @@ class Torrent extends TorrentAbstract {
             return [false, $message];
         }
         $manager->softDelete(SQLDB, 'torrent_has_attr', [['TorrentID', $this->id]]);
-        $manager->softDelete(SQLDB, 'torrents', [['ID', $this->id]]);
+        $manager->softDelete(SQLDB, 'releases', [['ID', $this->id]]);
         $manager->relaxConstraints(false);
 
         self::$db->prepared_query("
@@ -511,7 +511,7 @@ class Torrent extends TorrentAbstract {
                     snatcher.uid      IS NOT NULL AS is_snatched
                 FROM xbt_files_users AS xfu
                 INNER JOIN users_main AS um ON (um.ID = xfu.uid)
-                INNER JOIN torrents AS t ON (t.ID = xfu.fid)
+                INNER JOIN releases AS t ON (t.ID = xfu.fid)
                 LEFT JOIN (SELECT DISTINCT UserID FROM users_downloads WHERE TorrentID = ?) downloader
                     ON (downloader.UserID = xfu.uid)
                 LEFT JOIN (SELECT DISTINCT uid FROM xbt_snatched WHERE fid = ?) snatcher USING (uid)
